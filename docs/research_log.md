@@ -381,3 +381,10 @@ Interpretation:
 - Temporal grounding improves but remains poor in absolute terms.
 - Multiple-choice accuracy decreased slightly and should be inspected before the
   next method iteration.
+
+Summary tables added:
+
+- `docs/comprehensive_data_comparison.md`
+- `results/all_data_comparison_table.csv`
+- `results/main_result_summary.csv`
+- `results/lora_full_test_vs_overlay_baseline.csv`

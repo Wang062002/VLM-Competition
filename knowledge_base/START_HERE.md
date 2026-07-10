@@ -50,6 +50,13 @@ Current next step:
 - `docs/lora_sft_training_plan.md`: detailed LoRA-SFT plan
 - `docs/script_workflow_explained.md`: explanation of each script and what it
   did in the project workflow
+- `docs/comprehensive_data_comparison.md`: Chinese summary tables covering
+  datasets, splits, training runs, baseline results, LoRA results, and deltas
+- `results/all_data_comparison_table.csv`: machine-readable all-data comparison
+  table
+- `results/main_result_summary.csv`: main paper-ready result table
+- `results/lora_full_test_vs_overlay_baseline.csv`: full TEST LoRA-vs-overlay
+  delta table
 - `codex.md`: compact operational memory
 
 ## Critical Numbers

@@ -116,6 +116,13 @@ Clip-window audit result:
 
 ## Baseline Table Values
 
+For a fuller table, see:
+
+- `docs/comprehensive_data_comparison.md`
+- `results/all_data_comparison_table.csv`
+- `results/main_result_summary.csv`
+- `results/lora_full_test_vs_overlay_baseline.csv`
+
 | Setting | Overall | Pre-eval | temporal_grounding | time |
 |---|---:|---:|---:|---:|
 | Raw full 4000 | 0.194250 | 0.364083 | 0.007741 | 0.003199 |

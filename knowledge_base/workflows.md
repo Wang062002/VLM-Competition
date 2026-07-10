@@ -239,6 +239,17 @@ Recommended next analyses:
   - multiple-choice accuracy dropping slightly
   - object identification and `fo_class` improving strongly
 
+Current all-data comparison entry points:
+
+- human-readable Chinese overview:
+  `docs/comprehensive_data_comparison.md`
+- machine-readable all-data table:
+  `results/all_data_comparison_table.csv`
+- paper-ready main table:
+  `results/main_result_summary.csv`
+- LoRA-vs-overlay full TEST delta table:
+  `results/lora_full_test_vs_overlay_baseline.csv`
+
 ## If Script Changed Locally
 
 Always provide both:

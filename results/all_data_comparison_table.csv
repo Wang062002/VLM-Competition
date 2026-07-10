@@ -1,0 +1,18 @@
+category,name,split_or_scope,samples_or_size,input,model,overall_mean,pre_evaluation_score,temporal_grounding,time,object_recognition,object_identification,fo_class,train_samples,val_samples,valid_rows,invalid_rows,eval_loss,notes
+data,HeiCo raw videos,heico,30 videos / about 150G,raw video,,,,,,,,,,,,,"Downloaded to /home/Jiali_Wang/data/focus/heico/videos"
+data,HeiCo timestamp overlay,heico,30 videos / about 81G,timestamp overlay,,,,,,,,,,,,,"Generated with official VideoTimestampOverlayPreprocessor"
+data,LapChole-FOCUS,not used,not downloaded,,,,,,,,,,,,,,"Officially supported but not used yet"
+split,Official SEGMENT TRAIN,train,8000 QA,,,,,,,,,,,,,,"Source pool for LoRA-SFT; official TEST not used for training"
+split,Official SEGMENT TEST,test,4000 QA,,,,,,,,,,,,,,"Held-out evaluation split"
+split,Internal train,official TRAIN,7198 QA,,,,,,,,,,,5959,1239,,"Internal train before clip-window filtering"
+split,Internal val,official TRAIN,802 QA,,,,,,,,,,,663,139,,"Internal validation before clip-window filtering"
+training,qwen3vl-4b-smoke-32,internal train/val,,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct,,,,,,,32,8,,,1.0017873756587505,Plumbing smoke test only
+training,qwen3vl-4b-smoke-512-filtered,internal train/val,,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct,,,,,,,512,99,,,0.35957938603553546,Medium sanity check
+training,qwen3vl-4b-sft-valid5959-e1,internal train/val,,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct + LoRA,,,,,,,5959,663,,,0.42800752680308324,First full clip-valid LoRA adapter
+evaluation,official-smoke-3,TEST,3,raw video,Qwen/Qwen3-VL-4B-Instruct,0.000000,0.000000,,,,,,,,,,Pipeline smoke test only
+evaluation,official-smoke-100,TEST,100,raw video,Qwen/Qwen3-VL-4B-Instruct,0.200000,0.186795,,,,,,,,,,First usable raw small-sample baseline
+evaluation,official-overlay-100,TEST,100,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct,0.210000,0.200886,,,,,,,,,,Small-sample overlay baseline
+evaluation,official-raw-full-4000,TEST,4000,raw video,Qwen/Qwen3-VL-4B-Instruct,0.194250,0.364083,0.007741,0.003199,0.302873,0.153572,0.179436,,,,,Full raw baseline
+evaluation,official-overlay-full-4000,TEST,4000,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct,0.207500,0.372647,0.033822,0.029623,0.308308,0.149298,0.175904,,,,,Full overlay baseline
+evaluation,qwen3vl-4b-sft-valid5959-e1-overlay-test-100,TEST,100,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct + LoRA,0.350000,0.328905,0.065217,0.065217,0.592593,0.576923,0.521739,,,,,Small held-out TEST check after LoRA-SFT
+evaluation,qwen3vl-4b-sft-valid5959-e1-overlay-test-full,TEST,4000,timestamp overlay,Qwen/Qwen3-VL-4B-Instruct + LoRA,0.279000,0.402794,0.071740,0.064236,0.472173,0.469223,0.437977,,,,,Full held-out TEST confirms LoRA improvement
