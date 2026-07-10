@@ -1,5 +1,22 @@
 # Paper Notes
 
+## Maintenance Rule
+
+After every substantive project progress, update this file with any
+paper-relevant material:
+
+- method changes
+- dataset or preprocessing rules
+- training settings
+- evaluation settings
+- supported conclusions
+- unsupported hypotheses
+- table-ready numbers
+- limitations and failure modes
+
+Small-sample results must be labelled as preliminary until full held-out TEST
+evaluation confirms them.
+
 ## Reproducible Story So Far
 
 1. Reproduced official Qwen3-VL inference pipeline on HeiCo SEGMENT.

@@ -19,6 +19,35 @@ For project scripts:
 cd ~/workspace/VLM-Competition
 ```
 
+## After Every Substantive Progress
+
+When a new experiment result, script change, data finding, or paper-relevant
+conclusion appears, update the project memory before moving on:
+
+1. Update memory recovery files:
+   - `knowledge_base/START_HERE.md`
+   - `knowledge_base/experiments.md`
+   - `knowledge_base/training_stage.md`
+   - `knowledge_base/workflows.md`
+   - `knowledge_base/maintenance_protocol.md` if the maintenance rule changes
+2. Update paper-supporting files:
+   - `knowledge_base/paper_notes.md`
+   - `docs/research_log.md`
+   - relevant `results/*.csv`
+3. Update workflow documentation if commands or scripts changed:
+   - `docs/script_workflow_explained.md`
+   - relevant `scripts/*.py`
+4. Commit and push to GitHub:
+
+```bash
+git status
+git add .
+git commit -m "<short progress summary>"
+git push
+```
+
+Do not commit data, model weights, passwords, tokens, or `focus-runs/`.
+
 ## Data Audit And Train/Val Split
 
 Already executed successfully, but rerun if the dataset version changes:

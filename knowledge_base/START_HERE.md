@@ -31,6 +31,9 @@ Current next step:
   `VideoTimestampOverlayPreprocessor` defaults.
 - Overlay integrity must be checked by duration coverage, not file count only.
 - Do not store passwords or Hugging Face tokens in project files.
+- After every substantive project progress, update the memory library, paper
+  notes, workflow docs, structured result files, and GitHub commit history.
+  See `knowledge_base/maintenance_protocol.md`.
 
 ## Key Files
 
@@ -39,6 +42,8 @@ Current next step:
 - `knowledge_base/workflows.md`: repeatable command workflows
 - `knowledge_base/training_stage.md`: LoRA-SFT plan and current status
 - `knowledge_base/paper_notes.md`: thesis/paper observations and claims
+- `knowledge_base/maintenance_protocol.md`: rules for keeping memory, paper
+  notes, workflows, and GitHub versions updated after each progress step
 - `knowledge_base/sync_commands.md`: local-to-remote upload commands
 - `docs/research_log.md`: longer research log
 - `docs/lora_sft_training_plan.md`: detailed LoRA-SFT plan

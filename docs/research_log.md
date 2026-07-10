@@ -324,3 +324,20 @@ Interpretation:
   step, validation loss computation, and adapter saving.
 - This run is not intended to produce a useful model; it is a technical smoke
   test before scaling.
+
+## Project Maintenance Rule Added On 2026-07-10
+
+The project now has an explicit maintenance rule:
+
+- Every substantive experiment, script change, data issue, evaluation result,
+  or paper-relevant conclusion must be recorded in the project knowledge base.
+- The recovery entry point is `knowledge_base/START_HERE.md`.
+- The detailed protocol is `knowledge_base/maintenance_protocol.md`.
+- Paper-supporting notes should be kept in `knowledge_base/paper_notes.md`,
+  `docs/research_log.md`, and structured `results/*.csv` files.
+- Workflow and script changes should be reflected in
+  `knowledge_base/workflows.md` and `docs/script_workflow_explained.md`.
+- Stable progress should be committed and pushed to GitHub.
+
+This rule is meant to prevent memory loss after context compression and to keep
+the project ready for later thesis/paper writing.
