@@ -1,0 +1,16 @@
+level,name,accuracy,ci_low,ci_high,count,interpretation
+leaf,instance_matching,0.500000,0.166667,0.833333,6,Reasonable but small sample.
+leaf,object_attributes,0.500000,0.000000,1.000000,2,Too few samples for a stable conclusion.
+leaf,object_identification,0.192308,0.076923,0.346154,26,Foreign-object class recognition is weak.
+leaf,spatial_localization_camera,0.473684,0.263158,0.736842,19,Spatial camera-localization is relatively stronger.
+leaf,spatial_localization_situs,1.000000,1.000000,1.000000,1,Single sample only; not meaningful alone.
+leaf,temporal_localization,0.021739,0.000000,0.065217,46,Temporal localization nearly fails without timestamp overlay.
+group,object_recognition,0.351852,0.222222,0.481481,54,Object-recognition group shows some baseline ability.
+group,temporal_grounding,0.021739,0.000000,0.065217,46,Temporal grounding is the major bottleneck.
+answer_format,binary,0.500000,0.125000,0.875000,8,Binary answers are moderate.
+answer_format,fo_class,0.130435,0.000000,0.260870,23,Foreign-object class format is weak.
+answer_format,multiple_choice,0.500000,0.277778,0.722222,18,Multiple-choice answers are relatively stronger.
+answer_format,open_ended,0.600000,0.200000,1.000000,5,Small sample; only directional.
+answer_format,time,0.021739,0.000000,0.065217,46,Time answers nearly all fail without timestamp overlay.
+overall,MEAN,0.200000,0.120000,0.280000,100,Current raw-video 100-sample baseline.
+pre_evaluation,SCORE,0.186795,,,2,Official pre-evaluation score for this run.

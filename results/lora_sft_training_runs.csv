@@ -1,0 +1,4 @@
+run_name,date,base_model,train_samples,val_samples,invalid_train_clip_rows,invalid_val_clip_rows,epochs,gradient_accumulation_steps,optimizer_steps,eval_loss,adapter_dir,notes
+qwen3vl-4b-smoke-32,2026-07-09,Qwen/Qwen3-VL-4B-Instruct,32,8,0,0,1,4,8,1.0017873756587505,/home/Jiali_Wang/workspace/focus-runs/lora-sft/qwen3vl-4b-smoke-32/adapter-final,Plumbing smoke test only.
+qwen3vl-4b-smoke-512-filtered,2026-07-09,Qwen/Qwen3-VL-4B-Instruct,512,99,0,29,1,4,128,0.35957938603553546,/home/Jiali_Wang/workspace/focus-runs/lora-sft/qwen3vl-4b-smoke-512-filtered/adapter-final,Medium run completed after runtime clip filtering.
+qwen3vl-4b-sft-valid5959-e1,2026-07-10,Qwen/Qwen3-VL-4B-Instruct,5959,663,0,0,1,4,1490,0.42800752680308324,/home/Jiali_Wang/workspace/focus-runs/lora-sft/qwen3vl-4b-sft-valid5959-e1/adapter-final,First full clip-valid LoRA-SFT adapter; tail30 mean loss 0.384984; elapsed about 10.27h; needs held-out TEST evaluation.

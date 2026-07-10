@@ -1,0 +1,109 @@
+# Paper Notes
+
+## Reproducible Story So Far
+
+1. Reproduced official Qwen3-VL inference pipeline on HeiCo SEGMENT.
+2. Compared raw video vs official timestamp-overlay input on the full official
+   TEST split.
+3. Found that overlay improves temporal grounding relatively but only modestly
+   overall.
+4. Identified domain knowledge, foreign-object recognition, answer format, and
+   temporal grounding as major bottlenecks.
+5. Built leakage-safe LoRA-SFT train/val split from official TRAIN.
+6. Verified that Qwen3-VL LoRA-SFT training plumbing works.
+7. Found that TRAIN-derived SFT manifests require clip-duration validation, not
+   only file-existence validation.
+8. Completed the first full clip-valid Qwen3-VL LoRA-SFT run.
+
+## Claims Supported By Current Evidence
+
+Supported:
+
+- Timestamp overlay is useful but insufficient.
+- Raw videos lead to near-zero temporal localization/time performance.
+- Qwen3-VL-4B baseline struggles with surgical domain-specific QA.
+- Preprocessing integrity matters; overlay file count alone is insufficient.
+- Training data integrity also requires checking that each QA time window is
+  inside the referenced video duration.
+- Official TEST should remain held out when training on official TRAIN.
+
+Not yet supported:
+
+- LoRA-SFT improves final TEST performance on the full 4000-sample TEST split.
+- Larger training improves temporal grounding.
+- Any specific LoRA hyperparameter is optimal.
+- Prompt-only improvements are weaker/stronger than LoRA-SFT.
+
+## Useful Wording
+
+Baseline reproduction:
+
+> We reproduced the official Qwen3-VL-4B inference pipeline for the HeiCo-FOCUS
+> SEGMENT track and evaluated both raw-video and timestamp-overlay variants on
+> the official local TEST split.
+
+Overlay ablation:
+
+> Timestamp overlays improved temporal metrics in relative terms, but the
+> absolute temporal grounding accuracy remained low, indicating that explicit
+> time visibility alone is insufficient for robust surgical temporal QA.
+
+Training plan:
+
+> We use the official SEGMENT TRAIN split for supervised adaptation and keep the
+> official SEGMENT TEST split strictly held out for final local evaluation.
+
+Full LoRA-SFT status:
+
+> We trained a Qwen3-VL-4B LoRA adapter for one epoch on the 5,959 clip-valid
+> training samples and evaluated validation loss on 663 clip-valid validation
+> samples from the official TRAIN split. This establishes a trained adapter for
+> subsequent held-out TEST evaluation but does not by itself establish task-level
+> improvement.
+
+TEST-100 adapter result:
+
+> On a 100-sample held-out TEST subset using timestamp-overlay videos, the
+> clip-valid LoRA-SFT adapter improved overall accuracy from 0.210 to 0.350
+> compared with the reproduced overlay baseline. This motivates full TEST-set
+> evaluation but should be treated as preliminary because of the small sample
+> size.
+
+Data integrity:
+
+> Before supervised adaptation, each video-QA sample was validated by confirming
+> that its annotated time window could be cut from the referenced timestamp
+> overlay video. Invalid samples were excluded from training/evaluation subsets
+> and logged for reproducibility.
+
+Clip-window audit result:
+
+> The internal SFT split contained 7,198 training and 802 validation samples
+> before video-window filtering. After validating that each annotated time window
+> could be cut from its timestamp-overlay video, 5,959 training samples and 663
+> validation samples remained. The excluded samples correspond to impossible
+> video windows rather than model errors.
+
+## Baseline Table Values
+
+| Setting | Overall | Pre-eval | temporal_grounding | time |
+|---|---:|---:|---:|---:|
+| Raw full 4000 | 0.194250 | 0.364083 | 0.007741 | 0.003199 |
+| Overlay full 4000 | 0.207500 | 0.372647 | 0.033822 | 0.029623 |
+| LoRA overlay 100 | 0.350000 | 0.328905 | 0.065217 | 0.065217 |
+
+## SFT Data Integrity Table Values
+
+| Split | Total | Clip-valid | Invalid | Invalid rate |
+|---|---:|---:|---:|---:|
+| Internal train | 7198 | 5959 | 1239 | 0.172131 |
+| Internal val | 802 | 663 | 139 | 0.173317 |
+
+## Next Paper-Relevant Analyses
+
+- raw wrong / overlay correct examples
+- overlay wrong / raw correct examples
+- LoRA-SFT validation loss trend
+- adapter inference examples before full evaluation
+- category-level gains after training
+- prompt-only vs LoRA-SFT ablation

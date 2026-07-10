@@ -1,0 +1,3 @@
+split,total_rows,valid_rows,invalid_rows,invalid_rate,clean_jsonl,invalid_jsonl
+internal_train,7198,5959,1239,0.172131,/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.clip_valid.jsonl,/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.invalid_clips.jsonl
+internal_val,802,663,139,0.173317,/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.clip_valid.jsonl,/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.invalid_clips.jsonl

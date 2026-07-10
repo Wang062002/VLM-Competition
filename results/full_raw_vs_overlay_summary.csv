@@ -1,0 +1,30 @@
+level,name,count,raw_accuracy,overlay_accuracy,delta_overlay_minus_raw,interpretation
+leaf,causal_consequence_reasoning,62,0.877218,0.893884,0.016666,small improvement
+leaf,duration_estimation,146,0.090714,0.095714,0.005000,small improvement but still weak
+leaf,event_aggregation,169,0.311129,0.296971,-0.014158,small decrease
+leaf,fo_interaction_recognition,75,0.533611,0.504444,-0.029167,decrease
+leaf,fo_usage_purpose,19,0.916667,0.916667,0.000000,no change
+leaf,functional_reasoning,39,0.704167,0.714583,0.010416,small improvement
+leaf,instance_matching,141,0.536201,0.576397,0.040196,improvement
+leaf,multi_step_reasoning,52,0.330952,0.368571,0.037619,improvement
+leaf,object_aggregation,402,0.304141,0.301215,-0.002926,nearly unchanged
+leaf,object_attributes,27,0.833333,0.783333,-0.050000,decrease with small count
+leaf,object_identification,711,0.153572,0.149298,-0.004274,nearly unchanged and weak
+leaf,spatial_localization_camera,490,0.418717,0.438224,0.019507,small improvement
+leaf,spatial_localization_situs,12,0.693333,0.433333,-0.260000,decrease but very small count
+leaf,temporal_localization,1605,0.000000,0.027867,0.027867,improved from zero but remains very weak
+leaf,temporal_ordering,50,0.548810,0.565476,0.016666,small improvement
+group,aggregation,571,0.293229,0.284556,-0.008673,small decrease
+group,complex_reasoning,153,0.600999,0.616896,0.015897,small improvement
+group,event_understanding,144,0.580415,0.572450,-0.007965,small decrease
+group,object_recognition,1381,0.302873,0.308308,0.005435,nearly unchanged
+group,temporal_grounding,1751,0.007741,0.033822,0.026081,clear relative improvement but still very weak
+answer_format,binary,285,0.529792,0.551885,0.022093,small improvement
+answer_format,fo_class,850,0.179436,0.175904,-0.003532,nearly unchanged and weak
+answer_format,multiple_choice,468,0.402915,0.416370,0.013455,small improvement
+answer_format,number,480,0.256484,0.251833,-0.004651,nearly unchanged
+answer_format,open_ended,206,0.771750,0.768312,-0.003438,nearly unchanged
+answer_format,percentage,22,0.000000,0.000000,0.000000,no improvement
+answer_format,time,1689,0.003199,0.029623,0.026424,large relative improvement but still very weak
+overall,MEAN,4000,0.194250,0.207500,0.013250,modest overall improvement
+pre_evaluation,SCORE,5,0.364083,0.372647,0.008564,modest official-score improvement

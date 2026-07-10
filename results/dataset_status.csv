@@ -1,0 +1,4 @@
+dataset,official_name,status,local_path,local_size,track_used,split_used,known_sample_count,notes
+heico,HeiCo-FOCUS,downloaded,/home/Jiali_Wang/data/focus/heico/videos,150G,SEGMENT,TEST,4000,Used for current raw-video baseline.
+heico_overlay,HeiCo-FOCUS timestamp overlay,generated,/home/Jiali_Wang/data/focus/heico/overlayed,81G,SEGMENT,TEST,4000,Generated from heico videos for use_overlay=True experiments.
+lapchole,LapChole-FOCUS,not_downloaded,,,,,Officially supported but not used yet.
