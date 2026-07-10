@@ -341,3 +341,43 @@ The project now has an explicit maintenance rule:
 
 This rule is meant to prevent memory loss after context compression and to keep
 the project ready for later thesis/paper writing.
+
+## Full LoRA-SFT TEST Evaluation On 2026-07-10
+
+The first full clip-valid LoRA-SFT adapter was evaluated on the full 4000-sample
+official TEST split using timestamp-overlay videos.
+
+Run:
+
+- `qwen3vl-4b-sft-valid5959-e1-overlay-test-full`
+
+Result:
+
+- Overall MEAN: `0.279000`
+- Pre-evaluation SCORE: `0.402794`
+
+Comparison to reproduced overlay baseline:
+
+- Overlay baseline overall MEAN: `0.207500`
+- LoRA overall MEAN: `0.279000`
+- Overall delta: `+0.071500`
+- Overlay baseline pre-evaluation SCORE: `0.372647`
+- LoRA pre-evaluation SCORE: `0.402794`
+- Pre-evaluation delta: `+0.030147`
+
+Most important category-level changes:
+
+- `object_identification`: `0.149298 -> 0.469223`, delta `+0.319925`
+- `fo_class`: `0.175904 -> 0.437977`, delta `+0.262073`
+- `object_recognition`: `0.308308 -> 0.472173`, delta `+0.163865`
+- `temporal_grounding`: `0.033822 -> 0.071740`, delta `+0.037918`
+- `time`: `0.029623 -> 0.064236`, delta `+0.034613`
+
+Interpretation:
+
+- Full held-out TEST confirms that the first clip-valid LoRA-SFT adapter improves
+  over the reproduced overlay baseline.
+- The improvement is strongest for object/foreign-object recognition.
+- Temporal grounding improves but remains poor in absolute terms.
+- Multiple-choice accuracy decreased slightly and should be inspected before the
+  next method iteration.

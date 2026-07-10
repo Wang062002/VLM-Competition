@@ -19,8 +19,9 @@ Completed:
 
 Current next step:
 
-- run full 4000-sample held-out TEST evaluation for the trained adapter
-- compare against the reproduced `official-overlay-full-4000` baseline
+- analyze the full TEST result by category and answer format
+- inspect failure cases, especially temporal grounding and multiple-choice drops
+- plan the next method iteration beyond the first LoRA-SFT adapter
 
 ## Must-Preserve Rules
 
@@ -108,25 +109,30 @@ LoRA-SFT TEST-100:
 - pre-evaluation SCORE: `0.328905`
 - compared with `official-overlay-100` overall `0.210000`, delta `+0.140000`
 
+LoRA-SFT full TEST:
+
+- official TEST samples: `4000`
+- overall MEAN: `0.279000`
+- pre-evaluation SCORE: `0.402794`
+- compared with `official-overlay-full-4000` overall `0.207500`, delta
+  `+0.071500`
+- largest gains:
+  - `object_identification`: `+0.319925`
+  - `fo_class`: `+0.262073`
+  - `object_recognition`: `+0.163865`
+- temporal grounding improved but remains weak:
+  - `temporal_grounding`: `0.033822 -> 0.071740`
+  - `time`: `0.029623 -> 0.064236`
+
 ## Current Recommended Remote Command
 
-Run full held-out TEST evaluation for the LoRA adapter:
+Inspect full TEST output files:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-python scripts/run_segment_baseline.py \
-  --root-dir /home/Jiali_Wang/data/focus \
-  --dataset heico \
-  --split test \
-  --model-id Qwen/Qwen3-VL-4B-Instruct \
-  --adapter-dir ~/workspace/focus-runs/lora-sft/qwen3vl-4b-sft-valid5959-e1/adapter-final \
-  --device cuda:0 \
-  --num-eval none \
-  --video-stride 25 \
-  --width 640 \
-  --height 360 \
-  --output-dir ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full
+ls -lh ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full
+cat ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full/summary.csv
 ```

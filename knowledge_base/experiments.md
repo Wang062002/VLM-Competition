@@ -254,6 +254,47 @@ Comparison to `official-overlay-100`:
 - Full TEST-4000 evaluation is still required before making the final
   performance claim.
 
+## LoRA-SFT Adapter Full TEST Evaluation
+
+Run: `qwen3vl-4b-sft-valid5959-e1-overlay-test-full`
+
+- Date: `2026-07-10`
+- Split: official TEST
+- Samples: `4000`
+- Input: timestamp overlay
+- Base model: `Qwen/Qwen3-VL-4B-Instruct`
+- Adapter:
+  `/home/Jiali_Wang/workspace/focus-runs/lora-sft/qwen3vl-4b-sft-valid5959-e1/adapter-final`
+- Output directory:
+  `/home/Jiali_Wang/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full`
+- Overall MEAN: `0.279000`
+- Pre-evaluation SCORE: `0.402794`
+- `object_recognition`: `0.472173`
+- `temporal_grounding`: `0.071740`
+- `object_identification`: `0.469223`
+- `fo_class`: `0.437977`
+- `time`: `0.064236`
+
+Comparison to `official-overlay-full-4000`:
+
+- Overall MEAN: `0.207500 -> 0.279000`, delta `+0.071500`
+- Pre-evaluation SCORE: `0.372647 -> 0.402794`, delta `+0.030147`
+- `object_recognition`: `0.308308 -> 0.472173`, delta `+0.163865`
+- `object_identification`: `0.149298 -> 0.469223`, delta `+0.319925`
+- `fo_class`: `0.175904 -> 0.437977`, delta `+0.262073`
+- `temporal_grounding`: `0.033822 -> 0.071740`, delta `+0.037918`
+- `time`: `0.029623 -> 0.064236`, delta `+0.034613`
+
+Interpretation:
+
+- Full held-out TEST confirms that clip-valid LoRA-SFT improves performance over
+  the reproduced overlay baseline.
+- The largest gains are in object recognition, object identification, and
+  foreign-object class answers.
+- Temporal grounding improves but remains weak in absolute terms.
+- Multiple-choice performance decreases slightly, so future work should inspect
+  category-specific trade-offs and answer-format behavior.
+
 ## Structured Result Files
 
 - `results/experiment_log.csv`

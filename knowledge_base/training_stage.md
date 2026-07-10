@@ -143,13 +143,34 @@ Do not tune on official TEST.
 
 ## Next Evaluation Step
 
-Before claiming model improvement:
+Completed:
 
 - inspect `train_history.jsonl` for loss trend and instability: done, no
   obvious tail divergence
-- run adapter inference on a small held-out TEST subset first: next
-- then run full official TEST evaluation using the same overlay settings as the
-  reproduced baseline
+- run adapter inference on a small held-out TEST subset first: done
+- run full official TEST evaluation using the same overlay settings as the
+  reproduced baseline: done
 - compare against `official-overlay-full-4000`:
   - overall MEAN: `0.207500`
   - pre-evaluation SCORE: `0.372647`
+
+Full TEST result:
+
+- LoRA adapter overall MEAN: `0.279000`
+- LoRA adapter pre-evaluation SCORE: `0.402794`
+- Overall delta: `+0.071500`
+- Pre-evaluation delta: `+0.030147`
+- Main gains: object recognition, object identification, and foreign-object
+  class answers
+- Remaining bottleneck: temporal grounding/time answers
+
+## Next Method Step
+
+Analyze full TEST errors and plan a second method iteration:
+
+- inspect temporal grounding failures
+- inspect multiple-choice drop
+- compare baseline wrong / LoRA correct examples
+- compare baseline correct / LoRA wrong examples
+- consider temporal-specific prompting, data balancing, or second-stage
+  fine-tuning

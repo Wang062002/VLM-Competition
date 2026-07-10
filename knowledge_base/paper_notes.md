@@ -31,6 +31,8 @@ evaluation confirms them.
 7. Found that TRAIN-derived SFT manifests require clip-duration validation, not
    only file-existence validation.
 8. Completed the first full clip-valid Qwen3-VL LoRA-SFT run.
+9. Evaluated the trained LoRA adapter on the full 4000-sample held-out TEST
+   split.
 
 ## Claims Supported By Current Evidence
 
@@ -43,10 +45,13 @@ Supported:
 - Training data integrity also requires checking that each QA time window is
   inside the referenced video duration.
 - Official TEST should remain held out when training on official TRAIN.
+- Clip-valid LoRA-SFT improves full held-out TEST performance over the
+  reproduced overlay baseline.
+- The largest LoRA-SFT gains are in object recognition, object identification,
+  and foreign-object class answers.
 
 Not yet supported:
 
-- LoRA-SFT improves final TEST performance on the full 4000-sample TEST split.
 - Larger training improves temporal grounding.
 - Any specific LoRA hyperparameter is optimal.
 - Prompt-only improvements are weaker/stronger than LoRA-SFT.
@@ -86,6 +91,14 @@ TEST-100 adapter result:
 > evaluation but should be treated as preliminary because of the small sample
 > size.
 
+Full TEST adapter result:
+
+> On the full 4,000-sample held-out TEST split, the clip-valid LoRA-SFT adapter
+> improved overall accuracy from 0.2075 to 0.2790 over the reproduced
+> timestamp-overlay baseline. The largest gains occurred in object
+> identification and foreign-object class answers, while temporal grounding
+> improved but remained low in absolute terms.
+
 Data integrity:
 
 > Before supervised adaptation, each video-QA sample was validated by confirming
@@ -108,6 +121,19 @@ Clip-window audit result:
 | Raw full 4000 | 0.194250 | 0.364083 | 0.007741 | 0.003199 |
 | Overlay full 4000 | 0.207500 | 0.372647 | 0.033822 | 0.029623 |
 | LoRA overlay 100 | 0.350000 | 0.328905 | 0.065217 | 0.065217 |
+| LoRA overlay full 4000 | 0.279000 | 0.402794 | 0.071740 | 0.064236 |
+
+## Full TEST LoRA Delta Values
+
+| Metric | Overlay baseline | LoRA adapter | Delta |
+|---|---:|---:|---:|
+| Overall MEAN | 0.207500 | 0.279000 | +0.071500 |
+| Pre-evaluation SCORE | 0.372647 | 0.402794 | +0.030147 |
+| object_recognition | 0.308308 | 0.472173 | +0.163865 |
+| object_identification | 0.149298 | 0.469223 | +0.319925 |
+| fo_class | 0.175904 | 0.437977 | +0.262073 |
+| temporal_grounding | 0.033822 | 0.071740 | +0.037918 |
+| time | 0.029623 | 0.064236 | +0.034613 |
 
 ## SFT Data Integrity Table Values
 
@@ -121,6 +147,6 @@ Clip-window audit result:
 - raw wrong / overlay correct examples
 - overlay wrong / raw correct examples
 - LoRA-SFT validation loss trend
-- adapter inference examples before full evaluation
+- adapter full TEST error analysis
 - category-level gains after training
 - prompt-only vs LoRA-SFT ablation

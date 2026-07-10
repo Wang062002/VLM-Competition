@@ -198,7 +198,7 @@ python scripts/run_segment_baseline.py \
   --output-dir ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-100
 ```
 
-If the 100-sample run is healthy, run the full TEST evaluation:
+Full TEST evaluation has completed:
 
 ```bash
 python scripts/run_segment_baseline.py \
@@ -219,6 +219,25 @@ Compare against `official-overlay-full-4000`:
 
 - overall MEAN: `0.207500`
 - pre-evaluation SCORE: `0.372647`
+
+Known full TEST LoRA result:
+
+- overall MEAN: `0.279000`
+- pre-evaluation SCORE: `0.402794`
+- overall delta vs overlay baseline: `+0.071500`
+- pre-evaluation delta vs overlay baseline: `+0.030147`
+
+## Analyze Full LoRA TEST Result
+
+Recommended next analyses:
+
+- inspect `results.csv` and `responses.jsonl` from:
+  `/home/Jiali_Wang/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full`
+- compare wrong/correct cases between baseline and LoRA
+- focus on:
+  - temporal grounding still being weak
+  - multiple-choice accuracy dropping slightly
+  - object identification and `fo_class` improving strongly
 
 ## If Script Changed Locally
 
