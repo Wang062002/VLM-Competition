@@ -249,6 +249,10 @@ Current all-data comparison entry points:
   `results/main_result_summary.csv`
 - LoRA-vs-overlay full TEST delta table:
   `results/lora_full_test_vs_overlay_baseline.csv`
+- evaluator-style full TEST summaries:
+  `results/evaluator_style_full_4000_summaries.csv`
+- terminal-style evaluator output:
+  `results/evaluator_style_full_4000_summaries.txt`
 
 ## If Script Changed Locally
 

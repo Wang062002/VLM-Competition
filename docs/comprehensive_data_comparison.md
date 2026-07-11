@@ -2,6 +2,12 @@
 
 本文档汇总 ORena FOCUS 项目当前已经拥有和产生的主要数据，包括数据集规模、数据清洗结果、训练运行、baseline 评估、LoRA-SFT 评估以及关键指标对比。
 
+如果需要官方 evaluator 截图风格的 `level / name / accuracy / ci_low / ci_high / count` 表格，见：
+
+- `results/evaluator_style_full_4000_summaries.csv`
+- `results/evaluator_style_full_4000_summaries.txt`
+- `docs/evaluator_style_summary_tables.md`
+
 ## 1. 数据资源总览
 
 | 数据项 | 状态 | 本地/远端路径 | 规模或数量 | 用途 | 备注 |

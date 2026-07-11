@@ -122,6 +122,8 @@ For a fuller table, see:
 - `results/all_data_comparison_table.csv`
 - `results/main_result_summary.csv`
 - `results/lora_full_test_vs_overlay_baseline.csv`
+- `results/evaluator_style_full_4000_summaries.csv`
+- `results/evaluator_style_full_4000_summaries.txt`
 
 | Setting | Overall | Pre-eval | temporal_grounding | time |
 |---|---:|---:|---:|---:|

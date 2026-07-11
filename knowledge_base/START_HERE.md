@@ -57,6 +57,12 @@ Current next step:
 - `results/main_result_summary.csv`: main paper-ready result table
 - `results/lora_full_test_vs_overlay_baseline.csv`: full TEST LoRA-vs-overlay
   delta table
+- `results/evaluator_style_full_4000_summaries.csv`: evaluator-style long table
+  with `experiment, level, name, accuracy, ci_low, ci_high, count`
+- `results/evaluator_style_full_4000_summaries.txt`: terminal-style evaluator
+  output matching official summary formatting
+- `docs/evaluator_style_summary_tables.md`: explanation and print command for
+  evaluator-style tables
 - `codex.md`: compact operational memory
 
 ## Critical Numbers

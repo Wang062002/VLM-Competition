@@ -1,0 +1,101 @@
+====================================================================================================
+official_raw_full_4000
+====================================================================================================
+         level                         name  accuracy   ci_low  ci_high  count
+          leaf causal_consequence_reasoning  0.877218 0.755624 0.966699     62
+          leaf          duration_estimation  0.090714 0.026667 0.171446    146
+          leaf            event_aggregation  0.311129 0.149208 0.519143    169
+          leaf   fo_interaction_recognition  0.533611 0.410826 0.650840     75
+          leaf             fo_usage_purpose  0.916667 0.750000 1.000000     19
+          leaf         functional_reasoning  0.704167 0.447917 0.927240     39
+          leaf            instance_matching  0.536201 0.421221 0.653316    141
+          leaf         multi_step_reasoning  0.330952 0.097619 0.595357     52
+          leaf           object_aggregation  0.304141 0.234357 0.380658    402
+          leaf            object_attributes  0.833333 0.625000 1.000000     27
+          leaf        object_identification  0.153572 0.106235 0.205849    711
+          leaf  spatial_localization_camera  0.418717 0.335886 0.509603    490
+          leaf   spatial_localization_situs  0.693333 0.333333 1.000000     12
+          leaf        temporal_localization  0.000000 0.000000 0.000000   1605
+          leaf            temporal_ordering  0.548810 0.376071 0.730982     50
+         group                  aggregation  0.293229 0.218198 0.391535    571
+         group            complex_reasoning  0.600999 0.416202 0.768675    153
+         group          event_understanding  0.580415 0.483331 0.682857    144
+         group           object_recognition  0.302873 0.258245 0.352716   1381
+         group           temporal_grounding  0.007741 0.001647 0.014775   1751
+ answer_format                       binary  0.529792 0.458746 0.613855    285
+ answer_format                     fo_class  0.179436 0.142183 0.219345    850
+ answer_format              multiple_choice  0.402915 0.314449 0.501290    468
+ answer_format                       number  0.256484 0.187956 0.332463    480
+ answer_format                   open_ended  0.771750 0.678012 0.861863    206
+ answer_format                   percentage  0.000000 0.000000 0.000000     22
+ answer_format                         time  0.003199 0.000000 0.008390   1689
+       overall                         MEAN  0.194250 0.171494 0.219006   4000
+pre_evaluation                        SCORE  0.364083      NaN      NaN      5
+
+====================================================================================================
+official_overlay_full_4000
+====================================================================================================
+         level                         name  accuracy   ci_low  ci_high  count
+          leaf causal_consequence_reasoning  0.893884 0.773775 0.988889     62
+          leaf          duration_estimation  0.095714 0.029994 0.177411    146
+          leaf            event_aggregation  0.296971 0.120518 0.521066    169
+          leaf   fo_interaction_recognition  0.504444 0.374986 0.631674     75
+          leaf             fo_usage_purpose  0.916667 0.750000 1.000000     19
+          leaf         functional_reasoning  0.714583 0.447917 0.937656     39
+          leaf            instance_matching  0.576397 0.455340 0.698589    141
+          leaf         multi_step_reasoning  0.368571 0.180774 0.593381     52
+          leaf           object_aggregation  0.301215 0.230949 0.372697    402
+          leaf            object_attributes  0.783333 0.550000 0.966667     27
+          leaf        object_identification  0.149298 0.102831 0.199999    711
+          leaf  spatial_localization_camera  0.438224 0.361215 0.508098    490
+          leaf   spatial_localization_situs  0.433333 0.066667 0.800000     12
+          leaf        temporal_localization  0.027867 0.014515 0.043828   1605
+          leaf            temporal_ordering  0.565476 0.378512 0.741726     50
+         group                  aggregation  0.284556 0.207434 0.387499    571
+         group            complex_reasoning  0.616896 0.460174 0.760975    153
+         group          event_understanding  0.572450 0.480728 0.669776    144
+         group           object_recognition  0.308308 0.260377 0.365438   1381
+         group           temporal_grounding  0.033822 0.022786 0.045906   1751
+ answer_format                       binary  0.551885 0.475488 0.638730    285
+ answer_format                     fo_class  0.175904 0.134478 0.220814    850
+ answer_format              multiple_choice  0.416370 0.332575 0.495982    468
+ answer_format                       number  0.251833 0.185748 0.330942    480
+ answer_format                   open_ended  0.768312 0.673324 0.854985    206
+ answer_format                   percentage  0.000000 0.000000 0.000000     22
+ answer_format                         time  0.029623 0.018023 0.042887   1689
+       overall                         MEAN  0.207500 0.183744 0.234519   4000
+pre_evaluation                        SCORE  0.372647      NaN      NaN      5
+
+====================================================================================================
+qwen3vl_lora_full_4000
+====================================================================================================
+         level                         name  accuracy   ci_low  ci_high  count
+          leaf causal_consequence_reasoning  0.820191 0.678596 0.941530     62
+          leaf          duration_estimation  0.133182 0.070312 0.202893    147
+          leaf            event_aggregation  0.230136 0.144082 0.325384    169
+          leaf   fo_interaction_recognition  0.515556 0.363792 0.669465     75
+          leaf             fo_usage_purpose  0.703704 0.425926 0.944444     19
+          leaf         functional_reasoning  0.839583 0.625000 1.000000     34
+          leaf            instance_matching  0.588113 0.476529 0.690599    141
+          leaf         multi_step_reasoning  0.234286 0.100000 0.376202     52
+          leaf           object_aggregation  0.319869 0.256303 0.388061    403
+          leaf            object_attributes  0.808333 0.608333 0.966667     27
+          leaf        object_identification  0.469223 0.399195 0.554314    713
+          leaf  spatial_localization_camera  0.413799 0.347368 0.482286    490
+          leaf   spatial_localization_situs  0.460000 0.099500 0.860000     12
+          leaf        temporal_localization  0.065457 0.044891 0.093321   1605
+          leaf            temporal_ordering  0.558333 0.392798 0.716845     51
+         group                  aggregation  0.293179 0.233287 0.346372    572
+         group            complex_reasoning  0.511514 0.351305 0.673854    148
+         group          event_understanding  0.559220 0.457167 0.668495    145
+         group           object_recognition  0.472173 0.426592 0.522323   1383
+         group           temporal_grounding  0.071740 0.052819 0.095392   1752
+ answer_format                       binary  0.588102 0.518888 0.654754    287
+ answer_format                     fo_class  0.437977 0.359849 0.518520    851
+ answer_format              multiple_choice  0.381838 0.301817 0.459986    468
+ answer_format                       number  0.276006 0.209126 0.348670    481
+ answer_format                   open_ended  0.766402 0.678399 0.849191    201
+ answer_format                   percentage  0.000000 0.000000 0.000000     22
+ answer_format                         time  0.064236 0.044505 0.087657   1690
+       overall                         MEAN  0.279000 0.252731 0.306012   4000
+pre_evaluation                        SCORE  0.402794      NaN      NaN      5
