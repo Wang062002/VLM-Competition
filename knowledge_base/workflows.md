@@ -254,6 +254,19 @@ Current all-data comparison entry points:
 - terminal-style evaluator output:
   `results/evaluator_style_full_4000_summaries.txt`
 
+Print evaluator-style tables:
+
+```bash
+python scripts/print_evaluator_style_summary.py
+```
+
+Only print the LoRA full TEST result:
+
+```bash
+python scripts/print_evaluator_style_summary.py \
+  --experiment qwen3vl_lora_full_4000
+```
+
 ## If Script Changed Locally
 
 Always provide both:

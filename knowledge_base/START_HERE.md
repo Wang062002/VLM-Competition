@@ -63,6 +63,8 @@ Current next step:
   output matching official summary formatting
 - `docs/evaluator_style_summary_tables.md`: explanation and print command for
   evaluator-style tables
+- `scripts/print_evaluator_style_summary.py`: script for printing evaluator-style
+  tables from CSV
 - `codex.md`: compact operational memory
 
 ## Critical Numbers

@@ -321,6 +321,46 @@ LoRA 设置：
 - 它把官方 TRAIN split 转换为 supervised adaptation 实验。
 - 训练出来的 adapter 后续通过 `run_segment_baseline.py --adapter-dir` 接入官方 TEST evaluator。
 
+## 6.5 Evaluator 风格结果打印
+
+### `scripts/print_evaluator_style_summary.py`
+
+作用：
+
+- 读取 `results/evaluator_style_full_4000_summaries.csv`。
+- 按官方 evaluator 终端输出的风格打印：
+  `level / name / accuracy / ci_low / ci_high / count`。
+- 支持一次打印全部实验，也支持只打印某一个实验。
+- 支持输出到 `.txt` 文件。
+
+主要输入：
+
+- `--input`
+- `--experiment`
+- `--precision`
+- `--output`
+- `--no-separators`
+
+示例：
+
+```bash
+python scripts/print_evaluator_style_summary.py \
+  --experiment qwen3vl_lora_full_4000
+```
+
+输出文件示例：
+
+```bash
+python scripts/print_evaluator_style_summary.py \
+  --experiment qwen3vl_lora_full_4000 \
+  --output results/qwen3vl_lora_full_4000_summary.txt
+```
+
+为什么重要：
+
+- 它把我们整理好的 CSV 结果变成和官方 evaluator 截图接近的表格。
+- 后续写论文或做展示时，可以快速生成某个实验的完整类别结果表。
+
 ## 7. 调试阶段用过的手动命令
 
 有些关键步骤不是单独脚本，而是用临时 shell / Python 片段完成。

@@ -47,21 +47,22 @@ results/evaluator_style_full_4000_summaries.csv
 在本地或远端项目目录下运行：
 
 ```bash
-python - <<'PY'
-import pandas as pd
+python scripts/print_evaluator_style_summary.py
+```
 
-df = pd.read_csv("results/evaluator_style_full_4000_summaries.csv")
+只打印某一个实验：
 
-for experiment, part in df.groupby("experiment", sort=False):
-    print()
-    print("=" * 100)
-    print(experiment)
-    print("=" * 100)
-    print(
-        part[["level", "name", "accuracy", "ci_low", "ci_high", "count"]]
-        .to_string(index=False)
-    )
-PY
+```bash
+python scripts/print_evaluator_style_summary.py \
+  --experiment qwen3vl_lora_full_4000
+```
+
+输出到文本文件：
+
+```bash
+python scripts/print_evaluator_style_summary.py \
+  --experiment qwen3vl_lora_full_4000 \
+  --output results/qwen3vl_lora_full_4000_summary.txt
 ```
 
 输出格式会接近官方 evaluator 的终端表格：
