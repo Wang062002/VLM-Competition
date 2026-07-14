@@ -170,6 +170,27 @@ def patch_transformers_tied_weights_compat() -> None:
     )
 
 
+def patch_minicpm_processor_register_compat() -> None:
+    """Allow MiniCPM remote-code processor imports on stricter Transformers builds."""
+    from transformers import AutoImageProcessor
+
+    original_register = AutoImageProcessor.register
+    if getattr(original_register, "_vlm_competition_patched", False):
+        return
+
+    def register_compat(config_class: Any, image_processor_class: Any = None, exist_ok: bool = False) -> Any:
+        if isinstance(config_class, str):
+            LOGGER.debug(
+                "Skipping string-based AutoImageProcessor.register(%r) from remote code.",
+                config_class,
+            )
+            return None
+        return original_register(config_class, image_processor_class, exist_ok=exist_ok)
+
+    register_compat._vlm_competition_patched = True  # type: ignore[attr-defined]
+    AutoImageProcessor.register = register_compat  # type: ignore[method-assign]
+
+
 class BaseEngine:
     def __init__(self, model_path: Path, device: str, max_new_tokens: int) -> None:
         self.model_path = model_path
@@ -189,6 +210,7 @@ class MiniCPMVEngine(BaseEngine):
         from transformers import AutoModel, AutoTokenizer
 
         patch_transformers_tied_weights_compat()
+        patch_minicpm_processor_register_compat()
         self.model = AutoModel.from_pretrained(
             str(self.model_path),
             trust_remote_code=True,
@@ -200,6 +222,7 @@ class MiniCPMVEngine(BaseEngine):
         self.tokenizer = AutoTokenizer.from_pretrained(str(self.model_path), trust_remote_code=True)
 
     def predict(self, frames: list[Image.Image], question: str) -> str:
+        patch_minicpm_processor_register_compat()
         prompt = self.system_prompt + "\n\nQuestion: " + question
         msgs = [{"role": "user", "content": frames + [prompt]}]
         answer = self.model.chat(

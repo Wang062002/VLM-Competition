@@ -444,3 +444,7 @@ Next checkpoint:
   patches a compatibility property from `_tied_weights_keys` before loading
   MiniCPM. The property needs both getter and setter because Qwen3 initialization
   assigns `all_tied_weights_keys` during `post_init`.
+- After loading, MiniCPM failed inside `model.chat` while importing its processor:
+  string-based `AutoImageProcessor.register("MiniCPMVImageProcessor", ...)` is
+  not accepted by the installed Transformers version. The smoke runner now skips
+  this string-based registration side effect before loading MiniCPM's processor.

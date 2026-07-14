@@ -358,6 +358,9 @@ Known smoke issue:
 - MiniCPM-V-4.5 can fail on some Transformers versions with
   `MiniCPMV object has no attribute all_tied_weights_keys`. The smoke runner
   patches this compatibility gap before loading MiniCPM.
+- MiniCPM-V-4.5 can also fail during processor import with
+  `str object has no attribute __module__` from `AutoImageProcessor.register`.
+  The smoke runner skips that string-based registration side effect.
 
 ## If Script Changed Locally
 
