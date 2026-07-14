@@ -467,6 +467,7 @@ download_vlm_candidates.py -> 开源 VLM 候选模型下载
 - `--dry-run`
 - `--skip-existing`
 - `--continue-on-error`
+- `--disable-xet`
 - `--manifest`
 
 当前第一批候选：
@@ -482,6 +483,8 @@ download_vlm_candidates.py -> 开源 VLM 候选模型下载
 - Gemma / MedGemma 可能需要先在 Hugging Face 页面接受 license。
 - 如果下载被中断，默认重新运行脚本会校验/续传已有目录；不要因为目录非空就直接认定完成。
 - `--continue-on-error` 可用于跳过 gated repo 报错，继续下载后续候选。
+- `--disable-xet` 可用于绕过 `hf-xet` 层的下载异常，例如 Gemma 下载时出现
+  `Unable to parse string as hex hash value`。
 - 下载完成后还不能直接代表可评估，需要继续写或接入对应 model adapter。
 
 ## 9. 当前下一步

@@ -55,6 +55,8 @@ python scripts/download_vlm_candidates.py \
 - 只有明确想跳过非空目录时才使用 `--skip-existing`。
 - 如果 Gemma / MedGemma 因 gated repo 报 403，可加
   `--continue-on-error` 让脚本继续下载后续模型。
+- 如果 Gemma 授权后出现 `Unable to parse string as hex hash value`，可加
+  `--disable-xet` 绕过 `hf-xet` 下载层。
 
 先 dry-run：
 

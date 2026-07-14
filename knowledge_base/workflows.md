@@ -310,6 +310,8 @@ Important:
 - By default the script verifies/resumes existing target directories instead of
   skipping them. Use `--skip-existing` only when you intentionally want to skip
   non-empty directories.
+- If Gemma fails after license acceptance with
+  `Unable to parse string as hex hash value`, rerun with `--disable-xet`.
 - The download manifest is written to:
   `~/workspace/vlm-models/download_manifest.json`
 - After downloading, run smoke tests before TEST-100.

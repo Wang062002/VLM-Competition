@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -43,6 +44,11 @@ def parse_args() -> argparse.Namespace:
         "--continue-on-error",
         action="store_true",
         help="Record failed downloads and continue with the remaining models.",
+    )
+    parser.add_argument(
+        "--disable-xet",
+        action="store_true",
+        help="Set HF_HUB_DISABLE_XET=1 before importing huggingface_hub.",
     )
     parser.add_argument(
         "--manifest",
@@ -84,6 +90,9 @@ def main() -> None:
     missing = [key for key in selected_keys if key not in by_key]
     if missing:
         raise SystemExit(f"Unknown candidate key(s): {missing}. Available: {sorted(by_key)}")
+
+    if args.disable_xet:
+        os.environ["HF_HUB_DISABLE_XET"] = "1"
 
     records: list[dict[str, Any]] = []
     for key in selected_keys:

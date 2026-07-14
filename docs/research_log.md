@@ -424,3 +424,7 @@ Download note:
 - `google/gemma-3-12b-it` can return Hugging Face `GatedRepoError` / `403
   Forbidden` until access is accepted with the same Hugging Face account used on
   the remote server.
+- After access is accepted, Gemma may still fail in the `hf-xet` transfer layer
+  with `Unable to parse string as hex hash value`. The downloader now supports
+  `--disable-xet`, which sets `HF_HUB_DISABLE_XET=1` before importing
+  `huggingface_hub`.
