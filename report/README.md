@@ -56,3 +56,7 @@ When writing the paper, use this table style for:
 
 Small smoke tests such as `num_eval=3` should be labeled as engineering smoke
 tests, not performance claims.
+
+Prompt ablations such as the open-VLM `num_eval=30` comparison can be used as
+method-selection evidence, but final model performance claims should use larger
+evaluations such as TEST-100 or full TEST.

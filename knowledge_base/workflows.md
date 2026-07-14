@@ -394,6 +394,33 @@ python scripts/run_open_vlm_smoke.py \
   --continue-on-error
 ```
 
+Run TEST-100 for selected open VLM candidates:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model llava_onevision_7b \
+  --model medgemma_4b \
+  --model minicpm_v_4_5 \
+  --model internvl3_5_8b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 100 \
+  --frames-per-clip 4 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test100-class-prompt-selected \
+  --continue-on-error
+```
+
+Current selection rationale:
+
+- LLaVA-OneVision and MedGemma tie for best TEST-30 class-prompt overall
+  (`0.366667`).
+- MiniCPM remains relevant because it is video-capable and improved under
+  class-prompt on 30 samples.
+- InternVL improved but is lower priority.
+- Gemma is currently deprioritized.
+
 If evaluator memory becomes an issue, first validate generation only:
 
 ```bash

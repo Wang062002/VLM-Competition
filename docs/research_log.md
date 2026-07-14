@@ -495,3 +495,54 @@ Interpretation:
 Structured output:
 
 - `results/open_vlm_smoke_test3_prompt_comparison.csv`
+
+## Open VLM Prompt Ablation On 30 TEST Samples
+
+Date: `2026-07-14`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: first `30`
+- Input: timestamp-overlay clips sampled into `4` RGB frames
+- Models: MiniCPM-V-4.5, LLaVA-OneVision-7B, InternVL3.5-8B,
+  Gemma-3-12B, MedGemma-4B
+- Compared prompt modes:
+  - `default`
+  - `class_constrained` with `--normalize-answer`
+
+Overall MEAN:
+
+| Model | Default | Class-constrained | Delta |
+|---|---:|---:|---:|
+| Gemma-3-12B | 0.066667 | 0.100000 | +0.033333 |
+| InternVL3.5-8B | 0.100000 | 0.166667 | +0.066667 |
+| LLaVA-OneVision-7B | 0.166667 | 0.366667 | +0.200000 |
+| MedGemma-4B | 0.200000 | 0.366667 | +0.166667 |
+| MiniCPM-V-4.5 | 0.166667 | 0.233333 | +0.066667 |
+
+Key observations:
+
+- On 30 samples, class-constrained prompting improves overall score for every
+  tested model.
+- LLaVA-OneVision and MedGemma tie for the best 30-sample overall score
+  (`0.366667`).
+- MedGemma is the best default-prompt model (`0.200000`) and remains one of the
+  best under class constraints.
+- LLaVA has the largest gain from class constraints, especially in
+  `object_identification` and `fo_class`.
+- MiniCPM improves under class constraints on 30 samples despite the opposite
+  trend on the earlier 3-sample smoke test.
+- Gemma remains the weakest candidate in this setup.
+
+Next decision:
+
+- Run TEST-100 with class-constrained prompt for at least LLaVA-OneVision,
+  MedGemma, and MiniCPM.
+- InternVL can be included if time permits.
+- Gemma can be deprioritized unless later prompt or frame-sampling changes are
+  explored.
+
+Structured output:
+
+- `results/open_vlm_test30_prompt_comparison.csv`

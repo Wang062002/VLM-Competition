@@ -302,6 +302,7 @@ Interpretation:
 - `results/full_raw_vs_overlay_summary.csv`
 - `results/dataset_status.csv`
 - `results/open_vlm_smoke_test3_prompt_comparison.csv`
+- `results/open_vlm_test30_prompt_comparison.csv`
 
 ## Open VLM Smoke Prompt Ablation
 
@@ -337,3 +338,41 @@ Interpretation:
 - The prompt mode affects models differently and should not be selected from
   only 3 samples.
 - Next recommended step: `num_eval=30` prompt ablation before TEST-100.
+
+## Open VLM Prompt Ablation On 30 TEST Samples
+
+Date: `2026-07-14`
+
+Setup:
+
+- Official HeiCo SEGMENT TEST
+- First `30` samples
+- Timestamp-overlay clips sampled into `4` RGB frames
+- Prompt modes:
+  - default
+  - class-constrained + normalized answers
+
+Overall MEAN:
+
+| Model | Default | Class-constrained | Delta |
+|---|---:|---:|---:|
+| Gemma-3-12B | 0.066667 | 0.100000 | +0.033333 |
+| InternVL3.5-8B | 0.100000 | 0.166667 | +0.066667 |
+| LLaVA-OneVision-7B | 0.166667 | 0.366667 | +0.200000 |
+| MedGemma-4B | 0.200000 | 0.366667 | +0.166667 |
+| MiniCPM-V-4.5 | 0.166667 | 0.233333 | +0.066667 |
+
+Interpretation:
+
+- Class-constrained prompting improved overall score for every candidate on
+  this 30-sample subset.
+- LLaVA-OneVision and MedGemma are the strongest prompt-only candidates so far.
+- MiniCPM remains relevant because it improves under class constraints and has
+  a video-native architecture worth optimizing.
+- Gemma is currently low priority.
+
+Next recommended step:
+
+- TEST-100 with `--prompt-mode class_constrained --normalize-answer` for:
+  LLaVA-OneVision, MedGemma, MiniCPM.
+- Include InternVL if time permits.

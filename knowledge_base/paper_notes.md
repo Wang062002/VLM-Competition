@@ -168,6 +168,11 @@ For a fuller table, see:
   class-constrained prompting improves output validity but not uniformly
   accuracy; prompt mode should be model-specific and validated on larger samples
   before reporting final baseline comparisons
+- TEST-30 open VLM prompt ablation:
+  class-constrained prompting improved overall score for every candidate on the
+  first 30 TEST samples; LLaVA-OneVision and MedGemma reached `0.366667`,
+  compared with best default score `0.200000` from MedGemma. This supports
+  reporting prompt design as a controlled experimental variable.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the
