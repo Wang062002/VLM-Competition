@@ -140,6 +140,22 @@ def first_parameter_device(model: torch.nn.Module, fallback: str) -> str:
         return fallback
 
 
+def patch_transformers_tied_weights_compat() -> None:
+    """Bridge MiniCPM remote-code models across Transformers API variants."""
+    from transformers.modeling_utils import PreTrainedModel
+
+    if hasattr(PreTrainedModel, "all_tied_weights_keys"):
+        return
+
+    def all_tied_weights_keys(self: Any) -> dict[str, str]:
+        keys = getattr(self, "_tied_weights_keys", None) or []
+        if isinstance(keys, dict):
+            return keys
+        return {str(key): str(key) for key in keys}
+
+    PreTrainedModel.all_tied_weights_keys = property(all_tied_weights_keys)  # type: ignore[attr-defined]
+
+
 class BaseEngine:
     def __init__(self, model_path: Path, device: str, max_new_tokens: int) -> None:
         self.model_path = model_path
@@ -158,6 +174,7 @@ class MiniCPMVEngine(BaseEngine):
     def load(self) -> None:
         from transformers import AutoModel, AutoTokenizer
 
+        patch_transformers_tied_weights_compat()
         self.model = AutoModel.from_pretrained(
             str(self.model_path),
             trust_remote_code=True,

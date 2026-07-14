@@ -353,6 +353,12 @@ python scripts/run_open_vlm_smoke.py \
   --output-dir ~/workspace/focus-runs/open-vlm-smoke/minicpm-generate-only
 ```
 
+Known smoke issue:
+
+- MiniCPM-V-4.5 can fail on some Transformers versions with
+  `MiniCPMV object has no attribute all_tied_weights_keys`. The smoke runner
+  patches this compatibility gap before loading MiniCPM.
+
 ## If Script Changed Locally
 
 Always provide both:

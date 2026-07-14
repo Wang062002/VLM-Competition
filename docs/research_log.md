@@ -438,3 +438,8 @@ Next checkpoint:
   common multi-frame input route for all five candidates so that the first
   smoke test focuses on loading, generation, and evaluator compatibility. Model
   specific video-native adapters can be optimized after the common smoke pass.
+- First MiniCPM smoke attempt failed during `AutoModel.from_pretrained` with
+  `MiniCPMV` missing `all_tied_weights_keys`. This is a remote-code /
+  Transformers API compatibility issue. `scripts/run_open_vlm_smoke.py` now
+  patches a read-only compatibility property from `_tied_weights_keys` before
+  loading MiniCPM.
