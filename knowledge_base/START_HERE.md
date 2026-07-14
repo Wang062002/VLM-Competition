@@ -19,9 +19,10 @@ Completed:
 
 Current next step:
 
-- analyze the full TEST result by category and answer format
-- inspect failure cases, especially temporal grounding and multiple-choice drops
-- plan the next method iteration beyond the first LoRA-SFT adapter
+- download first-batch open-source VLM candidates on the remote server
+- run smoke / TEST-100 baselines for candidate models
+- compare candidate zero-shot baselines against Qwen3-VL overlay and current
+  Qwen3-VL + LoRA results
 
 ## Must-Preserve Rules
 
@@ -65,6 +66,11 @@ Current next step:
   evaluator-style tables
 - `scripts/print_evaluator_style_summary.py`: script for printing evaluator-style
   tables from CSV
+- `configs/vlm_candidate_models.csv`: first-batch open VLM candidate list
+- `scripts/download_vlm_candidates.py`: remote Hugging Face snapshot downloader
+  for candidate VLMs
+- `docs/open_vlm_baseline_plan.md`: plan for downloading and batch-testing
+  open-source VLM baselines
 - `codex.md`: compact operational memory
 
 ## Critical Numbers
@@ -141,13 +147,16 @@ LoRA-SFT full TEST:
 
 ## Current Recommended Remote Command
 
-Inspect full TEST output files:
+Download first-batch open-source VLM candidates:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-ls -lh ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full
-cat ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full/summary.csv
+python -m py_compile scripts/download_vlm_candidates.py
+
+python scripts/download_vlm_candidates.py \
+  --config configs/vlm_candidate_models.csv \
+  --output-dir ~/workspace/vlm-models
 ```

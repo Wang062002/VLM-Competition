@@ -159,3 +159,5 @@ For a fuller table, see:
 - adapter full TEST error analysis
 - category-level gains after training
 - prompt-only vs LoRA-SFT ablation
+- open-source VLM baseline comparison:
+  MiniCPM-V, LLaVA-OneVision, InternVL, Gemma, MedGemma

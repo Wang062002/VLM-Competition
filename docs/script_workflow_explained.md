@@ -443,33 +443,56 @@ audit_sft_clip_windows.py
 train_qwen3vl_lora_sft_smoke.py
         |
 run_segment_baseline.py --adapter-dir  -> LoRA TEST 结果
+        |
+download_vlm_candidates.py -> 开源 VLM 候选模型下载
 ```
+
+## 8.5 开源 VLM 候选模型下载
+
+### `scripts/download_vlm_candidates.py`
+
+作用：
+
+- 读取 `configs/vlm_candidate_models.csv` 中的候选模型。
+- 使用 Hugging Face `snapshot_download` 下载模型到远端服务器。
+- 为每个模型写入下载 manifest。
+- 支持 dry-run、只下载单个模型、强制刷新。
+
+主要输入：
+
+- `--config`
+- `--output-dir`
+- `--model`
+- `--revision`
+- `--dry-run`
+- `--force`
+- `--manifest`
+
+当前第一批候选：
+
+- `openbmb/MiniCPM-V-4_5`
+- `llava-hf/llava-onevision-qwen2-7b-ov-hf`
+- `OpenGVLab/InternVL3_5-8B-Instruct`
+- `google/gemma-3-12b-it`
+- `google/medgemma-4b-it`
+
+注意：
+
+- Gemma / MedGemma 可能需要先在 Hugging Face 页面接受 license。
+- 下载完成后还不能直接代表可评估，需要继续写或接入对应 model adapter。
 
 ## 9. 当前下一步
 
-当前建议跑 trained LoRA adapter 的 full held-out TEST 评估：
+当前建议下载第一批开源 VLM 候选模型：
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-python scripts/run_segment_baseline.py \
-  --root-dir /home/Jiali_Wang/data/focus \
-  --dataset heico \
-  --split test \
-  --model-id Qwen/Qwen3-VL-4B-Instruct \
-  --adapter-dir ~/workspace/focus-runs/lora-sft/qwen3vl-4b-sft-valid5959-e1/adapter-final \
-  --device cuda:0 \
-  --num-eval none \
-  --video-stride 25 \
-  --width 640 \
-  --height 360 \
-  --output-dir ~/workspace/focus-runs/lora-sft-eval/qwen3vl-4b-sft-valid5959-e1-overlay-test-full
+python scripts/download_vlm_candidates.py \
+  --config configs/vlm_candidate_models.csv \
+  --output-dir ~/workspace/vlm-models
 ```
 
-对比对象：
-
-- `official-overlay-full-4000`
-- overall MEAN：`0.207500`
-- pre-evaluation SCORE：`0.372647`
+下载完成后进入 smoke / TEST-100 批量测试阶段。

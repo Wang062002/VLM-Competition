@@ -267,6 +267,49 @@ python scripts/print_evaluator_style_summary.py \
   --experiment qwen3vl_lora_full_4000
 ```
 
+## Download Open VLM Candidates
+
+Candidate list:
+
+```text
+configs/vlm_candidate_models.csv
+```
+
+Remote download command:
+
+```bash
+source ~/tools/miniconda3/etc/profile.d/conda.sh
+conda activate orena-focus
+cd ~/workspace/VLM-Competition
+
+python -m py_compile scripts/download_vlm_candidates.py
+
+python scripts/download_vlm_candidates.py \
+  --config configs/vlm_candidate_models.csv \
+  --output-dir ~/workspace/vlm-models
+```
+
+Dry-run:
+
+```bash
+python scripts/download_vlm_candidates.py --dry-run
+```
+
+Download one model first:
+
+```bash
+python scripts/download_vlm_candidates.py \
+  --model minicpm_v_4_5 \
+  --output-dir ~/workspace/vlm-models
+```
+
+Important:
+
+- Gemma and MedGemma may require Hugging Face license acceptance before download.
+- The download manifest is written to:
+  `~/workspace/vlm-models/download_manifest.json`
+- After downloading, run smoke tests before TEST-100.
+
 ## If Script Changed Locally
 
 Always provide both:

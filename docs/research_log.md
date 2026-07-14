@@ -388,3 +388,30 @@ Summary tables added:
 - `results/all_data_comparison_table.csv`
 - `results/main_result_summary.csv`
 - `results/lora_full_test_vs_overlay_baseline.csv`
+
+## Open VLM Baseline Search Started On 2026-07-14
+
+After confirming that Qwen3-VL-4B + LoRA improves over the reproduced overlay
+baseline, the project moved to open-source VLM baseline search. The goal is to
+find stronger zero-shot or prompt-only models before investing in another
+fine-tuning stage.
+
+First-batch candidates:
+
+- `openbmb/MiniCPM-V-4_5`
+- `llava-hf/llava-onevision-qwen2-7b-ov-hf`
+- `OpenGVLab/InternVL3_5-8B-Instruct`
+- `google/gemma-3-12b-it`
+- `google/medgemma-4b-it`
+
+Artifacts added:
+
+- `configs/vlm_candidate_models.csv`
+- `scripts/download_vlm_candidates.py`
+- `docs/open_vlm_baseline_plan.md`
+
+Testing plan:
+
+- Stage 1: smoke test, `num_eval=10` or `30`
+- Stage 2: TEST-100 for models that can run
+- Stage 3: full TEST-4000 only for the strongest 1-2 candidates

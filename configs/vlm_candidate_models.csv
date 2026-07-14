@@ -1,0 +1,6 @@
+key,repo_id,engine,priority,modality,params_estimate,access_note,test_stage,note
+minicpm_v_4_5,openbmb/MiniCPM-V-4_5,minicpmv,A,video,8B,open,download_first,"Efficient video-capable VLM; strong candidate for zero-shot baseline."
+llava_onevision_7b,llava-hf/llava-onevision-qwen2-7b-ov-hf,llava_onevision,A,video,7B,open,download_first,"Mature video/image VLM; good comparison to Qwen3-VL."
+internvl3_5_8b,OpenGVLab/InternVL3_5-8B-Instruct,internvl,A,image_or_video,8B,open,download_first,"Strong open MLLM; video adapter may require custom preprocessing."
+gemma3_12b,google/gemma-3-12b-it,gemma3,B,image,12B,may_require_hf_license_acceptance,download_first,"Image-text VLM; video must be converted to sampled frames."
+medgemma_4b,google/medgemma-4b-it,medgemma,B,image,4B,may_require_hf_license_acceptance,download_first,"Medical image-text model; useful medical-domain baseline but not native video."
