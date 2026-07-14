@@ -451,3 +451,7 @@ Next checkpoint:
 - The first InternVL3.5 smoke retry exposed missing optional dependencies from
   its remote-code vision stack: first `einops`, then `timm`. These are now
   tracked in `requirements/open_vlm_smoke.txt`.
+- After dependencies were installed, InternVL3.5 hit the same Transformers
+  tied-weights API compatibility issue as MiniCPM:
+  `InternVLChatModel` missing `all_tied_weights_keys`. The generic compatibility
+  patch is now applied before InternVL loading as well.

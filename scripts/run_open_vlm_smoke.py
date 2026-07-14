@@ -307,6 +307,7 @@ class InternVLEngine(BaseEngine):
         from torchvision.transforms.functional import InterpolationMode
         from transformers import AutoModel, AutoTokenizer
 
+        patch_transformers_tied_weights_compat()
         self._torchvision_transforms = T
         self._interpolation = InterpolationMode
         self.tokenizer = AutoTokenizer.from_pretrained(

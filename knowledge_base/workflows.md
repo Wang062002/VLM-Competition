@@ -366,6 +366,9 @@ Known smoke issue:
 - InternVL3.5 needs extra Python packages beyond the base Qwen environment:
   `einops` and `timm`. Install them with
   `pip install -r requirements/open_vlm_smoke.txt`.
+- InternVL3.5 can also hit the `all_tied_weights_keys` compatibility issue.
+  The same generic tied-weights patch used for MiniCPM is applied before
+  InternVL loading.
 
 ## If Script Changed Locally
 
