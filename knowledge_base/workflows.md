@@ -316,6 +316,14 @@ Important:
   `~/workspace/vlm-models/download_manifest.json`
 - After downloading, run smoke tests before TEST-100.
 
+Check downloaded snapshots:
+
+```bash
+python scripts/check_vlm_downloads.py \
+  --model-dir ~/workspace/vlm-models \
+  --json-output ~/workspace/focus-runs/open-vlm-download-check.json
+```
+
 ## If Script Changed Locally
 
 Always provide both:

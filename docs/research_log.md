@@ -428,3 +428,9 @@ Download note:
   with `Unable to parse string as hex hash value`. The downloader now supports
   `--disable-xet`, which sets `HF_HUB_DISABLE_XET=1` before importing
   `huggingface_hub`.
+
+Next checkpoint:
+
+- After all five candidate snapshots are downloaded, run
+  `scripts/check_vlm_downloads.py` to confirm local directories, `config.json`,
+  weight files, and manifest status before model loading.

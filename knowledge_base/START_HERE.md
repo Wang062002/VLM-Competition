@@ -69,6 +69,8 @@ Current next step:
 - `configs/vlm_candidate_models.csv`: first-batch open VLM candidate list
 - `scripts/download_vlm_candidates.py`: remote Hugging Face snapshot downloader
   for candidate VLMs
+- `scripts/check_vlm_downloads.py`: lightweight local snapshot check before
+  smoke / batch evaluation
 - `docs/open_vlm_baseline_plan.md`: plan for downloading and batch-testing
   open-source VLM baselines
 - `codex.md`: compact operational memory
@@ -160,4 +162,8 @@ python scripts/download_vlm_candidates.py \
   --config configs/vlm_candidate_models.csv \
   --output-dir ~/workspace/vlm-models \
   --continue-on-error
+
+python scripts/check_vlm_downloads.py \
+  --model-dir ~/workspace/vlm-models \
+  --json-output ~/workspace/focus-runs/open-vlm-download-check.json
 ```

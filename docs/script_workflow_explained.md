@@ -445,6 +445,8 @@ train_qwen3vl_lora_sft_smoke.py
 run_segment_baseline.py --adapter-dir  -> LoRA TEST 结果
         |
 download_vlm_candidates.py -> 开源 VLM 候选模型下载
+        |
+check_vlm_downloads.py -> 候选模型本地快照完整性检查
 ```
 
 ## 8.5 开源 VLM 候选模型下载
@@ -486,6 +488,26 @@ download_vlm_candidates.py -> 开源 VLM 候选模型下载
 - `--disable-xet` 可用于绕过 `hf-xet` 层的下载异常，例如 Gemma 下载时出现
   `Unable to parse string as hex hash value`。
 - 下载完成后还不能直接代表可评估，需要继续写或接入对应 model adapter。
+
+### `scripts/check_vlm_downloads.py`
+
+作用：
+
+- 检查 `~/workspace/vlm-models` 下每个候选模型目录是否存在。
+- 统计目录大小、文件数、权重文件数。
+- 检查 `config.json` 是否存在。
+- 读取 `download_manifest.json` 中的下载状态。
+- 不加载模型权重，因此可作为批量测试前的低风险检查。
+
+远端命令：
+
+```bash
+python scripts/check_vlm_downloads.py \
+  --model-dir ~/workspace/vlm-models \
+  --json-output ~/workspace/focus-runs/open-vlm-download-check.json
+```
+
+如果全部为 `ok`，再进入模型加载 / inference smoke test。
 
 ## 9. 当前下一步
 
