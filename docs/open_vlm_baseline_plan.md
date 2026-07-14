@@ -71,6 +71,11 @@ python scripts/download_vlm_candidates.py --dry-run
 - 每个模型先跑 `num_eval=10` 或 `num_eval=30`。
 - 当前第一版先跑 `num_eval=3`，使用 `scripts/run_open_vlm_smoke.py`
   的共同多帧输入路线。
+- 发现 fo_class 问题中模型容易输出 `specimen bag`、解释句或多个类别后，
+  增加第二版 `class_constrained` prompt：
+  - 只允许从官方 FO class list 中选一个类别或 `none`
+  - 不允许解释
+  - 可选 `--normalize-answer` 保存 raw output 并将答案映射到官方类别
 - 目标是确认：
   - 模型能加载。
   - 视频或多帧输入能走通。
@@ -109,6 +114,8 @@ python scripts/download_vlm_candidates.py --dry-run
 - `medgemma`
 
 当前 `scripts/run_open_vlm_smoke.py` 已经实现第一版共同多帧 adapter。
+脚本支持 `--prompt-mode default/class_constrained` 和 `--normalize-answer`，
+用于测试 prompt 约束和输出归一化对 fo_class 任务的影响。
 后续优化重点是让 MiniCPM / InternVL 使用更贴近官方说明的视频原生接口，
 再比较共同多帧输入与视频原生输入的差异。
 

@@ -36,6 +36,32 @@ LOGGER = logging.getLogger("run_open_vlm_smoke")
 DEFAULT_CONFIG = "configs/vlm_candidate_models.csv"
 DEFAULT_MODEL_DIR = "~/workspace/vlm-models"
 DEFAULT_OUTPUT_DIR = "~/workspace/focus-runs/open-vlm-smoke"
+FALLBACK_FO_CLASSES = [
+    "Clip",
+    "Drain",
+    "Hemostatic",
+    "Mesh",
+    "Needle",
+    "Specimen",
+    "Sponge",
+    "Stapler",
+    "Suture",
+]
+FO_CLASS_ALIASES = {
+    "specimen bag": "Specimen",
+    "bag": "Specimen",
+    "clips": "Clip",
+    "surgical clip": "Clip",
+    "mesh implant": "Mesh",
+    "needle": "Needle",
+    "sponge": "Sponge",
+    "gauze": "Sponge",
+    "suture": "Suture",
+    "staple": "Stapler",
+    "stapler": "Stapler",
+    "none": "none",
+    "no foreign object": "none",
+}
 
 
 def parse_num_eval(value: str) -> int | None:
@@ -62,6 +88,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--frames-per-clip", type=int, default=4)
     parser.add_argument("--max-new-tokens", type=int, default=64)
     parser.add_argument("--device", default="cuda:0" if torch.cuda.is_available() else "cpu")
+    parser.add_argument(
+        "--prompt-mode",
+        choices=["default", "class_constrained"],
+        default="default",
+        help="Question formatting strategy. Use class_constrained for fo_class smoke tests.",
+    )
+    parser.add_argument(
+        "--normalize-answer",
+        action="store_true",
+        help="Map free-form model outputs to a likely official FO class when possible.",
+    )
     parser.add_argument("--no-overlay", action="store_true")
     parser.add_argument("--continue-on-error", action="store_true")
     parser.add_argument("--skip-evaluator", action="store_true")
@@ -123,6 +160,50 @@ def system_prompt() -> str:
         "the visual evidence. Be precise and concise.\n\n"
         + FO_DEFINITIONS_FILE.read_text(encoding="utf-8")
     )
+
+
+def official_fo_classes() -> list[str]:
+    classes: list[str] = []
+    for line in FO_DEFINITIONS_FILE.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("- "):
+            name = stripped[2:].split(":", 1)[0].strip()
+            if name:
+                classes.append(name)
+    return classes or FALLBACK_FO_CLASSES
+
+
+def format_question(question: str, prompt_mode: str) -> str:
+    if prompt_mode == "default":
+        return question
+    if prompt_mode == "class_constrained":
+        classes = official_fo_classes()
+        class_list = ", ".join(classes + ["none"])
+        return (
+            question
+            + "\n\nAnswer with exactly one class name from this list: "
+            + class_list
+            + ". Use lowercase 'none' if no listed class is visible. "
+            + "Do not explain. Do not list multiple classes."
+        )
+    raise ValueError(f"Unsupported prompt mode: {prompt_mode}")
+
+
+def normalize_fo_answer(answer: str) -> str:
+    text = " ".join(answer.strip().replace("\n", " ").split())
+    lowered = text.lower().strip(" .,:;")
+    for alias, canonical in FO_CLASS_ALIASES.items():
+        if alias in lowered:
+            return canonical
+    for candidate in official_fo_classes():
+        if candidate.lower() in lowered:
+            return candidate
+    first_token = lowered.split()[0] if lowered.split() else ""
+    if first_token in FO_CLASS_ALIASES:
+        return FO_CLASS_ALIASES[first_token]
+    return text
 
 
 def move_inputs_to_device(inputs: Any, device: str, dtype: torch.dtype | None = None) -> Any:
@@ -396,6 +477,8 @@ def run_one_model(
         "num_eval": n_eval,
         "frames_per_clip": args.frames_per_clip,
         "max_new_tokens": args.max_new_tokens,
+        "prompt_mode": args.prompt_mode,
+        "normalize_answer": args.normalize_answer,
         "device": args.device,
         "use_overlay": not args.no_overlay,
         "helper_repo_commit": git_commit(),
@@ -423,11 +506,14 @@ def run_one_model(
             start = time.perf_counter()
             try:
                 frames = sample_clip_frames(sample.video_path, args.frames_per_clip)
-                prediction = engine.predict(frames, sample.request.question)
+                formatted_question = format_question(sample.request.question, args.prompt_mode)
+                raw_prediction = engine.predict(frames, formatted_question)
+                prediction = normalize_fo_answer(raw_prediction) if args.normalize_answer else raw_prediction
                 latency = time.perf_counter() - start
             except Exception as exc:
                 LOGGER.exception("[%s] qID=%s failed", key, sample.request.qID)
-                prediction = f"Inference Error: {str(exc)[:300]}"
+                raw_prediction = f"Inference Error: {str(exc)[:300]}"
+                prediction = raw_prediction
                 latency = time.perf_counter() - start
                 failure = {
                     "qID": sample.request.qID,
@@ -450,7 +536,11 @@ def run_one_model(
                         "qID": sample.request.qID,
                         "videoID": sample.request.videoID,
                         "question": sample.request.question,
+                        "prompt_mode": args.prompt_mode,
+                        "formatted_question": format_question(sample.request.question, args.prompt_mode),
+                        "raw_prediction": raw_prediction,
                         "prediction": prediction,
+                        "normalized": args.normalize_answer,
                         "latency": latency,
                     },
                     ensure_ascii=False,

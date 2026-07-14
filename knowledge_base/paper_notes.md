@@ -161,3 +161,6 @@ For a fuller table, see:
 - prompt-only vs LoRA-SFT ablation
 - open-source VLM baseline comparison:
   MiniCPM-V, LLaVA-OneVision, InternVL, Gemma, MedGemma
+- prompt and output-normalization ablation for fo_class questions:
+  default open-ended prompting vs class-constrained prompting, preserving raw
+  model outputs and normalized class predictions separately

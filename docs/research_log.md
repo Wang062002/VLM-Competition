@@ -455,3 +455,8 @@ Next checkpoint:
   tied-weights API compatibility issue as MiniCPM:
   `InternVLChatModel` missing `all_tied_weights_keys`. The generic compatibility
   patch is now applied before InternVL loading as well.
+- Inspecting test3 responses showed that all five models can generate answers,
+  but fo_class outputs are poorly constrained: examples include `Specimen`,
+  `None`, `specimen bag`, and long multi-object explanations. This motivates a
+  prompt ablation with `--prompt-mode class_constrained` and optional
+  `--normalize-answer`, while preserving raw predictions for analysis.

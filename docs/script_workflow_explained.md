@@ -521,6 +521,9 @@ python scripts/check_vlm_downloads.py \
 - 保存 `responses.jsonl`、`run_config.json`、`status.json`。
 - 默认调用官方 `Evaluator` 生成 `results.csv` 和 `summary.csv`。
 - 每个模型推理完后释放模型显存，再加载 evaluator，降低 OOM 风险。
+- 支持 `--prompt-mode default/class_constrained`。
+- 支持 `--normalize-answer`，在 `responses.jsonl` 中同时保存
+  `raw_prediction` 和用于评分的 `prediction`。
 
 第一版支持的 engine：
 
@@ -546,6 +549,25 @@ python scripts/run_open_vlm_smoke.py \
   --num-eval 3 \
   --frames-per-clip 4 \
   --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3 \
+  --continue-on-error
+```
+
+class-constrained prompt 对照实验：
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 3 \
+  --frames-per-clip 4 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3-class-prompt \
   --continue-on-error
 ```
 
