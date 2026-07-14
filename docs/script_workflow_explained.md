@@ -465,7 +465,8 @@ download_vlm_candidates.py -> 开源 VLM 候选模型下载
 - `--model`
 - `--revision`
 - `--dry-run`
-- `--force`
+- `--skip-existing`
+- `--continue-on-error`
 - `--manifest`
 
 当前第一批候选：
@@ -479,6 +480,8 @@ download_vlm_candidates.py -> 开源 VLM 候选模型下载
 注意：
 
 - Gemma / MedGemma 可能需要先在 Hugging Face 页面接受 license。
+- 如果下载被中断，默认重新运行脚本会校验/续传已有目录；不要因为目录非空就直接认定完成。
+- `--continue-on-error` 可用于跳过 gated repo 报错，继续下载后续候选。
 - 下载完成后还不能直接代表可评估，需要继续写或接入对应 model adapter。
 
 ## 9. 当前下一步
@@ -492,7 +495,8 @@ cd ~/workspace/VLM-Competition
 
 python scripts/download_vlm_candidates.py \
   --config configs/vlm_candidate_models.csv \
-  --output-dir ~/workspace/vlm-models
+  --output-dir ~/workspace/vlm-models \
+  --continue-on-error
 ```
 
 下载完成后进入 smoke / TEST-100 批量测试阶段。

@@ -35,9 +35,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--revision", default=None, help="Optional HF revision for all downloads.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned downloads only.")
     parser.add_argument(
-        "--force",
+        "--skip-existing",
         action="store_true",
-        help="Download even if the target directory already exists.",
+        help="Skip a target when its directory already contains files.",
+    )
+    parser.add_argument(
+        "--continue-on-error",
+        action="store_true",
+        help="Record failed downloads and continue with the remaining models.",
     )
     parser.add_argument(
         "--manifest",
@@ -101,8 +106,8 @@ def main() -> None:
             records.append(record)
             continue
 
-        if target_dir.exists() and any(target_dir.iterdir()) and not args.force:
-            print("skip: target already exists; pass --force to refresh")
+        if target_dir.exists() and any(target_dir.iterdir()) and args.skip_existing:
+            print("skip: target already exists; omit --skip-existing to verify/resume")
             record["status"] = "skipped_existing"
             records.append(record)
             continue
@@ -114,7 +119,6 @@ def main() -> None:
                 repo_id=repo_id,
                 revision=args.revision,
                 local_dir=str(target_dir),
-                resume_download=True,
             )
         except Exception as exc:
             record["status"] = "failed"
@@ -123,6 +127,8 @@ def main() -> None:
             write_json(manifest_path, records)
             print(f"failed: {exc!r}")
             print("manifest updated before exit:", manifest_path)
+            if args.continue_on_error:
+                continue
             raise
 
         record["status"] = "downloaded"

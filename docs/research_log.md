@@ -415,3 +415,12 @@ Testing plan:
 - Stage 1: smoke test, `num_eval=10` or `30`
 - Stage 2: TEST-100 for models that can run
 - Stage 3: full TEST-4000 only for the strongest 1-2 candidates
+
+Download note:
+
+- If a download is interrupted, a non-empty target directory may be incomplete.
+  The downloader was updated to verify/resume existing directories by default
+  instead of skipping them.
+- `google/gemma-3-12b-it` can return Hugging Face `GatedRepoError` / `403
+  Forbidden` until access is accepted with the same Hugging Face account used on
+  the remote server.

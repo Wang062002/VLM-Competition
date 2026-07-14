@@ -286,7 +286,8 @@ python -m py_compile scripts/download_vlm_candidates.py
 
 python scripts/download_vlm_candidates.py \
   --config configs/vlm_candidate_models.csv \
-  --output-dir ~/workspace/vlm-models
+  --output-dir ~/workspace/vlm-models \
+  --continue-on-error
 ```
 
 Dry-run:
@@ -306,6 +307,9 @@ python scripts/download_vlm_candidates.py \
 Important:
 
 - Gemma and MedGemma may require Hugging Face license acceptance before download.
+- By default the script verifies/resumes existing target directories instead of
+  skipping them. Use `--skip-existing` only when you intentionally want to skip
+  non-empty directories.
 - The download manifest is written to:
   `~/workspace/vlm-models/download_manifest.json`
 - After downloading, run smoke tests before TEST-100.

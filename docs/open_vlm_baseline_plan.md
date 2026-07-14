@@ -37,7 +37,8 @@ cd ~/workspace/VLM-Competition
 
 python scripts/download_vlm_candidates.py \
   --config configs/vlm_candidate_models.csv \
-  --output-dir ~/workspace/vlm-models
+  --output-dir ~/workspace/vlm-models \
+  --continue-on-error
 ```
 
 只下载某一个：
@@ -47,6 +48,13 @@ python scripts/download_vlm_candidates.py \
   --model minicpm_v_4_5 \
   --output-dir ~/workspace/vlm-models
 ```
+
+说明：
+
+- 默认会校验并续传已经存在的目录。
+- 只有明确想跳过非空目录时才使用 `--skip-existing`。
+- 如果 Gemma / MedGemma 因 gated repo 报 403，可加
+  `--continue-on-error` 让脚本继续下载后续模型。
 
 先 dry-run：
 

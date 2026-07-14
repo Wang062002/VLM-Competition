@@ -158,5 +158,6 @@ python -m py_compile scripts/download_vlm_candidates.py
 
 python scripts/download_vlm_candidates.py \
   --config configs/vlm_candidate_models.csv \
-  --output-dir ~/workspace/vlm-models
+  --output-dir ~/workspace/vlm-models \
+  --continue-on-error
 ```
