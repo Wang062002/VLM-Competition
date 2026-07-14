@@ -303,6 +303,7 @@ Interpretation:
 - `results/dataset_status.csv`
 - `results/open_vlm_smoke_test3_prompt_comparison.csv`
 - `results/open_vlm_test30_prompt_comparison.csv`
+- `results/open_vlm_test100_class_prompt_selected.csv`
 
 ## Open VLM Smoke Prompt Ablation
 
@@ -376,3 +377,36 @@ Next recommended step:
 - TEST-100 with `--prompt-mode class_constrained --normalize-answer` for:
   LLaVA-OneVision, MedGemma, MiniCPM.
 - Include InternVL if time permits.
+
+## Open VLM TEST-100 Selected Candidates
+
+Date: `2026-07-15`
+
+Setup:
+
+- Official HeiCo SEGMENT TEST
+- First `100` samples
+- Timestamp-overlay clips sampled into `4` RGB frames
+- Prompt: class-constrained
+- Answer normalization: enabled
+
+Results:
+
+| Model | Overall | Pre-eval | object_recognition | fo_class | time |
+|---|---:|---:|---:|---:|---:|
+| MedGemma-4B | 0.270000 | 0.251610 | 0.481481 | 0.260870 | 0.021739 |
+| LLaVA-OneVision-7B | 0.260000 | 0.242351 | 0.462963 | 0.391304 | 0.021739 |
+| MiniCPM-V-4.5 | 0.150000 | 0.138889 | 0.277778 | 0.173913 | 0.000000 |
+| InternVL3.5-8B | 0.150000 | 0.140499 | 0.259259 | 0.173913 | 0.021739 |
+
+Comparison:
+
+- MedGemma and LLaVA exceed `official-overlay-100` overall `0.210000`.
+- They remain below Qwen3-VL LoRA TEST-100 overall `0.350000`.
+- LLaVA has the strongest `fo_class`; MedGemma has the strongest overall.
+
+Next recommended step:
+
+- Prioritize MedGemma and LLaVA for either:
+  - TEST-100 with more frames, e.g. `--frames-per-clip 8`; or
+  - full TEST-4000 as the current best prompt-only open-VLM baselines.

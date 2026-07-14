@@ -421,6 +421,29 @@ Current selection rationale:
 - InternVL improved but is lower priority.
 - Gemma is currently deprioritized.
 
+Run TEST-100 with more frames for the two strongest open VLM candidates:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model llava_onevision_7b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 100 \
+  --frames-per-clip 8 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test100-class-prompt-selected-8frames \
+  --continue-on-error
+```
+
+Rationale:
+
+- MedGemma and LLaVA are the top two TEST-100 prompt-only open VLMs with
+  4-frame input.
+- An 8-frame comparison checks whether the 4-frame sampling bottleneck is
+  limiting recognition before deciding on full TEST-4000.
+
 If evaluator memory becomes an issue, first validate generation only:
 
 ```bash

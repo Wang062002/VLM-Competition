@@ -546,3 +546,52 @@ Next decision:
 Structured output:
 
 - `results/open_vlm_test30_prompt_comparison.csv`
+
+## Open VLM TEST-100 Selected Candidates
+
+Date: `2026-07-15`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: first `100`
+- Input: timestamp-overlay clips sampled into `4` RGB frames
+- Prompt: `class_constrained`
+- Answer normalization: enabled
+- Models: LLaVA-OneVision-7B, MedGemma-4B, MiniCPM-V-4.5, InternVL3.5-8B
+
+Overall MEAN:
+
+| Model | Overall | Pre-eval | object_recognition | fo_class | time |
+|---|---:|---:|---:|---:|---:|
+| MedGemma-4B | 0.270000 | 0.251610 | 0.481481 | 0.260870 | 0.021739 |
+| LLaVA-OneVision-7B | 0.260000 | 0.242351 | 0.462963 | 0.391304 | 0.021739 |
+| MiniCPM-V-4.5 | 0.150000 | 0.138889 | 0.277778 | 0.173913 | 0.000000 |
+| InternVL3.5-8B | 0.150000 | 0.140499 | 0.259259 | 0.173913 | 0.021739 |
+
+Comparison:
+
+- `official-overlay-100` Qwen3-VL baseline: overall `0.210000`, pre-eval
+  `0.200886`.
+- `qwen3vl-4b-sft-valid5959-e1-overlay-test-100`: overall `0.350000`,
+  pre-eval `0.328905`.
+- MedGemma and LLaVA exceed the reproduced overlay baseline on TEST-100, but
+  both remain below the Qwen3-VL LoRA-SFT TEST-100 result.
+- LLaVA is the strongest selected open VLM on `fo_class` (`0.391304`), while
+  MedGemma is the strongest on overall mean (`0.270000`) and binary answers
+  (`0.625000`).
+- Temporal grounding remains weak across all prompt-only open VLM candidates.
+
+Decision:
+
+- MedGemma and LLaVA are the strongest prompt-only open-VLM candidates under the
+  current 4-frame class-constrained setup.
+- Before full TEST-4000, consider either:
+  - running TEST-100 with more frames, e.g. `--frames-per-clip 8`, for MedGemma
+    and LLaVA; or
+  - running full TEST for MedGemma and LLaVA as the current best prompt-only
+    baselines.
+
+Structured output:
+
+- `results/open_vlm_test100_class_prompt_selected.csv`

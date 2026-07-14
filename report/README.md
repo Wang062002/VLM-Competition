@@ -60,3 +60,12 @@ tests, not performance claims.
 Prompt ablations such as the open-VLM `num_eval=30` comparison can be used as
 method-selection evidence, but final model performance claims should use larger
 evaluations such as TEST-100 or full TEST.
+
+Current open-VLM TEST-100 comparison table:
+
+```text
+results/open_vlm_test100_class_prompt_selected.csv
+```
+
+Use it as a small-scale model-selection table. Full-paper performance claims
+still require either larger TEST subsets or full TEST-4000.

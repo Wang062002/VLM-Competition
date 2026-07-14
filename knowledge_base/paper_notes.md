@@ -173,6 +173,11 @@ For a fuller table, see:
   first 30 TEST samples; LLaVA-OneVision and MedGemma reached `0.366667`,
   compared with best default score `0.200000` from MedGemma. This supports
   reporting prompt design as a controlled experimental variable.
+- TEST-100 selected open VLM results:
+  MedGemma reached overall `0.270000` and LLaVA-OneVision reached `0.260000`
+  with class-constrained prompt and 4-frame input, exceeding the reproduced
+  Qwen3-VL overlay-100 baseline `0.210000` but remaining below Qwen3-VL LoRA
+  TEST-100 `0.350000`.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

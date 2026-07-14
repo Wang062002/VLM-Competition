@@ -1,0 +1,5 @@
+model,overall_mean,pre_evaluation_score,object_recognition,temporal_grounding,object_identification,spatial_localization_camera,fo_class,binary,multiple_choice,open_ended,time,selection_interpretation
+llava_onevision_7b,0.260000,0.242351,0.462963,0.021739,0.423077,0.631579,0.391304,0.125000,0.611111,0.800000,0.021739,"Second-best TEST-100 overall; strongest fo_class among selected open VLMs; strong candidate for further evaluation."
+medgemma_4b,0.270000,0.251610,0.481481,0.021739,0.346154,0.578947,0.260870,0.625000,0.611111,0.800000,0.021739,"Best TEST-100 overall among selected open VLMs; strong binary and object-recognition performance."
+minicpm_v_4_5,0.150000,0.138889,0.277778,0.000000,0.192308,0.473684,0.173913,0.000000,0.500000,0.400000,0.000000,"Stable but weaker than LLaVA and MedGemma under current 4-frame class-constrained setup."
+internvl3_5_8b,0.150000,0.140499,0.259259,0.021739,0.153846,0.421053,0.173913,0.125000,0.388889,0.400000,0.021739,"Stable after dependency and compatibility fixes, but lower priority than LLaVA and MedGemma."
