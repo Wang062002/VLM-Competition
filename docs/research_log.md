@@ -441,5 +441,6 @@ Next checkpoint:
 - First MiniCPM smoke attempt failed during `AutoModel.from_pretrained` with
   `MiniCPMV` missing `all_tied_weights_keys`. This is a remote-code /
   Transformers API compatibility issue. `scripts/run_open_vlm_smoke.py` now
-  patches a read-only compatibility property from `_tied_weights_keys` before
-  loading MiniCPM.
+  patches a compatibility property from `_tied_weights_keys` before loading
+  MiniCPM. The property needs both getter and setter because Qwen3 initialization
+  assigns `all_tied_weights_keys` during `post_init`.

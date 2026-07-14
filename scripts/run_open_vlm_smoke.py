@@ -144,16 +144,30 @@ def patch_transformers_tied_weights_compat() -> None:
     """Bridge MiniCPM remote-code models across Transformers API variants."""
     from transformers.modeling_utils import PreTrainedModel
 
-    if hasattr(PreTrainedModel, "all_tied_weights_keys"):
+    existing = getattr(PreTrainedModel, "all_tied_weights_keys", None)
+    if existing is not None and not isinstance(existing, property):
+        return
+    if isinstance(existing, property) and existing.fset is not None:
         return
 
-    def all_tied_weights_keys(self: Any) -> dict[str, str]:
+    def get_all_tied_weights_keys(self: Any) -> dict[str, str]:
+        stored = self.__dict__.get("all_tied_weights_keys")
+        if stored is not None:
+            if isinstance(stored, dict):
+                return stored
+            return {str(key): str(key) for key in stored}
         keys = getattr(self, "_tied_weights_keys", None) or []
         if isinstance(keys, dict):
             return keys
         return {str(key): str(key) for key in keys}
 
-    PreTrainedModel.all_tied_weights_keys = property(all_tied_weights_keys)  # type: ignore[attr-defined]
+    def set_all_tied_weights_keys(self: Any, value: Any) -> None:
+        self.__dict__["all_tied_weights_keys"] = value
+
+    PreTrainedModel.all_tied_weights_keys = property(  # type: ignore[attr-defined]
+        get_all_tied_weights_keys,
+        set_all_tied_weights_keys,
+    )
 
 
 class BaseEngine:
