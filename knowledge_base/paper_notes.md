@@ -168,3 +168,7 @@ For a fuller table, see:
   class-constrained prompting improves output validity but not uniformly
   accuracy; prompt mode should be model-specific and validated on larger samples
   before reporting final baseline comparisons
+- report table requirement:
+  formal evaluation runs should include evaluator-style breakdown tables with
+  `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the
+  official evaluator terminal output style. See `report/README.md`.

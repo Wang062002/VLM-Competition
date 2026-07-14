@@ -64,6 +64,8 @@ Current next step:
   output matching official summary formatting
 - `docs/evaluator_style_summary_tables.md`: explanation and print command for
   evaluator-style tables
+- `report/README.md`: paper/report artifact requirements, including the
+  screenshot-style evaluator breakdown table format
 - `scripts/print_evaluator_style_summary.py`: script for printing evaluator-style
   tables from CSV
 - `configs/vlm_candidate_models.csv`: first-batch open VLM candidate list
