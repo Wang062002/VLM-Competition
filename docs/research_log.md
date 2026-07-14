@@ -434,3 +434,7 @@ Next checkpoint:
 - After all five candidate snapshots are downloaded, run
   `scripts/check_vlm_downloads.py` to confirm local directories, `config.json`,
   weight files, and manifest status before model loading.
+- The first batch-testing runner is `scripts/run_open_vlm_smoke.py`. It uses a
+  common multi-frame input route for all five candidates so that the first
+  smoke test focuses on loading, generation, and evaluator compatibility. Model
+  specific video-native adapters can be optimized after the common smoke pass.

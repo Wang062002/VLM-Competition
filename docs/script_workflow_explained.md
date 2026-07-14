@@ -447,6 +447,8 @@ run_segment_baseline.py --adapter-dir  -> LoRA TEST 结果
 download_vlm_candidates.py -> 开源 VLM 候选模型下载
         |
 check_vlm_downloads.py -> 候选模型本地快照完整性检查
+        |
+run_open_vlm_smoke.py -> 五个开源 VLM 的多帧 smoke / 小批量测试
 ```
 
 ## 8.5 开源 VLM 候选模型下载
@@ -508,6 +510,48 @@ python scripts/check_vlm_downloads.py \
 ```
 
 如果全部为 `ok`，再进入模型加载 / inference smoke test。
+
+### `scripts/run_open_vlm_smoke.py`
+
+作用：
+
+- 从官方 FOCUS SEGMENT TEST 构造视频片段。
+- 每个片段抽取少量 RGB 帧，作为跨模型通用输入。
+- 对候选模型逐个加载并生成答案。
+- 保存 `responses.jsonl`、`run_config.json`、`status.json`。
+- 默认调用官方 `Evaluator` 生成 `results.csv` 和 `summary.csv`。
+- 每个模型推理完后释放模型显存，再加载 evaluator，降低 OOM 风险。
+
+第一版支持的 engine：
+
+- `minicpmv`
+- `llava_onevision`
+- `internvl`
+- `gemma3`
+- `medgemma`
+
+远端 smoke 命令：
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 3 \
+  --frames-per-clip 4 \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3 \
+  --continue-on-error
+```
+
+注意：
+
+- 这是共同多帧输入的第一版 smoke test，不是最终公平最优适配。
+- MiniCPM / InternVL 后续可以继续升级为更贴近官方说明的视频接口。
+- Gemma / MedGemma 本身是 image-text 路线，因此多帧抽样是合理的第一版。
 
 ## 9. 当前下一步
 

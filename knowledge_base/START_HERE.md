@@ -71,6 +71,8 @@ Current next step:
   for candidate VLMs
 - `scripts/check_vlm_downloads.py`: lightweight local snapshot check before
   smoke / batch evaluation
+- `scripts/run_open_vlm_smoke.py`: common multi-frame smoke runner for the five
+  downloaded VLM candidates
 - `docs/open_vlm_baseline_plan.md`: plan for downloading and batch-testing
   open-source VLM baselines
 - `codex.md`: compact operational memory
@@ -166,4 +168,17 @@ python scripts/download_vlm_candidates.py \
 python scripts/check_vlm_downloads.py \
   --model-dir ~/workspace/vlm-models \
   --json-output ~/workspace/focus-runs/open-vlm-download-check.json
+
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 3 \
+  --frames-per-clip 4 \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3 \
+  --continue-on-error
 ```

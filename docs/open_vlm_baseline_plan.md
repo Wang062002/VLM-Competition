@@ -69,6 +69,8 @@ python scripts/download_vlm_candidates.py --dry-run
 ### Stage 1: smoke test
 
 - 每个模型先跑 `num_eval=10` 或 `num_eval=30`。
+- 当前第一版先跑 `num_eval=3`，使用 `scripts/run_open_vlm_smoke.py`
+  的共同多帧输入路线。
 - 目标是确认：
   - 模型能加载。
   - 视频或多帧输入能走通。
@@ -105,6 +107,10 @@ python scripts/download_vlm_candidates.py --dry-run
 - `internvl`
 - `gemma3`
 - `medgemma`
+
+当前 `scripts/run_open_vlm_smoke.py` 已经实现第一版共同多帧 adapter。
+后续优化重点是让 MiniCPM / InternVL 使用更贴近官方说明的视频原生接口，
+再比较共同多帧输入与视频原生输入的差异。
 
 目标是让所有模型最终都能输出：
 

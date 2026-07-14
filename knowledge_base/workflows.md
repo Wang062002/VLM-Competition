@@ -324,6 +324,35 @@ python scripts/check_vlm_downloads.py \
   --json-output ~/workspace/focus-runs/open-vlm-download-check.json
 ```
 
+Run first common multi-frame smoke test:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 3 \
+  --frames-per-clip 4 \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3 \
+  --continue-on-error
+```
+
+If evaluator memory becomes an issue, first validate generation only:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 1 \
+  --skip-evaluator \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/minicpm-generate-only
+```
+
 ## If Script Changed Locally
 
 Always provide both:
