@@ -1,0 +1,11 @@
+experiment,model,prompt_mode,normalize_answer,evaluated_samples,failures,overall_mean,pre_evaluation_score,output_pattern,interpretation
+open-vlm-smoke-test3-default,minicpm_v_4_5,default,false,3,0,0.333333,0.333333,"Clip; Mesh; Mesh","Only model with a correct answer under default prompt on the first 3 fo_class samples."
+open-vlm-smoke-test3-default,llava_onevision_7b,default,false,3,0,0.000000,0.000000,"None; None; None","Runs successfully but is over-conservative on this tiny object-identification subset."
+open-vlm-smoke-test3-default,internvl3_5_8b,default,false,3,0,0.000000,0.000000,"specimen bag; specimen bag; specimen bag","Runs successfully after dependency and compatibility fixes; output uses natural phrase rather than official class."
+open-vlm-smoke-test3-default,gemma3_12b,default,false,3,0,0.000000,0.000000,"Specimen; Specimen; Specimen","Runs successfully but shows specimen bias on this tiny subset."
+open-vlm-smoke-test3-default,medgemma_4b,default,false,3,0,0.000000,0.000000,"Mesh; Specimen; long multi-object explanation","Runs successfully; answer format is less stable without class constraints."
+open-vlm-smoke-test3-class-prompt,minicpm_v_4_5,class_constrained,true,3,0,0.000000,0.000000,"Specimen; none; Clip","Class prompt constrains format but hurts MiniCPM on this tiny subset."
+open-vlm-smoke-test3-class-prompt,llava_onevision_7b,class_constrained,true,3,0,0.333333,0.333333,"Sponge; Sponge; Sponge","Class prompt changes LLaVA from all-none to a valid class and improves tiny-sample score."
+open-vlm-smoke-test3-class-prompt,internvl3_5_8b,class_constrained,true,3,0,0.000000,0.000000,"Specimen; none; Specimen","Class prompt removes specimen-bag phrase but does not improve tiny-sample score."
+open-vlm-smoke-test3-class-prompt,gemma3_12b,class_constrained,true,3,0,0.000000,0.000000,"Specimen; Specimen; Specimen","Class prompt preserves Gemma specimen bias on this tiny subset."
+open-vlm-smoke-test3-class-prompt,medgemma_4b,class_constrained,true,3,0,0.333333,0.333333,"Clip; Specimen; Specimen","Class prompt stabilizes MedGemma output and improves tiny-sample score."

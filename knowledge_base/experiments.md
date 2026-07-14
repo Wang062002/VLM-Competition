@@ -301,3 +301,39 @@ Interpretation:
 - `results/experiment_events.csv`
 - `results/full_raw_vs_overlay_summary.csv`
 - `results/dataset_status.csv`
+- `results/open_vlm_smoke_test3_prompt_comparison.csv`
+
+## Open VLM Smoke Prompt Ablation
+
+Date: `2026-07-14`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: first `3`
+- Input: timestamp-overlay video clips sampled into `4` RGB frames
+- Models: MiniCPM-V-4.5, LLaVA-OneVision-7B, InternVL3.5-8B,
+  Gemma-3-12B, MedGemma-4B
+
+Default prompt:
+
+- MiniCPM-V-4.5: `0.333333`
+- LLaVA-OneVision-7B: `0.000000`
+- InternVL3.5-8B: `0.000000`
+- Gemma-3-12B: `0.000000`
+- MedGemma-4B: `0.000000`
+
+Class-constrained prompt + normalization:
+
+- MiniCPM-V-4.5: `0.000000`
+- LLaVA-OneVision-7B: `0.333333`
+- InternVL3.5-8B: `0.000000`
+- Gemma-3-12B: `0.000000`
+- MedGemma-4B: `0.333333`
+
+Interpretation:
+
+- All five models can run through the smoke path.
+- The prompt mode affects models differently and should not be selected from
+  only 3 samples.
+- Next recommended step: `num_eval=30` prompt ablation before TEST-100.

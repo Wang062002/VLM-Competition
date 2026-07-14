@@ -460,3 +460,38 @@ Next checkpoint:
   `None`, `specimen bag`, and long multi-object explanations. This motivates a
   prompt ablation with `--prompt-mode class_constrained` and optional
   `--normalize-answer`, while preserving raw predictions for analysis.
+
+## Open VLM Smoke Prompt Ablation On 2026-07-14
+
+Default prompt, TEST first 3 fo_class samples:
+
+- MiniCPM-V-4.5: `0.333333`
+- LLaVA-OneVision-7B: `0.000000`
+- InternVL3.5-8B: `0.000000`
+- Gemma-3-12B: `0.000000`
+- MedGemma-4B: `0.000000`
+
+Class-constrained prompt with answer normalization, same 3 samples:
+
+- MiniCPM-V-4.5: `0.000000`
+- LLaVA-OneVision-7B: `0.333333`
+- InternVL3.5-8B: `0.000000`
+- Gemma-3-12B: `0.000000`
+- MedGemma-4B: `0.333333`
+
+Interpretation:
+
+- The class-constrained prompt successfully stabilizes outputs into valid
+  single-class answers, removing long explanations and phrases such as
+  `specimen bag`.
+- It does not uniformly improve accuracy: MiniCPM benefits more from the
+  default prompt on this tiny subset, whereas LLaVA and MedGemma improve under
+  class constraints.
+- Because the sample size is only 3 and all questions are from the same
+  fo_class subset, this is not a model ranking. It is evidence that prompt mode
+  should be treated as an experimental variable and tested on at least 30
+  samples before TEST-100.
+
+Structured output:
+
+- `results/open_vlm_smoke_test3_prompt_comparison.csv`

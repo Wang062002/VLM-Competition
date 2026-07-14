@@ -362,6 +362,38 @@ python scripts/run_open_vlm_smoke.py \
   --continue-on-error
 ```
 
+Run 30-sample prompt ablation before TEST-100:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 30 \
+  --frames-per-clip 4 \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test30-default \
+  --continue-on-error
+
+python scripts/run_open_vlm_smoke.py \
+  --model minicpm_v_4_5 \
+  --model llava_onevision_7b \
+  --model internvl3_5_8b \
+  --model gemma3_12b \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval 30 \
+  --frames-per-clip 4 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test30-class-prompt \
+  --continue-on-error
+```
+
 If evaluator memory becomes an issue, first validate generation only:
 
 ```bash

@@ -164,3 +164,7 @@ For a fuller table, see:
 - prompt and output-normalization ablation for fo_class questions:
   default open-ended prompting vs class-constrained prompting, preserving raw
   model outputs and normalized class predictions separately
+- preliminary open-VLM smoke observation:
+  class-constrained prompting improves output validity but not uniformly
+  accuracy; prompt mode should be model-specific and validated on larger samples
+  before reporting final baseline comparisons
