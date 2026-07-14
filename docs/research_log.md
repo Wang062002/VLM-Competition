@@ -448,3 +448,6 @@ Next checkpoint:
   string-based `AutoImageProcessor.register("MiniCPMVImageProcessor", ...)` is
   not accepted by the installed Transformers version. The smoke runner now skips
   this string-based registration side effect before loading MiniCPM's processor.
+- The first InternVL3.5 smoke retry exposed missing optional dependencies from
+  its remote-code vision stack: first `einops`, then `timm`. These are now
+  tracked in `requirements/open_vlm_smoke.txt`.

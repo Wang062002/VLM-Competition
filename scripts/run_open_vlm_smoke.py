@@ -309,7 +309,12 @@ class InternVLEngine(BaseEngine):
 
         self._torchvision_transforms = T
         self._interpolation = InterpolationMode
-        self.tokenizer = AutoTokenizer.from_pretrained(str(self.model_path), trust_remote_code=True, use_fast=False)
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            str(self.model_path),
+            trust_remote_code=True,
+            use_fast=False,
+            fix_mistral_regex=True,
+        )
         self.model = AutoModel.from_pretrained(
             str(self.model_path),
             torch_dtype=torch.bfloat16 if self.device.startswith("cuda") else torch.float32,

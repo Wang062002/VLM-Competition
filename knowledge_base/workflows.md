@@ -327,6 +327,8 @@ python scripts/check_vlm_downloads.py \
 Run first common multi-frame smoke test:
 
 ```bash
+pip install -r requirements/open_vlm_smoke.txt
+
 python scripts/run_open_vlm_smoke.py \
   --model minicpm_v_4_5 \
   --model llava_onevision_7b \
@@ -361,6 +363,9 @@ Known smoke issue:
 - MiniCPM-V-4.5 can also fail during processor import with
   `str object has no attribute __module__` from `AutoImageProcessor.register`.
   The smoke runner skips that string-based registration side effect.
+- InternVL3.5 needs extra Python packages beyond the base Qwen environment:
+  `einops` and `timm`. Install them with
+  `pip install -r requirements/open_vlm_smoke.txt`.
 
 ## If Script Changed Locally
 

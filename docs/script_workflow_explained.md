@@ -533,6 +533,8 @@ python scripts/check_vlm_downloads.py \
 远端 smoke 命令：
 
 ```bash
+pip install -r requirements/open_vlm_smoke.txt
+
 python scripts/run_open_vlm_smoke.py \
   --model minicpm_v_4_5 \
   --model llava_onevision_7b \
