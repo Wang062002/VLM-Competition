@@ -183,6 +183,15 @@ For a fuller table, see:
   from 4 to 8, mainly because temporal/time accuracy improves from `0.021739`
   to `0.130435`. LLaVA decreases overall from `0.260000` to `0.240000`, but
   `fo_class` improves from `0.391304` to `0.434783`.
+- MedGemma full TEST-4000 prompt-only baseline:
+  MedGemma-4B with 8 frames, class-constrained prompt, and answer normalization
+  reaches overall `0.188250` and pre-evaluation `0.281741` on all 4000 TEST
+  samples with `0` failures. This is below the Qwen3-VL overlay full baseline
+  overall `0.207500`, showing that TEST-100 overestimated MedGemma's global
+  performance. However, MedGemma is stronger than Qwen overlay on
+  `object_recognition` (`0.359666` vs `0.308308`), `object_identification`
+  (`0.227830` vs `0.149298`), and `fo_class` (`0.186662` vs `0.175904`), which
+  supports using it as the next LoRA/SFT training target.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

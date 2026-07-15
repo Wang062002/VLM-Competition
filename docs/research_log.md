@@ -641,3 +641,59 @@ Decision:
 Structured output:
 
 - `results/open_vlm_test100_frame_ablation.csv`
+
+## MedGemma-4B Full TEST-4000 Prompt-Only Baseline
+
+Date: `2026-07-15`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: full `4000`
+- Model: `google/medgemma-4b-it`
+- Input: timestamp-overlay clips
+- Frames per clip: `8`
+- Prompt: `class_constrained`
+- Answer normalization: enabled
+- Fine-tuning: none
+
+Result:
+
+| Setting | Overall | Pre-eval | object_recognition | temporal_grounding | object_identification | fo_class | multiple_choice | open_ended | time |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| MedGemma-4B 8-frame prompt-only | 0.188250 | 0.281741 | 0.359666 | 0.051561 | 0.227830 | 0.186662 | 0.587546 | 0.714236 | 0.049098 |
+
+Run status:
+
+- Processed: `4000`
+- Failures: `0`
+- Output directory:
+  `/home/Jiali_Wang/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt/medgemma_4b`
+
+Comparison:
+
+- MedGemma full TEST-4000 prompt-only overall `0.188250` is below the reproduced
+  Qwen3-VL overlay baseline overall `0.207500`.
+- MedGemma prompt-only pre-evaluation score `0.281741` is also below Qwen3-VL
+  overlay pre-evaluation `0.372647`.
+- MedGemma is stronger than Qwen overlay on some categories, including
+  `object_recognition` (`0.359666` vs `0.308308`), `object_identification`
+  (`0.227830` vs `0.149298`), and `fo_class` (`0.186662` vs `0.175904`).
+- It is much weaker on aggregation-related categories and remains weak on
+  temporal/time questions.
+
+Interpretation:
+
+- TEST-100 overestimated MedGemma's full-test performance. This confirms that
+  TEST-100 is useful for model selection but insufficient for final claims.
+- MedGemma is selected for fine-tuning not because its full prompt-only baseline
+  is strongest, but because it is medically oriented, has promising object and
+  spatial behavior, and now has a clean full-test baseline for before/after
+  comparison.
+- The next experimental stage should train MedGemma-4B with LoRA/SFT on the
+  official TRAIN-derived clip-valid split and compare against this `0.188250`
+  full-test baseline.
+
+Structured output:
+
+- `results/open_vlm_medgemma_8frames_full4000_summary.csv`

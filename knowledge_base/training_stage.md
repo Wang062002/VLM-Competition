@@ -166,7 +166,13 @@ Full TEST result:
 
 ## Next Method Step
 
-Analyze full TEST errors and plan a second method iteration:
+Two method directions are now active:
+
+1. Analyze Qwen3-VL LoRA full TEST errors and plan a second Qwen iteration.
+2. Train the selected open-VLM base model, MedGemma-4B, using the same
+   official-TRAIN-derived clip-valid split.
+
+Qwen error-analysis tasks:
 
 - inspect temporal grounding failures
 - inspect multiple-choice drop
@@ -174,3 +180,22 @@ Analyze full TEST errors and plan a second method iteration:
 - compare baseline correct / LoRA wrong examples
 - consider temporal-specific prompting, data balancing, or second-stage
   fine-tuning
+
+MedGemma training setup:
+
+- selected base: `google/medgemma-4b-it`
+- pre-training full TEST baseline:
+  `open-vlm-medgemma-8frames-full-4000`
+- pre-training overall MEAN: `0.188250`
+- pre-training pre-evaluation SCORE: `0.281741`
+- input setting: timestamp overlay, `8` sampled frames per clip,
+  class-constrained prompt, normalized answers
+- train JSONL:
+  `/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.clip_valid.jsonl`
+- val JSONL:
+  `/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.clip_valid.jsonl`
+
+Training goal:
+
+- establish whether MedGemma's medical prior plus LoRA/SFT can outperform its
+  prompt-only baseline and approach or exceed the Qwen3-VL LoRA reference.

@@ -19,15 +19,15 @@ Completed:
 - first-batch open-source VLM download and integrity check
 - open-VLM TEST-3, TEST-30, TEST-100 prompt ablations
 - LLaVA / MedGemma TEST-100 4-frame vs 8-frame comparison
+- MedGemma-4B 8-frame prompt-only full TEST-4000 baseline
 
 Current next step:
 
-- run full TEST-4000 for the strongest prompt-only open VLM setting so far:
-  MedGemma-4B with class-constrained prompt, answer normalization, and 8 sampled
-  frames per clip
-- keep Qwen3-VL + LoRA as the current strongest trained baseline
-- use open-VLM TEST-100 results as model-selection evidence, not final
-  performance claims
+- prepare MedGemma-4B LoRA/SFT training using the existing official-TRAIN-derived
+  clip-valid split
+- treat MedGemma-4B 8-frame full TEST-4000 prompt-only result as the
+  pre-training baseline
+- keep Qwen3-VL + LoRA as the current strongest trained reference result
 
 ## Must-Preserve Rules
 
@@ -65,6 +65,8 @@ Current next step:
   open-VLM comparison
 - `results/open_vlm_test100_frame_ablation.csv`: TEST-100 4-frame vs 8-frame
   ablation for LLaVA and MedGemma
+- `results/open_vlm_medgemma_8frames_full4000_summary.csv`: evaluator-style
+  full TEST-4000 MedGemma prompt-only summary
 - `results/lora_full_test_vs_overlay_baseline.csv`: full TEST LoRA-vs-overlay
   delta table
 - `results/evaluator_style_full_4000_summaries.csv`: evaluator-style long table
@@ -179,22 +181,33 @@ Open VLM TEST-100 frame ablation:
 - Current best prompt-only open VLM setting: MedGemma-4B, 8 frames,
   class-constrained prompt, answer normalization
 
+MedGemma-4B full TEST-4000 prompt-only baseline:
+
+- official TEST samples: `4000`
+- input: timestamp overlay, `8` sampled frames per clip
+- prompt: class-constrained, normalized answers
+- overall MEAN: `0.188250`
+- pre-evaluation SCORE: `0.281741`
+- object_recognition: `0.359666`
+- object_identification: `0.227830`
+- fo_class: `0.186662`
+- time: `0.049098`
+- processed: `4000`
+- failures: `0`
+- comparison: below Qwen3-VL overlay full overall `0.207500`, but stronger than
+  Qwen overlay on object-recognition-related metrics
+
 ## Current Recommended Remote Command
 
-Run the current strongest prompt-only open VLM on full TEST-4000:
+Start the next stage by preparing MedGemma-4B LoRA/SFT training:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-python scripts/run_open_vlm_smoke.py \
-  --model medgemma_4b \
-  --model-dir ~/workspace/vlm-models \
-  --root-dir /home/Jiali_Wang/data/focus \
-  --num-eval none \
-  --frames-per-clip 8 \
-  --prompt-mode class_constrained \
-  --normalize-answer \
-  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
+# Next implementation target:
+# create / validate a MedGemma LoRA-SFT training script that consumes:
+#   ~/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.clip_valid.jsonl
+#   ~/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.clip_valid.jsonl
 ```

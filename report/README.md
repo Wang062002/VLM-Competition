@@ -70,3 +70,12 @@ results/open_vlm_test100_frame_ablation.csv
 
 Use it as a small-scale model-selection table. Full-paper performance claims
 still require either larger TEST subsets or full TEST-4000.
+
+Current open-VLM full TEST-4000 baseline table:
+
+```text
+results/open_vlm_medgemma_8frames_full4000_summary.csv
+```
+
+Use this as the MedGemma-4B pre-training baseline for later LoRA/SFT
+before/after comparison.

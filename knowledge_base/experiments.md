@@ -439,3 +439,49 @@ Interpretation:
 - LLaVA does not benefit overall from 8 frames, although `fo_class` improves.
 - Current best prompt-only open-VLM setting: MedGemma 8-frame class-constrained.
 - Current strongest `fo_class`: LLaVA 8-frame, but lower overall.
+
+## MedGemma-4B Full TEST-4000 Prompt-Only Baseline
+
+Date: `2026-07-15`
+
+Setup:
+
+- Official HeiCo SEGMENT TEST
+- Full `4000` samples
+- Model: `google/medgemma-4b-it`
+- Timestamp overlay
+- `8` sampled RGB frames per clip
+- Class-constrained prompt
+- Answer normalization enabled
+- No fine-tuning
+
+Results:
+
+| Metric | Value |
+|---|---:|
+| Overall MEAN | 0.188250 |
+| Pre-evaluation SCORE | 0.281741 |
+| object_recognition | 0.359666 |
+| temporal_grounding | 0.051561 |
+| object_identification | 0.227830 |
+| fo_class | 0.186662 |
+| multiple_choice | 0.587546 |
+| open_ended | 0.714236 |
+| time | 0.049098 |
+| processed | 4000 |
+| failures | 0 |
+
+Comparison and decision:
+
+- MedGemma full prompt-only overall `0.188250` is below the reproduced Qwen3-VL
+  overlay full baseline `0.207500`.
+- MedGemma still improves over Qwen overlay on `object_recognition`,
+  `object_identification`, and `fo_class`.
+- TEST-100 overstated MedGemma's full-test overall performance, so full TEST is
+  required before making model-selection claims.
+- MedGemma remains the selected next training target because it is medically
+  oriented and has now been assigned a clean pre-training full TEST baseline.
+
+Structured output:
+
+- `results/open_vlm_medgemma_8frames_full4000_summary.csv`

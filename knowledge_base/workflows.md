@@ -450,7 +450,7 @@ Current frame-ablation decision:
 - LLaVA: keep 4 frames for stronger overall, but note 8 frames has stronger
   `fo_class`.
 
-Optional full TEST-4000 for current strongest prompt-only open VLM:
+Completed full TEST-4000 for current strongest prompt-only open VLM:
 
 ```bash
 python scripts/run_open_vlm_smoke.py \
@@ -463,6 +463,25 @@ python scripts/run_open_vlm_smoke.py \
   --normalize-answer \
   --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
 ```
+
+Observed full TEST-4000 result:
+
+- Overall MEAN: `0.188250`
+- Pre-evaluation SCORE: `0.281741`
+- Processed: `4000`
+- Failures: `0`
+- Summary CSV:
+  `/home/Jiali_Wang/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt/medgemma_4b/summary.csv`
+
+Next workflow direction:
+
+- Treat MedGemma-4B full TEST result as the pre-training baseline.
+- Prepare a MedGemma LoRA/SFT training script using the existing clip-valid
+  official-TRAIN-derived JSONL files.
+- Compare trained MedGemma against:
+  - MedGemma prompt-only full baseline overall `0.188250`
+  - Qwen3-VL overlay full baseline overall `0.207500`
+  - Qwen3-VL LoRA full result overall `0.279000`
 
 If evaluator memory becomes an issue, first validate generation only:
 

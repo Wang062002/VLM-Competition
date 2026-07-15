@@ -60,6 +60,7 @@ full LoRA 训练补充信息：
 | `official-overlay-100` | TEST | 100 | timestamp overlay | Qwen3-VL | 0.210000 | 0.200886 | 小样本 overlay baseline |
 | `official-raw-full-4000` | TEST | 4000 | raw video | Qwen3-VL | 0.194250 | 0.364083 | full raw baseline |
 | `official-overlay-full-4000` | TEST | 4000 | timestamp overlay | Qwen3-VL | 0.207500 | 0.372647 | full overlay baseline |
+| `open-vlm-medgemma-8frames-full-4000` | TEST | 4000 | timestamp overlay / 8 frames / class prompt | MedGemma-4B | 0.188250 | 0.281741 | MedGemma 未训练 full baseline，0 failures |
 | `qwen3vl-4b-sft-valid5959-e1-overlay-test-100` | TEST | 100 | timestamp overlay | Qwen3-VL + LoRA | 0.350000 | 0.328905 | LoRA 小样本 TEST 明显提升 |
 | `qwen3vl-4b-sft-valid5959-e1-overlay-test-full` | TEST | 4000 | timestamp overlay | Qwen3-VL + LoRA | 0.279000 | 0.402794 | LoRA full TEST 确认提升 |
 
@@ -69,6 +70,7 @@ full LoRA 训练补充信息：
 |---|---|---|---:|---:|---:|---:|---:|---:|---:|
 | Raw baseline | raw video | Qwen3-VL | 0.194250 | 0.364083 | 0.007741 | 0.003199 | 0.302873 | 0.153572 | 0.179436 |
 | Overlay baseline | timestamp overlay | Qwen3-VL | 0.207500 | 0.372647 | 0.033822 | 0.029623 | 0.308308 | 0.149298 | 0.175904 |
+| MedGemma prompt-only baseline | timestamp overlay / 8 frames / class prompt | MedGemma-4B | 0.188250 | 0.281741 | 0.051561 | 0.049098 | 0.359666 | 0.227830 | 0.186662 |
 | LoRA-SFT | timestamp overlay | Qwen3-VL + LoRA | 0.279000 | 0.402794 | 0.071740 | 0.064236 | 0.472173 | 0.469223 | 0.437977 |
 
 ## 6. LoRA-SFT 相对 overlay baseline 的 full TEST 提升
@@ -98,7 +100,13 @@ full LoRA 训练补充信息：
    - `object_recognition`
 4. temporal grounding 虽然提升，但仍然是最主要瓶颈。
 5. `multiple_choice` 在 LoRA-SFT 后略有下降，需要后续做误差分析。
-6. 当前最值得推进的下一步不是继续盲目训练，而是做 full TEST error analysis：
+6. MedGemma-4B 的 full prompt-only baseline 低于 Qwen3-VL overlay baseline，
+   说明 TEST-100 结果存在样本偏差；但 MedGemma 在 `object_recognition`、
+   `object_identification`、`fo_class` 上强于 Qwen overlay，因此仍适合作为下一
+   个 LoRA/SFT 训练底座。
+7. 当前最值得推进的下一步不是继续盲目训练，而是把 MedGemma 的训练前 baseline
+   与后续 LoRA/SFT 结果进行严格 before/after 对比，同时保留 full TEST error
+   analysis：
    - baseline wrong / LoRA correct
    - baseline correct / LoRA wrong
    - temporal grounding failure cases

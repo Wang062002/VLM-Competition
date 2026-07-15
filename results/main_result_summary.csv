@@ -1,4 +1,5 @@
 setting,split,samples,input,model,overall_mean,pre_evaluation_score,temporal_grounding,time,object_recognition,object_identification,fo_class,notes
 Raw baseline,TEST,4000,raw video,Qwen3-VL-4B-Instruct,0.194250,0.364083,0.007741,0.003199,0.302873,0.153572,0.179436,Reproduced raw-video official-style baseline.
 Overlay baseline,TEST,4000,timestamp overlay,Qwen3-VL-4B-Instruct,0.207500,0.372647,0.033822,0.029623,0.308308,0.149298,0.175904,Reproduced overlay official-style baseline.
+Open VLM baseline,TEST,4000,timestamp overlay / 8 frames / class-constrained prompt,MedGemma-4B-IT,0.188250,0.281741,0.051561,0.049098,0.359666,0.227830,0.186662,Prompt-only MedGemma full TEST baseline before any FOCUS fine-tuning.
 LoRA-SFT,TEST,4000,timestamp overlay,Qwen3-VL-4B-Instruct + LoRA qwen3vl-4b-sft-valid5959-e1,0.279000,0.402794,0.071740,0.064236,0.472173,0.469223,0.437977,First full clip-valid LoRA-SFT adapter.

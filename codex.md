@@ -508,3 +508,21 @@ python scripts/run_open_vlm_smoke.py \
   --normalize-answer \
   --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
 ```
+
+That full run has now completed:
+
+- Overall MEAN: `0.188250`
+- Pre-evaluation SCORE: `0.281741`
+- Processed: `4000`
+- Failures: `0`
+- Output:
+  `/home/Jiali_Wang/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt/medgemma_4b`
+
+Interpretation:
+
+- MedGemma-4B is not the strongest full prompt-only baseline by overall score;
+  it is below Qwen3-VL overlay full overall `0.207500`.
+- It is still selected as the next training target because it is medically
+  oriented and has promising object-recognition behavior.
+- Next stage: implement MedGemma-4B LoRA/SFT training on the existing
+  clip-valid official-TRAIN-derived JSONL files.
