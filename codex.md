@@ -470,3 +470,41 @@ These details were useful during setup but are no longer central:
   this was not a loop.
 - Computer-use can inspect VS Code UI, but terminal copy/paste remains more
   reliable than automating terminal input through the GUI.
+
+## Current Open VLM Baseline State
+
+As of 2026-07-15, five open VLM candidates were downloaded and smoke-tested:
+
+- MiniCPM-V-4_5
+- LLaVA-OneVision-Qwen2-7B
+- InternVL3.5-8B
+- Gemma-3-12B-IT
+- MedGemma-4B-IT
+
+Key TEST-100 class-constrained results:
+
+- Qwen3-VL LoRA TEST-100 remains strongest overall: `0.350000`.
+- MedGemma-4B, 4 frames: overall `0.270000`.
+- MedGemma-4B, 8 frames: overall `0.290000`; temporal/time improved from
+  `0.021739` to `0.130435`.
+- LLaVA-OneVision, 4 frames: overall `0.260000`.
+- LLaVA-OneVision, 8 frames: overall `0.240000`; `fo_class` improved from
+  `0.391304` to `0.434783`.
+
+Current next recommended remote run:
+
+```bash
+source ~/tools/miniconda3/etc/profile.d/conda.sh
+conda activate orena-focus
+cd ~/workspace/VLM-Competition
+
+python scripts/run_open_vlm_smoke.py \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval none \
+  --frames-per-clip 8 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
+```

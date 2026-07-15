@@ -304,6 +304,7 @@ Interpretation:
 - `results/open_vlm_smoke_test3_prompt_comparison.csv`
 - `results/open_vlm_test30_prompt_comparison.csv`
 - `results/open_vlm_test100_class_prompt_selected.csv`
+- `results/open_vlm_test100_frame_ablation.csv`
 
 ## Open VLM Smoke Prompt Ablation
 
@@ -410,3 +411,31 @@ Next recommended step:
 - Prioritize MedGemma and LLaVA for either:
   - TEST-100 with more frames, e.g. `--frames-per-clip 8`; or
   - full TEST-4000 as the current best prompt-only open-VLM baselines.
+
+## Open VLM TEST-100 Frame Ablation
+
+Date: `2026-07-15`
+
+Setup:
+
+- Official HeiCo SEGMENT TEST
+- First `100` samples
+- Prompt: class-constrained
+- Answer normalization: enabled
+- Compared `4` vs `8` sampled RGB frames per clip for LLaVA and MedGemma.
+
+Results:
+
+| Model | Frames | Overall | Pre-eval | object_recognition | temporal_grounding | fo_class | time |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| LLaVA-OneVision-7B | 4 | 0.260000 | 0.242351 | 0.462963 | 0.021739 | 0.391304 | 0.021739 |
+| LLaVA-OneVision-7B | 8 | 0.240000 | 0.222222 | 0.444444 | 0.000000 | 0.434783 | 0.000000 |
+| MedGemma-4B | 4 | 0.270000 | 0.251610 | 0.481481 | 0.021739 | 0.260870 | 0.021739 |
+| MedGemma-4B | 8 | 0.290000 | 0.278180 | 0.425926 | 0.130435 | 0.260870 | 0.130435 |
+
+Interpretation:
+
+- MedGemma benefits from 8 frames overall and in temporal/time metrics.
+- LLaVA does not benefit overall from 8 frames, although `fo_class` improves.
+- Current best prompt-only open-VLM setting: MedGemma 8-frame class-constrained.
+- Current strongest `fo_class`: LLaVA 8-frame, but lower overall.

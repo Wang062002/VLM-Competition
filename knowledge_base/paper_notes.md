@@ -178,6 +178,11 @@ For a fuller table, see:
   with class-constrained prompt and 4-frame input, exceeding the reproduced
   Qwen3-VL overlay-100 baseline `0.210000` but remaining below Qwen3-VL LoRA
   TEST-100 `0.350000`.
+- TEST-100 frame ablation:
+  MedGemma improves from `0.270000` to `0.290000` when increasing sampled frames
+  from 4 to 8, mainly because temporal/time accuracy improves from `0.021739`
+  to `0.130435`. LLaVA decreases overall from `0.260000` to `0.240000`, but
+  `fo_class` improves from `0.391304` to `0.434783`.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

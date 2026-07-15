@@ -595,3 +595,49 @@ Decision:
 Structured output:
 
 - `results/open_vlm_test100_class_prompt_selected.csv`
+
+## Open VLM TEST-100 Frame Ablation
+
+Date: `2026-07-15`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: first `100`
+- Prompt: `class_constrained`
+- Answer normalization: enabled
+- Compared inputs:
+  - `4` sampled RGB frames per clip
+  - `8` sampled RGB frames per clip
+- Models: LLaVA-OneVision-7B, MedGemma-4B
+
+Results:
+
+| Model | Frames | Overall | Pre-eval | object_recognition | temporal_grounding | fo_class | time |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| LLaVA-OneVision-7B | 4 | 0.260000 | 0.242351 | 0.462963 | 0.021739 | 0.391304 | 0.021739 |
+| LLaVA-OneVision-7B | 8 | 0.240000 | 0.222222 | 0.444444 | 0.000000 | 0.434783 | 0.000000 |
+| MedGemma-4B | 4 | 0.270000 | 0.251610 | 0.481481 | 0.021739 | 0.260870 | 0.021739 |
+| MedGemma-4B | 8 | 0.290000 | 0.278180 | 0.425926 | 0.130435 | 0.260870 | 0.130435 |
+
+Interpretation:
+
+- Increasing from 4 to 8 frames is not uniformly beneficial.
+- LLaVA's overall score decreases from `0.260000` to `0.240000`, although
+  `fo_class` improves slightly from `0.391304` to `0.434783`.
+- MedGemma's overall score improves from `0.270000` to `0.290000`, driven
+  largely by temporal/time improvement from `0.021739` to `0.130435`.
+- MedGemma 8-frame is now the best prompt-only open VLM TEST-100 result in this
+  project so far, but still below Qwen3-VL LoRA TEST-100 overall `0.350000`.
+
+Decision:
+
+- Use MedGemma 8-frame as the strongest current prompt-only open-VLM setting.
+- Keep LLaVA 4-frame as the stronger overall LLaVA setting, while noting that
+  8-frame improves `fo_class`.
+- Before full TEST-4000, consider whether the goal is best overall prompt-only
+  baseline (MedGemma 8-frame) or strongest `fo_class` behavior (LLaVA 8-frame).
+
+Structured output:
+
+- `results/open_vlm_test100_frame_ablation.csv`

@@ -65,6 +65,7 @@ Current open-VLM TEST-100 comparison table:
 
 ```text
 results/open_vlm_test100_class_prompt_selected.csv
+results/open_vlm_test100_frame_ablation.csv
 ```
 
 Use it as a small-scale model-selection table. Full-paper performance claims

@@ -444,6 +444,26 @@ Rationale:
 - An 8-frame comparison checks whether the 4-frame sampling bottleneck is
   limiting recognition before deciding on full TEST-4000.
 
+Current frame-ablation decision:
+
+- MedGemma: use 8 frames for the strongest overall prompt-only setting.
+- LLaVA: keep 4 frames for stronger overall, but note 8 frames has stronger
+  `fo_class`.
+
+Optional full TEST-4000 for current strongest prompt-only open VLM:
+
+```bash
+python scripts/run_open_vlm_smoke.py \
+  --model medgemma_4b \
+  --model-dir ~/workspace/vlm-models \
+  --root-dir /home/Jiali_Wang/data/focus \
+  --num-eval none \
+  --frames-per-clip 8 \
+  --prompt-mode class_constrained \
+  --normalize-answer \
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
+```
+
 If evaluator memory becomes an issue, first validate generation only:
 
 ```bash

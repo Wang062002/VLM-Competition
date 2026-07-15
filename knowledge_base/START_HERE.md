@@ -16,13 +16,18 @@ Completed:
 - Qwen3-VL LoRA-SFT 32-sample smoke test
 - Qwen3-VL LoRA-SFT 512-sample filtered medium test
 - Qwen3-VL full clip-valid LoRA-SFT run
+- first-batch open-source VLM download and integrity check
+- open-VLM TEST-3, TEST-30, TEST-100 prompt ablations
+- LLaVA / MedGemma TEST-100 4-frame vs 8-frame comparison
 
 Current next step:
 
-- download first-batch open-source VLM candidates on the remote server
-- run smoke / TEST-100 baselines for candidate models
-- compare candidate zero-shot baselines against Qwen3-VL overlay and current
-  Qwen3-VL + LoRA results
+- run full TEST-4000 for the strongest prompt-only open VLM setting so far:
+  MedGemma-4B with class-constrained prompt, answer normalization, and 8 sampled
+  frames per clip
+- keep Qwen3-VL + LoRA as the current strongest trained baseline
+- use open-VLM TEST-100 results as model-selection evidence, not final
+  performance claims
 
 ## Must-Preserve Rules
 
@@ -56,6 +61,10 @@ Current next step:
 - `results/all_data_comparison_table.csv`: machine-readable all-data comparison
   table
 - `results/main_result_summary.csv`: main paper-ready result table
+- `results/open_vlm_test100_class_prompt_selected.csv`: TEST-100 class-prompt
+  open-VLM comparison
+- `results/open_vlm_test100_frame_ablation.csv`: TEST-100 4-frame vs 8-frame
+  ablation for LLaVA and MedGemma
 - `results/lora_full_test_vs_overlay_baseline.csv`: full TEST LoRA-vs-overlay
   delta table
 - `results/evaluator_style_full_4000_summaries.csv`: evaluator-style long table
@@ -152,51 +161,40 @@ LoRA-SFT full TEST:
   - `temporal_grounding`: `0.033822 -> 0.071740`
   - `time`: `0.029623 -> 0.064236`
 
+Open VLM TEST-100 class-constrained, 4 frames:
+
+- MedGemma-4B overall: `0.270000`
+- LLaVA-OneVision-7B overall: `0.260000`
+- MiniCPM-V-4_5 overall: `0.150000`
+- InternVL3.5-8B overall: `0.150000`
+
+Open VLM TEST-100 frame ablation:
+
+- LLaVA-OneVision: `4` frames overall `0.260000`; `8` frames overall
+  `0.240000`
+- LLaVA `fo_class`: `0.391304 -> 0.434783` when increasing `4 -> 8` frames
+- MedGemma: `4` frames overall `0.270000`; `8` frames overall `0.290000`
+- MedGemma temporal/time: `0.021739 -> 0.130435` when increasing `4 -> 8`
+  frames
+- Current best prompt-only open VLM setting: MedGemma-4B, 8 frames,
+  class-constrained prompt, answer normalization
+
 ## Current Recommended Remote Command
 
-Download first-batch open-source VLM candidates:
+Run the current strongest prompt-only open VLM on full TEST-4000:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-python -m py_compile scripts/download_vlm_candidates.py
-
-python scripts/download_vlm_candidates.py \
-  --config configs/vlm_candidate_models.csv \
-  --output-dir ~/workspace/vlm-models \
-  --continue-on-error
-
-python scripts/check_vlm_downloads.py \
-  --model-dir ~/workspace/vlm-models \
-  --json-output ~/workspace/focus-runs/open-vlm-download-check.json
-
 python scripts/run_open_vlm_smoke.py \
-  --model minicpm_v_4_5 \
-  --model llava_onevision_7b \
-  --model internvl3_5_8b \
-  --model gemma3_12b \
   --model medgemma_4b \
   --model-dir ~/workspace/vlm-models \
   --root-dir /home/Jiali_Wang/data/focus \
-  --num-eval 3 \
-  --frames-per-clip 4 \
-  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3 \
-  --continue-on-error
-
-python scripts/run_open_vlm_smoke.py \
-  --model minicpm_v_4_5 \
-  --model llava_onevision_7b \
-  --model internvl3_5_8b \
-  --model gemma3_12b \
-  --model medgemma_4b \
-  --model-dir ~/workspace/vlm-models \
-  --root-dir /home/Jiali_Wang/data/focus \
-  --num-eval 3 \
-  --frames-per-clip 4 \
+  --num-eval none \
+  --frames-per-clip 8 \
   --prompt-mode class_constrained \
   --normalize-answer \
-  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test3-class-prompt \
-  --continue-on-error
+  --output-dir ~/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt
 ```
