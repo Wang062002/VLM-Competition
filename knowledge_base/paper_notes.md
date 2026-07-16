@@ -192,6 +192,14 @@ For a fuller table, see:
   `object_recognition` (`0.359666` vs `0.308308`), `object_identification`
   (`0.227830` vs `0.149298`), and `fo_class` (`0.186662` vs `0.175904`), which
   supports using it as the next LoRA/SFT training target.
+- LLaVA-OneVision full TEST-4000 prompt-only baseline:
+  LLaVA-OneVision-7B with 4 frames, class-constrained prompt, and answer
+  normalization reaches overall `0.155500` and pre-evaluation `0.249757` with
+  `0` failures. It is weaker than MedGemma overall (`0.188250`) but stronger on
+  `object_identification` (`0.279323` vs `0.227830`) and `fo_class`
+  (`0.230758` vs `0.186662`). This supports keeping LLaVA as a secondary
+  object-class specialist candidate while prioritizing MedGemma for first
+  LoRA/SFT training.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

@@ -20,6 +20,7 @@ Completed:
 - open-VLM TEST-3, TEST-30, TEST-100 prompt ablations
 - LLaVA / MedGemma TEST-100 4-frame vs 8-frame comparison
 - MedGemma-4B 8-frame prompt-only full TEST-4000 baseline
+- LLaVA-OneVision 4-frame prompt-only full TEST-4000 baseline
 
 Current next step:
 
@@ -67,6 +68,8 @@ Current next step:
   ablation for LLaVA and MedGemma
 - `results/open_vlm_medgemma_8frames_full4000_summary.csv`: evaluator-style
   full TEST-4000 MedGemma prompt-only summary
+- `results/open_vlm_llava_onevision_4frames_full4000_summary.csv`:
+  evaluator-style full TEST-4000 LLaVA prompt-only summary
 - `results/lora_full_test_vs_overlay_baseline.csv`: full TEST LoRA-vs-overlay
   delta table
 - `results/evaluator_style_full_4000_summaries.csv`: evaluator-style long table
@@ -196,6 +199,23 @@ MedGemma-4B full TEST-4000 prompt-only baseline:
 - failures: `0`
 - comparison: below Qwen3-VL overlay full overall `0.207500`, but stronger than
   Qwen overlay on object-recognition-related metrics
+
+LLaVA-OneVision full TEST-4000 prompt-only baseline:
+
+- official TEST samples: `4000`
+- input: timestamp overlay, `4` sampled frames per clip
+- prompt: class-constrained, normalized answers
+- overall MEAN: `0.155500`
+- pre-evaluation SCORE: `0.249757`
+- object_recognition: `0.331625`
+- object_identification: `0.279323`
+- fo_class: `0.230758`
+- temporal_grounding: `0.015283`
+- time: `0.006235`
+- processed: `4000`
+- failures: `0`
+- comparison: lower than MedGemma overall, but stronger on
+  `object_identification` and `fo_class`
 
 ## Current Recommended Remote Command
 

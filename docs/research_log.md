@@ -697,3 +697,56 @@ Interpretation:
 Structured output:
 
 - `results/open_vlm_medgemma_8frames_full4000_summary.csv`
+
+## LLaVA-OneVision Full TEST-4000 Prompt-Only Baseline
+
+Date: `2026-07-16`
+
+Setup:
+
+- Dataset: official HeiCo SEGMENT TEST
+- Samples: full `4000`
+- Model: `llava-hf/llava-onevision-qwen2-7b-ov-hf`
+- Input: timestamp-overlay clips
+- Frames per clip: `4`
+- Prompt: `class_constrained`
+- Answer normalization: enabled
+- Fine-tuning: none
+
+Result:
+
+| Setting | Overall | Pre-eval | object_recognition | temporal_grounding | object_identification | fo_class | multiple_choice | open_ended | time |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| LLaVA-OneVision 4-frame prompt-only | 0.155500 | 0.249757 | 0.331625 | 0.015283 | 0.279323 | 0.230758 | 0.375295 | 0.873939 | 0.006235 |
+
+Run status:
+
+- Processed: `4000`
+- Failures: `0`
+- Output directory:
+  `/home/Jiali_Wang/workspace/focus-runs/open-vlm-smoke/test4000-llava-4frames-class-prompt/llava_onevision_7b`
+
+Comparison:
+
+- LLaVA full TEST-4000 prompt-only overall `0.155500` is lower than MedGemma
+  full prompt-only overall `0.188250`.
+- LLaVA is also below the reproduced Qwen3-VL overlay full baseline overall
+  `0.207500`.
+- LLaVA is stronger than MedGemma on `object_identification` (`0.279323` vs
+  `0.227830`) and `fo_class` (`0.230758` vs `0.186662`).
+- LLaVA is much weaker on temporal/time and number-format questions, with
+  `time` `0.006235` and `number` `0.000000`.
+
+Interpretation:
+
+- The full TEST result confirms that TEST-100 was not reliable enough to rank
+  open VLM bases globally.
+- LLaVA should remain a secondary candidate or specialist route for foreign
+  object class recognition.
+- MedGemma remains the preferred first training target because its full overall,
+  pre-evaluation score, object-recognition group, and temporal/time metrics are
+  all stronger than LLaVA under the current settings.
+
+Structured output:
+
+- `results/open_vlm_llava_onevision_4frames_full4000_summary.csv`

@@ -480,8 +480,19 @@ Next workflow direction:
   official-TRAIN-derived JSONL files.
 - Compare trained MedGemma against:
   - MedGemma prompt-only full baseline overall `0.188250`
+  - LLaVA prompt-only full baseline overall `0.155500`
   - Qwen3-VL overlay full baseline overall `0.207500`
   - Qwen3-VL LoRA full result overall `0.279000`
+
+LLaVA full TEST-4000 check:
+
+- Completed with `4` frames, class-constrained prompt, and answer normalization.
+- Overall MEAN: `0.155500`
+- Pre-evaluation SCORE: `0.249757`
+- Processed: `4000`
+- Failures: `0`
+- Decision: keep as secondary object/fo_class specialist candidate; do not
+  replace MedGemma as first training target.
 
 If evaluator memory becomes an issue, first validate generation only:
 

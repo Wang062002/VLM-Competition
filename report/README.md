@@ -74,6 +74,7 @@ still require either larger TEST subsets or full TEST-4000.
 Current open-VLM full TEST-4000 baseline table:
 
 ```text
+results/open_vlm_llava_onevision_4frames_full4000_summary.csv
 results/open_vlm_medgemma_8frames_full4000_summary.csv
 ```
 

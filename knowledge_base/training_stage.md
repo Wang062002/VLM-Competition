@@ -199,3 +199,15 @@ Training goal:
 
 - establish whether MedGemma's medical prior plus LoRA/SFT can outperform its
   prompt-only baseline and approach or exceed the Qwen3-VL LoRA reference.
+
+Secondary candidate:
+
+- LLaVA-OneVision-7B full prompt-only baseline:
+  - overall MEAN: `0.155500`
+  - pre-evaluation SCORE: `0.249757`
+  - object_identification: `0.279323`
+  - fo_class: `0.230758`
+- LLaVA is weaker than MedGemma overall, but stronger on class/object
+  identification metrics.
+- Keep LLaVA as a second training candidate or specialist route if MedGemma
+  training fails to improve `fo_class` sufficiently.

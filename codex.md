@@ -526,3 +526,20 @@ Interpretation:
   oriented and has promising object-recognition behavior.
 - Next stage: implement MedGemma-4B LoRA/SFT training on the existing
   clip-valid official-TRAIN-derived JSONL files.
+
+LLaVA-OneVision-7B full prompt-only baseline also completed:
+
+- Setting: timestamp overlay, `4` frames, class-constrained prompt, normalized
+  answers
+- Overall MEAN: `0.155500`
+- Pre-evaluation SCORE: `0.249757`
+- Processed: `4000`
+- Failures: `0`
+- It is weaker than MedGemma overall, but stronger on:
+  - object_identification: `0.279323` vs MedGemma `0.227830`
+  - fo_class: `0.230758` vs MedGemma `0.186662`
+
+Conclusion:
+
+- MedGemma remains first LoRA/SFT training target.
+- LLaVA remains a secondary candidate or class-recognition specialist route.

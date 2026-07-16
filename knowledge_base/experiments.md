@@ -485,3 +485,46 @@ Comparison and decision:
 Structured output:
 
 - `results/open_vlm_medgemma_8frames_full4000_summary.csv`
+
+## LLaVA-OneVision Full TEST-4000 Prompt-Only Baseline
+
+Date: `2026-07-16`
+
+Setup:
+
+- Official HeiCo SEGMENT TEST
+- Full `4000` samples
+- Model: `llava-hf/llava-onevision-qwen2-7b-ov-hf`
+- Timestamp overlay
+- `4` sampled RGB frames per clip
+- Class-constrained prompt
+- Answer normalization enabled
+- No fine-tuning
+
+Results:
+
+| Metric | Value |
+|---|---:|
+| Overall MEAN | 0.155500 |
+| Pre-evaluation SCORE | 0.249757 |
+| object_recognition | 0.331625 |
+| temporal_grounding | 0.015283 |
+| object_identification | 0.279323 |
+| fo_class | 0.230758 |
+| multiple_choice | 0.375295 |
+| open_ended | 0.873939 |
+| time | 0.006235 |
+| processed | 4000 |
+| failures | 0 |
+
+Comparison and decision:
+
+- LLaVA full prompt-only overall `0.155500` is below MedGemma full prompt-only
+  overall `0.188250`.
+- LLaVA is stronger than MedGemma on `object_identification` and `fo_class`.
+- LLaVA remains useful as a secondary/specialist candidate for object class
+  recognition, but it does not replace MedGemma as the first training target.
+
+Structured output:
+
+- `results/open_vlm_llava_onevision_4frames_full4000_summary.csv`
