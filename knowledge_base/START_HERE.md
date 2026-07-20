@@ -24,11 +24,12 @@ Completed:
 
 Current next step:
 
-- prepare MedGemma-4B LoRA/SFT training using the existing official-TRAIN-derived
-  clip-valid split
-- treat MedGemma-4B 8-frame full TEST-4000 prompt-only result as the
-  pre-training baseline
-- keep Qwen3-VL + LoRA as the current strongest trained reference result
+- prioritize Qwen3-VL as the main training line because full evaluations show
+  Qwen remains stronger overall than the open-VLM candidates
+- use MedGemma/LLaVA full TEST results as recorded baseline evidence, not the
+  next primary training target
+- migrate large data to `/mnt/data/jiali_wang` and clean no-longer-needed
+  open-VLM candidate model snapshots from the main disk
 
 ## Must-Preserve Rules
 
@@ -53,6 +54,8 @@ Current next step:
 - `knowledge_base/maintenance_protocol.md`: rules for keeping memory, paper
   notes, workflows, and GitHub versions updated after each progress step
 - `knowledge_base/sync_commands.md`: local-to-remote upload commands
+- `docs/storage_cleanup_plan.md`: `/mnt/data/jiali_wang` migration and
+  open-VLM model cleanup workflow
 - `docs/research_log.md`: longer research log
 - `docs/lora_sft_training_plan.md`: detailed LoRA-SFT plan
 - `docs/script_workflow_explained.md`: explanation of each script and what it
@@ -217,17 +220,25 @@ LLaVA-OneVision full TEST-4000 prompt-only baseline:
 - comparison: lower than MedGemma overall, but stronger on
   `object_identification` and `fo_class`
 
+Storage decision:
+
+- New large disk mount: `/mnt/data`
+- User project directory to create/use: `/mnt/data/jiali_wang`
+- Prefer future large data/cache/run storage under `/mnt/data/jiali_wang`
+- Open-VLM candidate snapshots can be removed after recorded full baseline
+  results, because Qwen is the stronger overall mainline.
+
 ## Current Recommended Remote Command
 
-Start the next stage by preparing MedGemma-4B LoRA/SFT training:
+Start the next stage by creating the new large-storage directory and checking
+what can be migrated or removed:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
 
-# Next implementation target:
-# create / validate a MedGemma LoRA-SFT training script that consumes:
-#   ~/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.clip_valid.jsonl
-#   ~/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.clip_valid.jsonl
+mkdir -p /mnt/data/jiali_wang/focus /mnt/data/jiali_wang/focus-runs /mnt/data/jiali_wang/hf-cache /mnt/data/jiali_wang/tmp
+df -h
+du -sh ~/data/focus ~/workspace/vlm-models ~/workspace/focus-runs ~/.cache/huggingface 2>/dev/null
 ```

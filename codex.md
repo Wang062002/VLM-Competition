@@ -541,5 +541,20 @@ LLaVA-OneVision-7B full prompt-only baseline also completed:
 
 Conclusion:
 
-- MedGemma remains first LoRA/SFT training target.
-- LLaVA remains a secondary candidate or class-recognition specialist route.
+- Qwen remains the primary LoRA/SFT direction because it is stronger overall:
+  Qwen overlay full `0.207500`, Qwen LoRA full `0.279000`, MedGemma prompt-only
+  full `0.188250`, LLaVA prompt-only full `0.155500`.
+- MedGemma and LLaVA remain recorded open-VLM baselines, but no longer drive the
+  next training step.
+- Large open-VLM candidate snapshots can be deleted from the main disk after
+  preserving results.
+
+Storage update:
+
+- New large disk mount: `/mnt/data`
+- Project directory to create/use: `/mnt/data/jiali_wang`
+- Prefer future large data, caches, and temporary files under:
+  - `/mnt/data/jiali_wang/focus`
+  - `/mnt/data/jiali_wang/focus-runs`
+  - `/mnt/data/jiali_wang/hf-cache`
+  - `/mnt/data/jiali_wang/tmp`

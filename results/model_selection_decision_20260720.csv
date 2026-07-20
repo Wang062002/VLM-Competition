@@ -1,0 +1,5 @@
+model_or_route,setting,full_test_overall,full_test_pre_eval,status,decision_reason
+Qwen3-VL overlay baseline,timestamp overlay official-style baseline,0.207500,0.372647,baseline_reference,Stronger than prompt-only MedGemma and LLaVA on overall full TEST.
+Qwen3-VL LoRA-SFT,timestamp overlay trained LoRA adapter,0.279000,0.402794,primary_route,Best observed full TEST result; continue Qwen error analysis and second-round LoRA/SFT.
+MedGemma-4B prompt-only,timestamp overlay / 8 frames / class-constrained prompt,0.188250,0.281741,recorded_open_vlm_baseline,Lower than Qwen overlay overall; keep as evidence and possible future secondary route.
+LLaVA-OneVision prompt-only,timestamp overlay / 4 frames / class-constrained prompt,0.155500,0.249757,recorded_open_vlm_baseline,Lower than Qwen and MedGemma overall; useful only as possible object/fo_class specialist evidence.

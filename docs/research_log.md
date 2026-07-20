@@ -750,3 +750,43 @@ Interpretation:
 Structured output:
 
 - `results/open_vlm_llava_onevision_4frames_full4000_summary.csv`
+
+## Model Selection And Storage Cleanup Decision
+
+Date: `2026-07-20`
+
+New infrastructure:
+
+- A new disk is mounted at `/mnt/data`.
+- Large project files should use `/mnt/data/jiali_wang`.
+- Recommended large-storage layout:
+  - `/mnt/data/jiali_wang/focus`
+  - `/mnt/data/jiali_wang/focus-runs`
+  - `/mnt/data/jiali_wang/hf-cache`
+  - `/mnt/data/jiali_wang/tmp`
+
+Model selection:
+
+| Route | Full TEST overall | Pre-eval | Status |
+|---|---:|---:|---|
+| Qwen3-VL overlay baseline | 0.207500 | 0.372647 | baseline reference |
+| Qwen3-VL LoRA-SFT | 0.279000 | 0.402794 | primary route |
+| MedGemma-4B prompt-only | 0.188250 | 0.281741 | recorded open-VLM baseline |
+| LLaVA-OneVision prompt-only | 0.155500 | 0.249757 | recorded open-VLM baseline |
+
+Decision:
+
+- Qwen remains the main model route because both open-VLM full baselines are
+  below the reproduced Qwen overlay full baseline, while Qwen LoRA is the best
+  full TEST result so far.
+- MedGemma and LLaVA are retained as comparison baselines and possible future
+  specialist routes, but they are no longer the immediate training priority.
+- Open-VLM model snapshots under `~/workspace/vlm-models` can be deleted after
+  preserving recorded metrics.
+- Future large downloads, caches, datasets, and temporary files should go under
+  `/mnt/data/jiali_wang`.
+
+Structured output:
+
+- `results/model_selection_decision_20260720.csv`
+- `docs/storage_cleanup_plan.md`

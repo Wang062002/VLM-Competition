@@ -197,9 +197,18 @@ For a fuller table, see:
   normalization reaches overall `0.155500` and pre-evaluation `0.249757` with
   `0` failures. It is weaker than MedGemma overall (`0.188250`) but stronger on
   `object_identification` (`0.279323` vs `0.227830`) and `fo_class`
-  (`0.230758` vs `0.186662`). This supports keeping LLaVA as a secondary
-  object-class specialist candidate while prioritizing MedGemma for first
-  LoRA/SFT training.
+  (`0.230758` vs `0.186662`).
+- Model selection decision:
+  Full TEST-4000 shows that both MedGemma and LLaVA prompt-only baselines are
+  below Qwen3-VL overlay full overall `0.207500`, while Qwen3-VL LoRA reaches
+  `0.279000`. Therefore the main training line should remain Qwen. MedGemma and
+  LLaVA results are still useful as evidence that medical or open-VLM priors do
+  not automatically outperform the task-aligned Qwen baseline without FOCUS
+  fine-tuning.
+- Storage note:
+  Large future data/cache/run artifacts should use `/mnt/data/jiali_wang`; open
+  VLM model snapshots can be deleted from the main disk after their recorded
+  results are preserved.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

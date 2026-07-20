@@ -34,10 +34,24 @@ Do not store or repeat the server password.
 - Local project copy on remote: `/home/Jiali_Wang/workspace/VLM-Competition`
 - Conda install: `/home/Jiali_Wang/tools/miniconda3`
 - Conda env: `orena-focus`
-- Data root: `/home/Jiali_Wang/data/focus`
-- Raw videos: `/home/Jiali_Wang/data/focus/heico/videos`
-- Overlay videos: `/home/Jiali_Wang/data/focus/heico/overlayed`
+- Preferred large-storage root: `/mnt/data/jiali_wang`
+- Preferred future data root: `/mnt/data/jiali_wang/focus`
+- Legacy data root: `/home/Jiali_Wang/data/focus`
+- Raw videos: `/home/Jiali_Wang/data/focus/heico/videos` or
+  `/mnt/data/jiali_wang/focus/heico/videos` after migration
+- Overlay videos: `/home/Jiali_Wang/data/focus/heico/overlayed` or
+  `/mnt/data/jiali_wang/focus/heico/overlayed` after migration
 - Experiment outputs: `/home/Jiali_Wang/workspace/focus-runs`
+
+Storage policy:
+
+- `/mnt/data` has a newly mounted disk. Create and use
+  `/mnt/data/jiali_wang` before storing large files.
+- Avoid placing large datasets, model snapshots, Hugging Face cache, or future
+  run artifacts on the main system disk.
+- Open-VLM candidate snapshots under `~/workspace/vlm-models` may be removed
+  after their baseline metrics have been recorded, because Qwen remains the
+  stronger mainline model.
 
 ## Environment
 
@@ -65,4 +79,3 @@ conda activate orena-focus
   - `0027 - Heico - Sigma - 8.avi`
   - `0028 - Heico - Sigma - 9.avi`
 - Lesson: validate overlay duration coverage against QA metadata.
-

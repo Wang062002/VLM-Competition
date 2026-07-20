@@ -473,16 +473,13 @@ Observed full TEST-4000 result:
 - Summary CSV:
   `/home/Jiali_Wang/workspace/focus-runs/open-vlm-smoke/test4000-medgemma-8frames-class-prompt/medgemma_4b/summary.csv`
 
-Next workflow direction:
+Model-selection decision after full baselines:
 
-- Treat MedGemma-4B full TEST result as the pre-training baseline.
-- Prepare a MedGemma LoRA/SFT training script using the existing clip-valid
-  official-TRAIN-derived JSONL files.
-- Compare trained MedGemma against:
-  - MedGemma prompt-only full baseline overall `0.188250`
-  - LLaVA prompt-only full baseline overall `0.155500`
-  - Qwen3-VL overlay full baseline overall `0.207500`
-  - Qwen3-VL LoRA full result overall `0.279000`
+- Qwen remains the strongest overall direction.
+- Open-VLM snapshots are no longer needed for immediate training and can be
+  removed after results are preserved.
+- Continue with Qwen error analysis and a second Qwen LoRA/SFT iteration before
+  investing more GPU time in MedGemma or LLaVA training.
 
 LLaVA full TEST-4000 check:
 
@@ -493,6 +490,75 @@ LLaVA full TEST-4000 check:
 - Failures: `0`
 - Decision: keep as secondary object/fo_class specialist candidate; do not
   replace MedGemma as first training target.
+
+## Storage Migration And Cleanup
+
+New large disk mount:
+
+```bash
+/mnt/data
+```
+
+Required user directory:
+
+```bash
+/mnt/data/jiali_wang
+```
+
+Create the storage layout:
+
+```bash
+mkdir -p /mnt/data/jiali_wang/focus
+mkdir -p /mnt/data/jiali_wang/focus-runs
+mkdir -p /mnt/data/jiali_wang/hf-cache
+mkdir -p /mnt/data/jiali_wang/tmp
+```
+
+Check large paths:
+
+```bash
+df -h
+du -sh ~/data/focus ~/workspace/vlm-models ~/workspace/focus-runs ~/.cache/huggingface 2>/dev/null
+```
+
+Move FOCUS data by copy-first migration:
+
+```bash
+rsync -aH --info=progress2 ~/data/focus/ /mnt/data/jiali_wang/focus/
+du -sh ~/data/focus /mnt/data/jiali_wang/focus
+find ~/data/focus/heico/overlayed -type f -name '*_overlay.mp4' | wc -l
+find /mnt/data/jiali_wang/focus/heico/overlayed -type f -name '*_overlay.mp4' | wc -l
+```
+
+After verifying that the new copy is complete:
+
+```bash
+mv ~/data/focus ~/data/focus.before_mnt_data_migration
+ln -s /mnt/data/jiali_wang/focus ~/data/focus
+```
+
+Only after one dataset load and one smoke run pass, remove the backup if the
+main disk needs space:
+
+```bash
+rm -rf ~/data/focus.before_mnt_data_migration
+```
+
+Clean open-VLM candidate snapshots:
+
+```bash
+du -sh ~/workspace/vlm-models
+find ~/workspace/vlm-models -maxdepth 1 -mindepth 1 -type d -print
+rm -rf ~/workspace/vlm-models
+```
+
+Do not remove:
+
+- `~/workspace/focus-runs`
+- `~/workspace/VLM-Competition`
+- `~/workspace/orena-focus`
+- Qwen cache/checkpoints needed for current experiments
+- LoRA adapters and summary CSVs
 
 If evaluator memory becomes an issue, first validate generation only:
 

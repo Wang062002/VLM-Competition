@@ -166,11 +166,16 @@ Full TEST result:
 
 ## Next Method Step
 
-Two method directions are now active:
+Full open-VLM baselines changed the method priority.
 
-1. Analyze Qwen3-VL LoRA full TEST errors and plan a second Qwen iteration.
-2. Train the selected open-VLM base model, MedGemma-4B, using the same
-   official-TRAIN-derived clip-valid split.
+Primary direction:
+
+- Analyze Qwen3-VL LoRA full TEST errors and plan a second Qwen iteration.
+- Qwen remains the strongest overall model family observed so far:
+  - Qwen overlay full baseline: `0.207500`
+  - Qwen LoRA full result: `0.279000`
+  - MedGemma full prompt-only: `0.188250`
+  - LLaVA full prompt-only: `0.155500`
 
 Qwen error-analysis tasks:
 
@@ -181,33 +186,22 @@ Qwen error-analysis tasks:
 - consider temporal-specific prompting, data balancing, or second-stage
   fine-tuning
 
-MedGemma training setup:
+Open-VLM branch status:
 
-- selected base: `google/medgemma-4b-it`
-- pre-training full TEST baseline:
+- MedGemma full prompt-only baseline:
   `open-vlm-medgemma-8frames-full-4000`
-- pre-training overall MEAN: `0.188250`
-- pre-training pre-evaluation SCORE: `0.281741`
-- input setting: timestamp overlay, `8` sampled frames per clip,
-  class-constrained prompt, normalized answers
-- train JSONL:
-  `/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_train_overlay.clip_valid.jsonl`
-- val JSONL:
-  `/home/Jiali_Wang/workspace/focus-runs/data-audit/clip-window-audit-seed20260707/sft_val_overlay.clip_valid.jsonl`
-
-Training goal:
-
-- establish whether MedGemma's medical prior plus LoRA/SFT can outperform its
-  prompt-only baseline and approach or exceed the Qwen3-VL LoRA reference.
-
-Secondary candidate:
-
-- LLaVA-OneVision-7B full prompt-only baseline:
+  - overall MEAN: `0.188250`
+  - pre-evaluation SCORE: `0.281741`
+- LLaVA-OneVision full prompt-only baseline:
+  `open-vlm-llava-onevision-4frames-full-4000`
   - overall MEAN: `0.155500`
   - pre-evaluation SCORE: `0.249757`
-  - object_identification: `0.279323`
-  - fo_class: `0.230758`
-- LLaVA is weaker than MedGemma overall, but stronger on class/object
-  identification metrics.
-- Keep LLaVA as a second training candidate or specialist route if MedGemma
-  training fails to improve `fo_class` sufficiently.
+  - stronger than MedGemma on `object_identification` and `fo_class`
+
+Decision:
+
+- Do not prioritize open-VLM LoRA training before the next Qwen iteration.
+- Keep MedGemma and LLaVA results as model-selection evidence and possible
+  future specialist/ensemble routes.
+- Large open-VLM snapshots may be deleted from the remote main disk after
+  recorded summaries are preserved in this repo.

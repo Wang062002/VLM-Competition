@@ -116,3 +116,22 @@ full LoRA 训练补充信息：
    - baseline correct / LoRA wrong
    - temporal grounding failure cases
    - answer-format-specific failure cases
+
+## 8. 2026-07-20 模型选择与存储决策更新
+
+1. full TEST-4000 综合表现仍然是 Qwen 路线更强：
+   - Qwen overlay baseline overall：`0.207500`
+   - Qwen LoRA-SFT overall：`0.279000`
+   - MedGemma prompt-only overall：`0.188250`
+   - LLaVA prompt-only overall：`0.155500`
+2. 因此后续主线应回到 Qwen：
+   - 做 Qwen full TEST error analysis
+   - 设计第二轮 Qwen LoRA/SFT
+   - 重点补 temporal、aggregation、answer-format 相关弱项
+3. MedGemma 和 LLaVA 的意义调整为：
+   - 已完成 open-VLM baseline 对照实验
+   - 可作为论文中“不同 VLM 底座并不天然优于任务适配 Qwen”的证据
+   - 暂不作为下一阶段主训练目标
+4. 新硬盘 `/mnt/data` 已可用；大文件应放在：
+   - `/mnt/data/jiali_wang`
+5. open-VLM 模型快照占用主盘空间较多，结果已记录后可以删除。
