@@ -81,6 +81,14 @@ def inspect_video(path: Path) -> dict[str, float | int]:
         return {"fps": 5.0, "n_frames": 0, "width": 640, "height": 360}
 
 
+def normalize_video_kwargs(video_kwargs: dict) -> dict:
+    """Normalize qwen-vl-utils kwargs for single-sample processor calls."""
+    normalized = dict(video_kwargs)
+    if isinstance(normalized.get("fps"), list) and len(normalized["fps"]) == 1:
+        normalized["fps"] = float(normalized["fps"][0])
+    return normalized
+
+
 class QwenLoraEngine:
     def __init__(self, device: str, system_prompt: str) -> None:
         self.device = device
@@ -158,6 +166,7 @@ class QwenLoraEngine:
         except TypeError:
             image_inputs, video_inputs = process_vision_info(messages)
             video_kwargs = {}
+        video_kwargs = normalize_video_kwargs(video_kwargs)
         inputs = self.processor(
             text=[text],
             images=image_inputs,
