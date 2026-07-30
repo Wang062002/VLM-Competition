@@ -56,6 +56,8 @@ Current next step:
 - `knowledge_base/sync_commands.md`: local-to-remote upload commands
 - `docs/storage_cleanup_plan.md`: `/mnt/data/jiali_wang` migration and
   open-VLM model cleanup workflow
+- `docs/official_submission_qwen_lora.md`: official SEGMENT Docker submission
+  preparation notes for the trained Qwen3-VL LoRA adapter
 - `docs/research_log.md`: longer research log
 - `docs/lora_sft_training_plan.md`: detailed LoRA-SFT plan
 - `docs/script_workflow_explained.md`: explanation of each script and what it
@@ -93,6 +95,8 @@ Current next step:
 - `scripts/run_open_vlm_smoke.py`: common multi-frame smoke runner for the five
   downloaded VLM candidates; supports `--prompt-mode class_constrained` and
   `--normalize-answer`
+- `submission/segment_qwen_lora/`: files to copy into the official
+  `segment-algorithm` template for Qwen3-VL + LoRA submission
 - `docs/open_vlm_baseline_plan.md`: plan for downloading and batch-testing
   open-source VLM baselines
 - `codex.md`: compact operational memory
@@ -228,17 +232,34 @@ Storage decision:
 - Open-VLM candidate snapshots can be removed after recorded full baseline
   results, because Qwen is the stronger overall mainline.
 
+Official submission preparation:
+
+- Official template cloned remotely at:
+  `~/workspace/orena-focus-submission-template`
+- Track directory:
+  `~/workspace/orena-focus-submission-template/segment-algorithm`
+- School server has no Docker/container runtime, so final official image build
+  must happen on another Docker-capable machine.
+- Qwen base model copied into template resources:
+  `segment-algorithm/resources/qwen3vl-4b` (`8.3G`)
+- Qwen LoRA adapter copied into template resources:
+  `segment-algorithm/resources/qwen3vl-lora` (`74M`)
+- Use Git pull to update submission code, then copy files from
+  `submission/segment_qwen_lora/` into the official template.
+
 ## Current Recommended Remote Command
 
-Start the next stage by creating the new large-storage directory and checking
-what can be migrated or removed:
+Update the remote project and copy Qwen-LoRA submission files into the official
+SEGMENT template:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 cd ~/workspace/VLM-Competition
+git pull origin main
 
-mkdir -p /mnt/data/jiali_wang/focus /mnt/data/jiali_wang/focus-runs /mnt/data/jiali_wang/hf-cache /mnt/data/jiali_wang/tmp
-df -h
-du -sh ~/data/focus ~/workspace/vlm-models ~/workspace/focus-runs ~/.cache/huggingface 2>/dev/null
+cp ~/workspace/VLM-Competition/submission/segment_qwen_lora/inference.py \
+  ~/workspace/orena-focus-submission-template/segment-algorithm/inference.py
+cp ~/workspace/VLM-Competition/submission/segment_qwen_lora/requirements.txt \
+  ~/workspace/orena-focus-submission-template/segment-algorithm/requirements.txt
 ```

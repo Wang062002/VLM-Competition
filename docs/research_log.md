@@ -790,3 +790,63 @@ Structured output:
 
 - `results/model_selection_decision_20260720.csv`
 - `docs/storage_cleanup_plan.md`
+
+## Official SEGMENT Submission Preparation
+
+Date: `2026-07-30`
+
+Goal:
+
+- Run the trained Qwen3-VL LoRA adapter through the official SEGMENT submission
+  channel and obtain an official platform score.
+
+Findings:
+
+- Official SEGMENT submission uses a Docker container.
+- Runtime input is mounted at `/input`.
+- Runtime output must be `/output/answer.json`.
+- Each request has an already-trimmed clip:
+  - `plain/<qID>.mp4`
+  - `overlayed/<qID>.mp4`
+- Official runtime has no internet, so model files must be packaged into the
+  image.
+- The school server currently has no `docker`, `podman`, `singularity`, or
+  `apptainer`, so it cannot build the final official image.
+
+Prepared resources on the remote server:
+
+- Official template:
+  `~/workspace/orena-focus-submission-template`
+- SEGMENT template:
+  `~/workspace/orena-focus-submission-template/segment-algorithm`
+- Base Qwen snapshot copied to:
+  `segment-algorithm/resources/qwen3vl-4b`
+- LoRA adapter copied to:
+  `segment-algorithm/resources/qwen3vl-lora`
+- Offline model load was validated successfully:
+  - base model exists
+  - adapter exists
+  - CUDA available
+  - visible GPU count: `1`
+  - load completed
+  - allocated VRAM: about `8582.6 MiB`
+
+Implementation:
+
+- Added `submission/segment_qwen_lora/inference.py`
+- Added `submission/segment_qwen_lora/requirements.txt`
+- Added `submission/segment_qwen_lora/README.md`
+- The script defaults to official `/input` and `/output` paths, but also
+  supports `ORENA_INPUT_PATH` and `ORENA_OUTPUT_PATH` for direct non-Docker
+  dry-runs on the school server.
+
+Next steps:
+
+- Pull this repository on the server.
+- Copy submission files into the official template.
+- Run a direct Python dry-run against the official sample batch.
+- Build and save the Docker image on another Docker-capable machine.
+
+Detailed notes:
+
+- `docs/official_submission_qwen_lora.md`
