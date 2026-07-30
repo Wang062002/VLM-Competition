@@ -150,13 +150,21 @@ class QwenLoraEngine:
             tokenize=False,
             add_generation_prompt=True,
         )
-        image_inputs, video_inputs = process_vision_info(messages)
+        try:
+            image_inputs, video_inputs, video_kwargs = process_vision_info(
+                messages,
+                return_video_kwargs=True,
+            )
+        except TypeError:
+            image_inputs, video_inputs = process_vision_info(messages)
+            video_kwargs = {}
         inputs = self.processor(
             text=[text],
             images=image_inputs,
             videos=video_inputs,
             padding=True,
             return_tensors="pt",
+            **video_kwargs,
         ).to(self.device)
 
         with torch.no_grad():
