@@ -46,6 +46,9 @@ Current next step:
 
 ## Key Files
 
+- `knowledge_base/AGENT_HANDOFF_ZH.md`: Chinese handoff document for any
+  auxiliary agent joining the project, including project background, remote
+  server state, experiments, pitfalls, Docker submission status, and next steps
 - `knowledge_base/project_state.md`: project facts, paths, remote state
 - `knowledge_base/experiments.md`: baseline and training experiment results
 - `knowledge_base/workflows.md`: repeatable command workflows
