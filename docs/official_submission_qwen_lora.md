@@ -11,13 +11,20 @@ ORena FOCUS SEGMENT channel.
   `~/workspace/orena-focus-submission-template`
 - Target track directory:
   `~/workspace/orena-focus-submission-template/segment-algorithm`
-- School server status:
-  - no `docker`
-  - no `podman`
-  - no `singularity`
-  - no `apptainer`
-- Therefore, the school server can prepare resources and run direct Python
-  dry-runs, but cannot produce the final official Docker tarball.
+- School server Docker environment installed 2026-08-07 (user self-installed
+  after receiving sudo):
+  - Docker Engine 28.1.1 (official docker-ce) + containerd 1.7.27 + buildx + compose
+  - NVIDIA Container Toolkit 1.19.1, nvidia runtime configured in
+    `/etc/docker/daemon.json`
+  - Jiali_Wang in docker group; registry-mirrors configured (Docker Hub large
+    files get `connection reset by peer` without mirrors)
+- `./do_test_run.sh` PASSED: image built in 818s, 3 test samples ran with 0
+  failures, output written to `test/output/interface_1/answer.json`.
+  Note: PyTorch fell back to CPU because driver 470 (CUDA 11.4) is too old for
+  the CUDA 12.4 base image (`UserWarning: NVIDIA driver ... too old`); the
+  official evaluation machine has a newer driver and will run on GPU.
+- `./do_save.sh` produced the submission tarball:
+  `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz`
 
 ## Model Resources
 

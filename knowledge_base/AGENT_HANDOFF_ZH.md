@@ -494,49 +494,30 @@ Wrote 3 responses with 0 failures
 - 这说明离线资源加载、Qwen+LoRA 推理、官方 request/response 格式链路均正常。
 - 但这不是最终官方 Docker 验收，因为它没有通过 `do_test_run.sh` 在容器中运行。
 
-### 7.2 Docker 状态
+### 7.2 Docker 状态（2026-08-07 装好，卡点已解决）
 
-截至 2026-08-03 用户检查：
+管理员已授予 sudo 权限，用户自行安装完成：
 
-```text
-docker: not installed
-nvidia-container-runtime: not installed
-nvidia-ctk: not installed
-sudo: 用户 Jiali_Wang 不能在 UNNC-CVIP-03 上运行 sudo
-```
+- **Docker Engine 28.1.1**（官方 docker-ce 源，非 docker.io/snap）+ containerd 1.7.27 + buildx 0.23.0 + compose 2.35.1。
+- **NVIDIA Container Toolkit 1.19.1**，nvidia runtime 已配进 `/etc/docker/daemon.json`。
+- **Jiali_Wang 在 docker 组**。
+- **/etc/docker/daemon.json** 同时含 `runtimes.nvidia` 和 `registry-mirrors`（docker.m.daocloud.io / docker.1panel.live / hub.rat.dev）。Docker Hub 大文件直拉会 connection reset，必须走加速器。
 
-检查命令输出过：
+用 docker 的项目约定（重要）：
 
-```text
-对不起，用户 Jiali_Wang 不能在 UNNC-CVIP-03 上运行 sudo。
-```
+- **VS Code Remote-SSH 终端不刷新组关系**：用 docker 前先 `newgrp docker`，或用普通终端 `ssh Jiali_Wang@10.176.61.126` 真 login shell（组正常加载）。
+- 每次新终端先激活 conda：`source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus`。
+- 约定单卡：`export CUDA_VISIBLE_DEVICES=0`。
 
-最新背景：
+已验证：
 
-- 用户表示“可以在学校服务器部署 docker”。
-- 但当前账号没有 sudo 权限，因此需要管理员安装，或提供 docker 权限。
+- `docker run --rm hello-world` ✓
+- `docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi` ✓ → 2×RTX A5000, Driver 470.256.02。
+- **注意**：nvidia-smi 能跑 ≠ PyTorch CUDA runtime 能跑。驱动 470（CUDA 11.4）跑不了官方 base image 的 CUDA 12.4 PyTorch，inference.py 自动回退 CPU。本地 do_test_run 用 CPU 跑通即算通过；官方评测机有新驱动能 GPU 跑。
+- `./do_test_run.sh` ✓（build 818s，3 条 0 failures，CPU 回退）。
+- `./do_save.sh` ✓ → tarball `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz` 生成，可提交。
 
-给管理员的需求：
-
-```text
-需要在 Ubuntu 20.04.5 LTS 的 UNNC-CVIP-03 上运行 ORena FOCUS 官方 Docker submission template。
-需要安装：
-1. Docker Engine
-2. NVIDIA Container Toolkit
-3. 配置 Docker 可使用 NVIDIA GPU
-4. 将 Jiali_Wang 加入 docker 用户组，或提供可运行 docker 的方式
-
-安装后应通过：
-docker --version
-docker run --rm hello-world
-docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
-```
-
-管理员完成后，从以下命令继续：
-
-```bash
-docker --version && docker run --rm hello-world && docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi
-```
+服务器磁盘隐患：`/` 盘 98% 满（剩约 40G），后续需迁移数据到 `/mnt/data/jiali_wang` 或清理 docker 镜像。
 
 如果通过，再进入：
 

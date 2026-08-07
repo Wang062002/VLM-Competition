@@ -850,3 +850,58 @@ Next steps:
 Detailed notes:
 
 - `docs/official_submission_qwen_lora.md`
+
+## 2026-08-07: Docker environment installed, submission line closed
+
+Background: the project's biggest blocker was that the school server had no
+Docker runtime and the user had no sudo. On 2026-08-07 the administrator
+granted sudo, and the user self-installed the full Docker + GPU stack.
+
+Installed on UNNC-CVIP-03 (Ubuntu 20.04.5):
+
+- Docker Engine 28.1.1 (official docker-ce repo; refused the older docker.io /
+  snap versions), containerd 1.7.27, buildx 0.23.0, compose 2.35.1.
+- NVIDIA Container Toolkit 1.19.1; `nvidia-ctk runtime configure --runtime=docker`
+  wrote the nvidia runtime into `/etc/docker/daemon.json`.
+- Jiali_Wang added to the docker group.
+- Registry mirrors merged into `/etc/docker/daemon.json`
+  (docker.m.daocloud.io / docker.1panel.live / hub.rat.dev) because Docker Hub
+  large pulls fail with `connection reset by peer` (hello-world's few KB pass,
+  but the nvidia/cuda and pytorch base images do not).
+
+Operational gotcha recorded for future sessions: VS Code Remote-SSH terminals
+are not login shells and do NOT refresh group membership after `usermod -aG`.
+`docker version` keeps failing with permission denied until `newgrp docker` is
+run, or until a real `ssh Jiali_Wang@10.176.61.126` login shell is used.
+
+Verification:
+
+- `docker run --rm hello-world` OK.
+- `docker run --rm --gpus all nvidia/cuda:12.4.1-base-ubuntu22.04 nvidia-smi`
+  OK: 2x RTX A5000, Driver 470.256.02.
+
+Important nuance: `nvidia-smi` running inside a container does NOT prove the
+CUDA runtime works. The driver is 470 (CUDA 11.4); the official base image is
+`pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime` (CUDA 12.4). PyTorch in the
+container warns `NVIDIA driver ... too old (found version 11040)` and
+`inference.py` falls back to CPU (`Device: cpu`, float32). This is acceptable
+for `do_test_run.sh` because the script is CPU-friendly; the official
+evaluation machine has a newer driver and will run on GPU. Upgrading the
+driver locally is not worth the risk for testing only.
+
+Official submission local self-test:
+
+- `./do_test_run.sh` PASSED: image built in 818s; 3 test samples ran with 0
+  failures; output written to `test/output/interface_1/answer.json`
+  (q001 "Yes, a sponge is visible.", q002 "1", q003 "Yes.").
+- `./do_save.sh` produced the submission tarball:
+  `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz`.
+
+Conclusion: the full submission line is closed (Docker env -> do_test_run pass
+-> do_save tarball ready). The tarball is the final artifact to submit through
+the official channel.
+
+Follow-up risk: the server root filesystem is at 98% full (~40G free after
+cleanup). Large data should be migrated to `/mnt/data/jiali_wang` and unused
+docker images (pytorch base, nvidia/cuda) pruned after the tarball is safely
+submitted.

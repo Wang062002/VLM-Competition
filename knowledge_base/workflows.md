@@ -595,3 +595,74 @@ Always provide both:
 - remote extraction or run command
 
 See `knowledge_base/sync_commands.md`.
+
+## Official Docker Submission (SEGMENT, Qwen3-VL + LoRA)
+
+Precondition: Docker Engine + NVIDIA Container Toolkit installed (see
+`knowledge_base/AGENT_HANDOFF_ZH.md` section 7.2). In a VS Code Remote-SSH
+terminal, run `newgrp docker` first so the docker group is active.
+
+One-time preparation (already done, rerun only if submission files changed):
+
+```bash
+source ~/tools/miniconda3/etc/profile.d/conda.sh
+conda activate orena-focus
+cd ~/workspace/VLM-Competition
+git pull origin main
+
+cp submission/segment_qwen_lora/inference.py \
+  ~/workspace/orena-focus-submission-template/segment-algorithm/inference.py
+cp submission/segment_qwen_lora/requirements.txt \
+  ~/workspace/orena-focus-submission-template/segment-algorithm/requirements.txt
+```
+
+Resources must already be in place (do NOT git-commit these large files):
+
+```text
+segment-algorithm/resources/qwen3vl-4b       # ~8.3G, real files not symlinks
+segment-algorithm/resources/qwen3vl-lora     # ~74M
+```
+
+Local self-test (builds the image, runs 3 sample inputs offline, checks
+output). Note: with driver 470 this runs on CPU (~100s/sample); that is
+expected and still counts as a pass:
+
+```bash
+cd ~/workspace/orena-focus-submission-template/segment-algorithm
+./do_test_run.sh
+# success: "Wrote results to .../test/output/interface_1" + answer.json with 0 failures
+cat test/output/interface_1/answer.json
+```
+
+Disk check before saving (image is ~16G; tarball ~10-12G):
+
+```bash
+df -h /var/lib/docker
+docker system df
+# safe: docker builder prune -f   (clears build cache only)
+# NEVER: docker system prune       (would delete the segment-algorithm image)
+```
+
+Save the submission tarball:
+
+```bash
+./do_save.sh
+# produces segment-algorithm_<build-timestamp>.tar.gz
+ls -lh segment-algorithm_*.tar.gz
+```
+
+Known result (2026-08-07): tarball
+`segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz` is the final
+artifact to submit through the official channel.
+
+Important caveats:
+
+- `do_save.sh` re-runs `do_build.sh` first; layer cache makes it fast unless
+  Dockerfile/resources changed.
+- Driver 470 cannot run the CUDA 12.4 PyTorch runtime; the official evaluation
+  machine has a newer driver and will run on GPU. Do not "fix" this locally by
+  changing the base image — the official template pins
+  `pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime`.
+- `--network none` is enforced during `do_test_run.sh`, so all model files and
+  dependencies must be baked into the image (that is what `COPY resources/`
+  does).

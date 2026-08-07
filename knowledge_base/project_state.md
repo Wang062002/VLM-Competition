@@ -68,6 +68,26 @@ source ~/tools/miniconda3/etc/profile.d/conda.sh
 conda activate orena-focus
 ```
 
+## Docker Environment (installed 2026-08-07)
+
+- Docker Engine 28.1.1 (official docker-ce) + containerd 1.7.27 + buildx + compose
+- NVIDIA Container Toolkit 1.19.1; nvidia runtime in `/etc/docker/daemon.json`
+- Jiali_Wang in docker group
+- `/etc/docker/daemon.json` also has `registry-mirrors`
+  (docker.m.daocloud.io / docker.1panel.live / hub.rat.dev) — Docker Hub large
+  pulls get `connection reset by peer` without mirrors
+- VS Code Remote-SSH terminals do not refresh group membership; run
+  `newgrp docker` first, or use a real `ssh Jiali_Wang@10.176.61.126` login shell
+- Verified: `hello-world` OK; `--gpus all nvidia/cuda:12.4.1-base nvidia-smi`
+  shows 2x A5000 (driver 470.256.02). Note: PyTorch CUDA 12.4 runtime does NOT
+  work with driver 470 (CUDA 11.4); `inference.py` falls back to CPU locally.
+  Official eval machine has a newer driver and runs on GPU.
+- `./do_test_run.sh` PASSED (3 samples, 0 failures, CPU fallback);
+  `./do_save.sh` produced tarball
+  `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz`
+- Disk risk: `/` at 98% full (~40G free); migrate large data to
+  `/mnt/data/jiali_wang` and prune unused docker images after submission
+
 ## Data Integrity Notes
 
 - Timestamp overlay files should be exactly `30`.

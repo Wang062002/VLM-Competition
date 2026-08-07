@@ -241,8 +241,13 @@ Official submission preparation:
   `~/workspace/orena-focus-submission-template`
 - Track directory:
   `~/workspace/orena-focus-submission-template/segment-algorithm`
-- School server has no Docker/container runtime, so final official image build
-  must happen on another Docker-capable machine.
+- School server Docker environment installed and verified (2026-08-07): Docker
+  Engine 28.1.1 + NVIDIA Container Toolkit 1.19.1 + registry-mirrors; see
+  `knowledge_base/AGENT_HANDOFF_ZH.md` section 7.2 for details.
+- `./do_test_run.sh` passed (CPU fallback because driver 470 is too old for the
+  CUDA 12.4 base image, but 3 samples / 0 failures / output validated) and
+  `./do_save.sh` produced the submission tarball
+  `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz`.
 - Qwen base model copied into template resources:
   `segment-algorithm/resources/qwen3vl-4b` (`8.3G`)
 - Qwen LoRA adapter copied into template resources:
