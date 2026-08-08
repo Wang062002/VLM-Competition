@@ -49,8 +49,10 @@ BASE_MODEL_PATH = RESOURCES_PATH / "qwen3vl-4b"
 ADAPTER_PATH = RESOURCES_PATH / "qwen3vl-lora"
 VIDEO_DIR = INPUT_PATH / "overlayed"
 
-MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "128"))
+MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "64"))
 VIDEO_FPS = float(os.environ.get("VIDEO_FPS", "1.0"))
+VIDEO_MIN_FRAMES = int(os.environ.get("VIDEO_MIN_FRAMES", "4"))
+VIDEO_MAX_FRAMES = int(os.environ.get("VIDEO_MAX_FRAMES", "64"))
 USE_BFLOAT16 = os.environ.get("USE_BFLOAT16", "1") != "0"
 
 
@@ -142,6 +144,8 @@ class QwenLoraEngine:
                         "type": "video",
                         "video": f"file://{video_path}",
                         "fps": VIDEO_FPS,
+                        "min_frames": VIDEO_MIN_FRAMES,
+                        "max_frames": VIDEO_MAX_FRAMES,
                         "video_metadata": {
                             "fps": VIDEO_FPS,
                             "width": metadata["width"],
@@ -161,18 +165,30 @@ class QwenLoraEngine:
         try:
             image_inputs, video_inputs, video_kwargs = process_vision_info(
                 messages,
+                image_patch_size=16,
                 return_video_kwargs=True,
+                return_video_metadata=True,
             )
         except TypeError:
             image_inputs, video_inputs = process_vision_info(messages)
             video_kwargs = {}
+            video_metadatas = None
+        else:
+            if video_inputs is not None:
+                video_inputs, video_metadatas = zip(*video_inputs)
+                video_inputs = list(video_inputs)
+                video_metadatas = list(video_metadatas)
+            else:
+                video_metadatas = None
         video_kwargs = normalize_video_kwargs(video_kwargs)
         inputs = self.processor(
             text=[text],
             images=image_inputs,
             videos=video_inputs,
+            video_metadata=video_metadatas,
             padding=True,
             return_tensors="pt",
+            do_resize=False,
             **video_kwargs,
         ).to(self.device)
 

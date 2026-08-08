@@ -32,13 +32,14 @@
 - Timestamp overlay videos generated with the official
   `VideoTimestampOverlayPreprocessor` (overlays the running timestamp onto each
   frame to help temporal grounding)
-- Inference samples video at `VIDEO_FPS=1.0`
+- Inference samples video at `VIDEO_FPS=1.0` with an official-template-aligned
+  hard cap of `VIDEO_MAX_FRAMES=64`
 
 ## Inference
 
 - Qwen3-VL base + LoRA adapter loaded fully offline (all weights baked into the
   Docker image under `resources/`)
-- `bfloat16` on GPU, `max_new_tokens=128`
+- `bfloat16` on GPU, `max_new_tokens=64`
 - Single GPU, fully automated, no internet access at runtime
 
 ## Results (local held-out TEST, HeiCo SEGMENT, 4000 QA)

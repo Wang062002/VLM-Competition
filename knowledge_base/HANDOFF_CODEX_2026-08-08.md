@@ -41,6 +41,29 @@
 
 ## 3. Codex 首要任务：诊断官方提交 Failed
 
+### 2026-08-08 Codex 官方要求复核结论
+
+已重新读取官方 `IMSY-DKFZ/orena-focus-submission-template` README 和
+`segment-algorithm/inference.py`，确认当前修复方向应优先对齐两点：
+
+- SEGMENT 按批处理，预算为 `120 s + B x 15 s`；超预算会 forfeiture 题目，
+  超过 20% 会 forfeiture 整批。
+- 官方 SEGMENT dummy 的视频预处理使用 `TARGET_FPS=1.0` 且 `MAX_FRAMES=64`
+  的有界采样；我们首次提交版只有 `VIDEO_FPS=1.0`，没有显式最大帧数上限，
+  长 clip 可能采到数百帧，是官方失败的高优先级嫌疑。
+
+已在本地 `submission/segment_qwen_lora/inference.py` 对齐：
+
+- `MAX_NEW_TOKENS` 默认从 `128` 降到 `64`。
+- 新增 `VIDEO_MIN_FRAMES=4`、`VIDEO_MAX_FRAMES=64`。
+- 视频消息传入 `min_frames/max_frames`。
+- Qwen3-VL 预处理改为 `image_patch_size=16`、
+  `return_video_metadata=True`，并向 processor 传 `video_metadata` 和
+  `do_resize=False`，对齐 Qwen3-VL 官方 `qwen-vl-utils` 用法。
+
+下一步：commit/push 后，服务器 `git pull`，复制到官方 template，重新
+`./do_test_run.sh` 和 `./do_save.sh`，上传新 tarball 再提交。
+
 ### 步骤 1：拿失败日志
 登录 `https://segment.orena-focus-challenge.org/` → Submissions 页 →
 点那条 Failed 记录的 **Failed** 按钮 → 看错误详情/logs。把日志贴回来分析。
