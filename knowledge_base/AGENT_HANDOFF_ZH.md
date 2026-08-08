@@ -667,6 +667,14 @@ Defaulting to fps=24...
 
 ## 9. 当前最推荐的下一步
 
+> ⚠️ **2026-08-08 更新**：Docker 环境已装好（见 7.2 节）、submission tarball
+> 已生成、知识库已更新 commit `6740346`。**首次官方提交 Evaluations: Failed
+> （2026-08-08 21:44，pre-evaluation phase，剩余 9/10 额度）**。当前首要任务
+> 是诊断 Failed 原因（优先怀疑超时，降 `VIDEO_FPS`）→ 修复 → 重新提交。
+> **完整交接状态见 `knowledge_base/HANDOFF_CODEX_2026-08-08.md`**。
+>
+> 下方"优先级 1/2/3"为历史记录（均已完成），保留备查。
+
 优先级 1：解决 Docker 环境。
 
 1. 管理员安装 Docker Engine 和 NVIDIA Container Toolkit。
