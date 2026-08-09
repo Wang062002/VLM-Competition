@@ -47,7 +47,13 @@ RESOURCES_PATH = Path(__file__).parent / "resources"
 
 BASE_MODEL_PATH = RESOURCES_PATH / "qwen3vl-4b"
 ADAPTER_PATH = RESOURCES_PATH / "qwen3vl-lora"
-VIDEO_DIR = INPUT_PATH / "overlayed"
+VIDEO_SUBDIR_CANDIDATES = (
+    "overlayed",
+    "plain",
+    "batch-videos/overlayed",
+    "batch-videos/plain",
+    "batch-videos",
+)
 
 MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "64"))
 VIDEO_FPS = float(os.environ.get("VIDEO_FPS", "1.0"))
@@ -62,8 +68,45 @@ def read_fo_definitions() -> str:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def input_tree_preview(limit: int = 80) -> str:
+    """Compact preview of mounted input files for platform debugging."""
+    try:
+        entries = []
+        for path in sorted(INPUT_PATH.rglob("*")):
+            if len(entries) >= limit:
+                entries.append("...")
+                break
+            try:
+                entries.append(str(path.relative_to(INPUT_PATH)))
+            except ValueError:
+                entries.append(str(path))
+        return ", ".join(entries) if entries else "<empty>"
+    except Exception as exc:
+        return f"<could not inspect input tree: {exc}>"
+
+
 def clip_path_for(req: Request) -> Path:
-    return VIDEO_DIR / f"{req.qID}.mp4"
+    """Locate the SEGMENT clip for a request across platform upload layouts."""
+    filename = f"{req.qID}.mp4"
+
+    for subdir in VIDEO_SUBDIR_CANDIDATES:
+        candidate = INPUT_PATH / subdir / filename
+        if candidate.exists():
+            return candidate
+
+    matches = sorted(INPUT_PATH.rglob(filename))
+    if matches:
+        return matches[0]
+
+    raise FileNotFoundError(
+        f"Could not find video clip {filename!r} under {INPUT_PATH}. "
+        f"Input tree preview: {input_tree_preview()}"
+    )
+
+
+def log_input_layout_once() -> None:
+    LOGGER.info("Input path: %s", INPUT_PATH)
+    LOGGER.info("Input tree preview: %s", input_tree_preview())
 
 
 def inspect_video(path: Path) -> dict[str, float | int]:
@@ -214,6 +257,7 @@ def run() -> int:
         LOGGER.error("No requests found")
         return 1
     LOGGER.info("Batch size: %d", len(requests))
+    log_input_layout_once()
 
     fo_definitions = read_fo_definitions()
     system_prompt = (

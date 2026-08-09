@@ -167,3 +167,20 @@
 4. 改 inference.py → commit push → 服务器 git pull → 复制到 template →
    do_test_run 验证 → do_save → 上传 → 重新提交。
 5. 等 leaderboard，对比本地 0.279。
+
+## 10. 2026-08-10 官方平台 Try-out 最新诊断
+
+新上传的 CUDA 12.8 / PyTorch 2.7.1 镜像已经解决 Blackwell `sm_120` 兼容问题，官方平台可以启动模型并加载 LoRA。Try-out 状态变为 `Succeeded, with warnings`，但日志显示：
+
+```text
+Wrote 3 responses with 3 failures
+ERROR opening: /input/overlayed/q001.mp4, No such file or directory
+```
+
+结论：当前失败不是模型、显存或 CUDA 问题，而是官方 Try-out 上传的 `batch-videos` zip 在平台内的解压路径不等于本地模板的 `/input/overlayed/<qID>.mp4`。因此 `submission/segment_qwen_lora/inference.py` 已改为：
+
+- 支持多个候选目录：`/input/overlayed`、`/input/plain`、`/input/batch-videos/overlayed`、`/input/batch-videos/plain`、`/input/batch-videos`。
+- 如果仍找不到视频，则递归搜索 `/input/**/<qID>.mp4`。
+- 启动时打印 `/input` 目录预览，便于从官方日志确认真实挂载结构。
+
+下一步：服务器 `git pull`，复制新版 `inference.py` 到 official template，保持 Dockerfile 为 `pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime`，重建并上传新 tarball，再跑 Try-out。
