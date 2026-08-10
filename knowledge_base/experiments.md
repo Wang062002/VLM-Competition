@@ -528,3 +528,51 @@ Comparison and decision:
 Structured output:
 
 - `results/open_vlm_llava_onevision_4frames_full4000_summary.csv`
+
+## Official SEGMENT Pre-Evaluation: Qwen3-VL LoRA-SFT
+
+Date: `2026-08-10`
+
+Setup:
+
+- Official SEGMENT Track pre-evaluation phase
+- Hidden official pre-evaluation set
+- `2000` questions in `100` platform batches
+- Active image version: `16860a54-5d41-40c9-a925-34d5ec0aecb9`
+- Model: `Qwen/Qwen3-VL-4B-Instruct` with LoRA adapter
+  `qwen3vl-4b-sft-valid5959-e1`
+- Container: PyTorch `2.7.1`, CUDA `12.8`, flexible batch-video input path
+  discovery
+
+Results:
+
+| Metric | Value |
+|---|---:|
+| Status | Succeeded |
+| Leaderboard position | 27 |
+| Pre-evaluation score | 0.32331911598560603 |
+| Questions | 2000 |
+| Batches | 100 |
+| Questions forfeited | 0 |
+| Questions unanswered | 0 |
+| Mean batch duration | 63.47976909 s |
+| Throughput | 0.315061 questions/s |
+| aggregation ID / OOD | 0.170732 / 0.300000 |
+| complex reasoning ID / OOD | 0.367647 / 0.688889 |
+| object recognition ID / OOD | 0.360856 / 0.320413 |
+| temporal grounding ID / OOD | 0.174081 / 0.242678 |
+| event understanding ID / OOD | 0.450000 / 0.157895 |
+
+Interpretation:
+
+- This is the first successful official pre-evaluation submission.
+- The official score is lower than the local TEST-4000 pre-evaluation-style
+  score `0.402794`, likely because the hidden pre-evaluation distribution and
+  bucket weighting differ from local TEST-4000.
+- Runtime is healthy: `0` forfeited and `0` unanswered means the container
+  completed all official hidden questions without timeout penalty or dropped
+  outputs.
+
+Structured output:
+
+- `results/official_preeval_20260810_qwen_lora_metrics.csv`

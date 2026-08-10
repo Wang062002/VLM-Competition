@@ -1,0 +1,27 @@
+metric,value,notes
+submission_created,2026-08-10 17:40 Asia/Shanghai,Official SEGMENT Track pre-evaluation phase submission time shown by platform.
+submission_status,succeeded,Official platform status.
+leaderboard_position,27,Position on pre-evaluation leaderboard when inspected.
+algorithm_image_version,16860a54-5d41-40c9-a925-34d5ec0aecb9,Active image version used by the official evaluation.
+image_comment,"Qwen3-VL-4B LoRA-SFT, CUDA12.8, flexible batch-video input paths",Container image comment.
+budget_batches,100,Number of scored algorithm jobs/batches.
+budget_questions,2000,Number of hidden pre-evaluation questions.
+budget_setup_allowance_s,120.0,Per-batch setup allowance before per-question budget.
+budget_latency_per_question_s,15.0,Per-question latency budget after setup allowance.
+budget_saturation_fraction,0.2,Relative overrun at which the whole batch is forfeited.
+questions_forfeited,0,No questions were scored incorrect due to latency overrun.
+questions_unanswered,0,No hidden questions were missing from answer.json.
+mean_batch_duration_s,63.479769090000026,Mean platform-measured duration per batch, including setup.
+mean_latency_per_question_s,0.0,Official net per-question latency after setup allowance; zero because batches finished inside setup allowance.
+throughput_questions_per_s,0.31506100741552007,Questions per second using full job duration including setup.
+pre_evaluation_score,0.32331911598560603,Headline ranking metric: unweighted mean accuracy over 10 capability x distribution buckets.
+accuracy_aggregation_id,0.17073170731707318,In-distribution aggregation bucket.
+accuracy_aggregation_ood,0.3,Out-of-distribution aggregation bucket.
+accuracy_complex_reasoning_id,0.36764705882352944,In-distribution complex reasoning bucket.
+accuracy_complex_reasoning_ood,0.6888888888888889,Out-of-distribution complex reasoning bucket.
+accuracy_object_recognition_id,0.36085626911314983,In-distribution object recognition bucket.
+accuracy_object_recognition_ood,0.32041343669250644,Out-of-distribution object recognition bucket.
+accuracy_temporal_grounding_id,0.17408123791102514,In-distribution temporal grounding bucket.
+accuracy_temporal_grounding_ood,0.24267782426778242,Out-of-distribution temporal grounding bucket.
+accuracy_event_understanding_id,0.45,In-distribution event understanding bucket.
+accuracy_event_understanding_ood,0.15789473684210525,Out-of-distribution event understanding bucket.

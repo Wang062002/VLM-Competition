@@ -255,6 +255,20 @@ Official submission preparation:
 - Use Git pull to update submission code, then copy files from
   `submission/segment_qwen_lora/` into the official template.
 
+Official pre-evaluation result:
+
+- Date: `2026-08-10`
+- Algorithm image version: `16860a54-5d41-40c9-a925-34d5ec0aecb9`
+- Status: `Succeeded`
+- Leaderboard position when inspected: `27`
+- Hidden questions: `2000` in `100` batches
+- Headline `pre_evaluation_score`: `0.32331911598560603`
+- Questions forfeited due to latency: `0`
+- Questions unanswered: `0`
+- Mean batch duration: `63.47976909 s`
+- Detailed structured metrics:
+  `results/official_preeval_20260810_qwen_lora_metrics.csv`
+
 ## Current Recommended Remote Command
 
 Update the remote project and copy Qwen-LoRA submission files into the official

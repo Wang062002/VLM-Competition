@@ -104,3 +104,34 @@ cd ~/workspace/orena-focus-submission-template/segment-algorithm
 
 The official platform runs without internet, so the Docker image must contain
 both `resources/qwen3vl-4b` and `resources/qwen3vl-lora`.
+
+## Official Pre-Evaluation Result
+
+Date: `2026-08-10`
+
+The CUDA 12.8 / flexible input-path image was uploaded and marked active:
+
+```text
+Image version: 16860a54-5d41-40c9-a925-34d5ec0aecb9
+Comment: Qwen3-VL-4B LoRA-SFT, CUDA12.8, flexible batch-video input paths
+```
+
+Try-out confirmed the official platform mounts uploaded batch videos directly
+under `/input/<qID>.mp4`, not `/input/overlayed/<qID>.mp4`. The updated
+`inference.py` resolved this by recursively locating qID-named video clips.
+
+Official SEGMENT pre-evaluation then completed successfully:
+
+| Metric | Value |
+|---|---:|
+| Status | Succeeded |
+| Leaderboard position | 27 |
+| Hidden questions | 2000 |
+| Batches | 100 |
+| Pre-evaluation score | 0.32331911598560603 |
+| Questions forfeited | 0 |
+| Questions unanswered | 0 |
+| Mean batch duration | 63.47976909 s |
+
+Detailed metrics are stored in
+`results/official_preeval_20260810_qwen_lora_metrics.csv`.
