@@ -268,6 +268,8 @@ Official pre-evaluation result:
 - Mean batch duration: `63.47976909 s`
 - Detailed structured metrics:
   `results/official_preeval_20260810_qwen_lora_metrics.csv`
+- SFT gap audit after comparing against a stronger ~0.5 baseline:
+  `docs/sft_training_audit_20260810.md`
 
 ## Current Recommended Remote Command
 

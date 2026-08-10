@@ -576,3 +576,14 @@ Interpretation:
 Structured output:
 
 - `results/official_preeval_20260810_qwen_lora_metrics.csv`
+
+Follow-up audit:
+
+- The official score is far below the stronger reported baseline around `0.5`.
+- First diagnosis points to SFT/input-pipeline mismatch rather than Docker
+  failure: the current SFT trained on richer 1 fps clips without an explicit
+  64-frame cap, while official submission uses `VIDEO_MAX_FRAMES=64`.
+- A second risk is data coverage: the first SFT used only HeiCo TRAIN, while the
+  ORena data ecosystem now includes LapChole-FOCUS-VQA as a second batch.
+- Detailed audit:
+  `docs/sft_training_audit_20260810.md`
