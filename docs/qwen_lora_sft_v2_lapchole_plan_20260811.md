@@ -84,23 +84,10 @@ questions_unanswered = 0
 
 ### Step 1：确认 LapChole 是否可访问
 
-先不下载大视频，只检查官方 loader 是否能看到 split：
+先不下载大视频，只检查官方 loader 是否能看到 split。现在项目里已经有通用访问检查脚本：
 
 ```bash
-source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python - <<'PY'
-from focus import FocusConfig, set_config
-from focus.data.base_dataset import FocusDataset
-from focus.enums import DatasetSplit, Track
-
-set_config(FocusConfig(root_dir="/home/Jiali_Wang/data/focus"))
-for dataset in ["heico", "lapchole"]:
-    for split in [DatasetSplit.TRAIN, DatasetSplit.TEST]:
-        try:
-            ds = FocusDataset(dataset, split, Track.SEGMENT)
-            print(dataset, split.value, len(ds), "samples")
-        except Exception as exc:
-            print(dataset, split.value, type(exc).__name__, exc)
-PY
+source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python scripts/check_focus_dataset_access.py --root-dir /mnt/data/jiali_wang/focus --dataset heico --dataset lapchole --track segment --json-output ~/workspace/focus-runs/data-audit/qwen-lora-sft-v2-access-check.json
 ```
 
 如果 LapChole 报 gated/access error，则先在 Hugging Face 页面申请权限。
@@ -110,10 +97,16 @@ PY
 权限通过后，下载到主数据目录或 `/mnt/data/jiali_wang/focus`。考虑主盘紧张，优先使用大盘：
 
 ```bash
-source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python scripts/prepare_heico_data.py --dataset lapchole --root-dir /mnt/data/jiali_wang/focus --skip-frames
+source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python scripts/prepare_focus_data.py --root-dir /mnt/data/jiali_wang/focus --dataset lapchole --skip-frames
 ```
 
-注意：脚本名仍叫 `prepare_heico_data.py`，但实际已有 `--dataset` 参数，可用于 `lapchole`。
+注意：`prepare_focus_data.py` 是通用脚本，后续可以用于 `heico`、`lapchole` 或官方新增数据集。
+
+所有阶段命令都可以由配置文件统一打印，避免手动拼错参数：
+
+```bash
+python scripts/print_qwen_lora_sft_v2_commands.py --stage all
+```
 
 ### Step 3：生成 HeiCo + LapChole 联合 SFT split
 

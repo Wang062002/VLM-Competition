@@ -608,6 +608,14 @@ Official data check:
 
 Engineering updates:
 
+- Added `configs/qwen_lora_sft_v2.json` as the single source of truth for the
+  next HeiCo + LapChole SFT attempt.
+- Added `scripts/check_focus_dataset_access.py` to verify gated dataset access
+  and split counts without downloading videos.
+- Added `scripts/prepare_focus_data.py` as a generic download/overlay
+  preprocessor for `heico`, `lapchole`, or future FOCUS datasets.
+- Added `scripts/print_qwen_lora_sft_v2_commands.py` to print staged remote
+  commands from the config, reducing manual command-copy errors.
 - `scripts/audit_and_split_segment_train.py` now supports repeated
   `--dataset`, e.g. `--dataset heico --dataset lapchole`, and no longer
   hardcodes HeiCo paths in generated SFT rows.

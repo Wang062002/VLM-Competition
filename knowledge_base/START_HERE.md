@@ -275,12 +275,20 @@ Official pre-evaluation result:
 
 ## Current Recommended Remote Command
 
-Update the remote project, then check whether LapChole SEGMENT splits are
-visible to the current Hugging Face account:
+Update the remote project first:
 
 ```bash
 source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && git pull origin main
 ```
 
-Then run the Step 1 command in
-`docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`.
+Then print the current v2 staged commands:
+
+```bash
+python scripts/print_qwen_lora_sft_v2_commands.py --stage all
+```
+
+Until LapChole access is approved, only run the access-check stage:
+
+```bash
+python scripts/print_qwen_lora_sft_v2_commands.py --stage access
+```

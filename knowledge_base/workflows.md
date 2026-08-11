@@ -130,23 +130,17 @@ commands are maintained in:
 docs/qwen_lora_sft_v2_lapchole_plan_20260811.md
 ```
 
-First remote command after pulling latest code:
+Use the config-driven command printer to avoid hand-editing long commands:
 
 ```bash
-source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python - <<'PY'
-from focus import FocusConfig, set_config
-from focus.data.base_dataset import FocusDataset
-from focus.enums import DatasetSplit, Track
+python scripts/print_qwen_lora_sft_v2_commands.py --stage all
+```
 
-set_config(FocusConfig(root_dir="/home/Jiali_Wang/data/focus"))
-for dataset in ["heico", "lapchole"]:
-    for split in [DatasetSplit.TRAIN, DatasetSplit.TEST]:
-        try:
-            ds = FocusDataset(dataset, split, Track.SEGMENT)
-            print(dataset, split.value, len(ds), "samples")
-        except Exception as exc:
-            print(dataset, split.value, type(exc).__name__, exc)
-PY
+First remote command after pulling latest code should usually be the access
+check printed by:
+
+```bash
+python scripts/print_qwen_lora_sft_v2_commands.py --stage access
 ```
 
 ## LoRA-SFT 32-Sample Smoke
@@ -680,18 +674,22 @@ Save the submission tarball:
 ls -lh segment-algorithm_*.tar.gz
 ```
 
-Known result (2026-08-07): tarball
-`segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz` is the final
-artifact to submit through the official channel.
+Known successful official pre-evaluation artifact:
+
+- Image version: `16860a54-5d41-40c9-a925-34d5ec0aecb9`
+- Tarball source name:
+  `segment-algorithm_2026-08-10-cu128-flexpaths.tar.gz`
+- Base image: `pytorch/pytorch:2.7.1-cuda12.8-cudnn9-runtime`
+- Reason: the official GPU is Blackwell `sm_120`, which failed with the older
+  PyTorch 2.5.1/CUDA 12.4 image.
 
 Important caveats:
 
 - `do_save.sh` re-runs `do_build.sh` first; layer cache makes it fast unless
   Dockerfile/resources changed.
-- Driver 470 cannot run the CUDA 12.4 PyTorch runtime; the official evaluation
-  machine has a newer driver and will run on GPU. Do not "fix" this locally by
-  changing the base image — the official template pins
-  `pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime`.
+- The official pre-evaluation GPU is
+  `NVIDIA RTX PRO 6000 Blackwell Server Edition`; keep the CUDA 12.8 base image
+  unless a future official runtime change requires another update.
 - `--network none` is enforced during `do_test_run.sh`, so all model files and
   dependencies must be baked into the image (that is what `COPY resources/`
   does).
