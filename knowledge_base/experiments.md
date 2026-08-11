@@ -587,3 +587,44 @@ Follow-up audit:
   ORena data ecosystem now includes LapChole-FOCUS-VQA as a second batch.
 - Detailed audit:
   `docs/sft_training_audit_20260810.md`
+
+## 2026-08-11 — Qwen LoRA-SFT v2 Decision: Add LapChole And Train Longer
+
+Trigger:
+
+- User reported a stronger baseline around `0.5`, while our first official
+  pre-evaluation score is `0.32331911598560603`.
+- Senior peer advice: prompt construction and language-layer LoRA are probably
+  acceptable; the main gap is likely insufficient training data and too few
+  epochs. The peer used two official datasets for the FRAME track.
+
+Official data check:
+
+- `orena-focus` README states FOCUS builds on two datasets:
+  HeiCo-FOCUS and LapChole-FOCUS.
+- HeiCo has SEGMENT train/test annotations and was already used.
+- LapChole is the second ORena FOCUS data batch, has the same frame/segment/
+  procedure track structure, and is gated to registered challenge participants.
+
+Engineering updates:
+
+- `scripts/audit_and_split_segment_train.py` now supports repeated
+  `--dataset`, e.g. `--dataset heico --dataset lapchole`, and no longer
+  hardcodes HeiCo paths in generated SFT rows.
+- `scripts/train_qwen3vl_lora_sft_smoke.py` now supports
+  `--video-min-frames` and `--video-max-frames`, with default max frames aligned
+  to the official submission container (`64`).
+- `--max-train-samples 0` and `--max-val-samples 0` now mean all rows.
+
+Next plan:
+
+1. Verify LapChole access and SEGMENT split counts on the server.
+2. If access is approved, download and overlay-preprocess LapChole under
+   `/mnt/data/jiali_wang/focus`.
+3. Build a combined HeiCo + LapChole SFT split.
+4. Run a 128-sample smoke.
+5. Run full Qwen3-VL LoRA-SFT v2 for about `5` epochs.
+
+Detailed plan:
+
+- `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`

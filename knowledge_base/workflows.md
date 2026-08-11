@@ -120,6 +120,35 @@ Expected outputs:
 - `sft_val_overlay.clip_valid.jsonl`
 - `sft_val_overlay.invalid_clips.jsonl`
 
+## Qwen3-VL LoRA-SFT v2: HeiCo + LapChole
+
+Current recommended plan after the first official pre-evaluation score
+(`0.32331911598560603`) is to add LapChole and train longer. Full rationale and
+commands are maintained in:
+
+```text
+docs/qwen_lora_sft_v2_lapchole_plan_20260811.md
+```
+
+First remote command after pulling latest code:
+
+```bash
+source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && python - <<'PY'
+from focus import FocusConfig, set_config
+from focus.data.base_dataset import FocusDataset
+from focus.enums import DatasetSplit, Track
+
+set_config(FocusConfig(root_dir="/home/Jiali_Wang/data/focus"))
+for dataset in ["heico", "lapchole"]:
+    for split in [DatasetSplit.TRAIN, DatasetSplit.TEST]:
+        try:
+            ds = FocusDataset(dataset, split, Track.SEGMENT)
+            print(dataset, split.value, len(ds), "samples")
+        except Exception as exc:
+            print(dataset, split.value, type(exc).__name__, exc)
+PY
+```
+
 ## LoRA-SFT 32-Sample Smoke
 
 Already completed:

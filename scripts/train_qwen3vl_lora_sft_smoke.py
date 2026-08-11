@@ -65,14 +65,26 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--device", default="cuda:0" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--seed", type=int, default=20260709)
-    parser.add_argument("--max-train-samples", type=int, default=32)
-    parser.add_argument("--max-val-samples", type=int, default=16)
+    parser.add_argument(
+        "--max-train-samples",
+        type=int,
+        default=32,
+        help="Maximum training rows to load. Use 0 or a negative value for all rows.",
+    )
+    parser.add_argument(
+        "--max-val-samples",
+        type=int,
+        default=16,
+        help="Maximum validation rows to load. Use 0 or a negative value for all rows.",
+    )
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--learning-rate", type=float, default=1e-4)
     parser.add_argument("--weight-decay", type=float, default=0.0)
     parser.add_argument("--gradient-accumulation-steps", type=int, default=4)
     parser.add_argument("--max-grad-norm", type=float, default=1.0)
     parser.add_argument("--video-stride", type=int, default=25)
+    parser.add_argument("--video-min-frames", type=int, default=4)
+    parser.add_argument("--video-max-frames", type=int, default=64)
     parser.add_argument("--width", type=int, default=640)
     parser.add_argument("--height", type=int, default=360)
     parser.add_argument("--lora-r", type=int, default=8)
@@ -93,6 +105,19 @@ def parse_args() -> argparse.Namespace:
         help="How to handle samples whose time window is outside the source video.",
     )
     return parser.parse_args()
+
+
+def normalize_limit(value: int | None) -> int | None:
+    if value is None or value <= 0:
+        return None
+    return value
+
+
+def normalize_video_kwargs(video_kwargs: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(video_kwargs)
+    if isinstance(normalized.get("fps"), list) and len(normalized["fps"]) == 1:
+        normalized["fps"] = float(normalized["fps"][0])
+    return normalized
 
 
 def require_peft():
@@ -286,6 +311,8 @@ def build_messages(
     resolution: tuple[int, int],
     system_prompt: str,
     include_answer: bool,
+    min_frames: int,
+    max_frames: int,
 ) -> list[dict[str, Any]]:
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
@@ -296,6 +323,8 @@ def build_messages(
                     "type": "video",
                     "video": f"file://{clip_path}",
                     "fps": clip_fps,
+                    "min_frames": min_frames,
+                    "max_frames": max_frames,
                     "video_metadata": {
                         "fps": clip_fps,
                         "width": resolution[0],
@@ -319,12 +348,27 @@ def encode_sample(
     resolution: tuple[int, int],
     system_prompt: str,
     device: str,
+    args: argparse.Namespace,
 ) -> dict[str, torch.Tensor]:
     full_messages = build_messages(
-        row, clip_path, clip_fps, resolution, system_prompt, include_answer=True
+        row,
+        clip_path,
+        clip_fps,
+        resolution,
+        system_prompt,
+        include_answer=True,
+        min_frames=args.video_min_frames,
+        max_frames=args.video_max_frames,
     )
     prompt_messages = build_messages(
-        row, clip_path, clip_fps, resolution, system_prompt, include_answer=False
+        row,
+        clip_path,
+        clip_fps,
+        resolution,
+        system_prompt,
+        include_answer=False,
+        min_frames=args.video_min_frames,
+        max_frames=args.video_max_frames,
     )
 
     full_text = processor.apply_chat_template(
@@ -338,22 +382,64 @@ def encode_sample(
         add_generation_prompt=True,
     )
 
-    full_image_inputs, full_video_inputs = process_vision_info(full_messages)
+    try:
+        full_image_inputs, full_video_inputs, full_video_kwargs = process_vision_info(
+            full_messages,
+            image_patch_size=16,
+            return_video_kwargs=True,
+            return_video_metadata=True,
+        )
+    except TypeError:
+        full_image_inputs, full_video_inputs = process_vision_info(full_messages)
+        full_video_kwargs = {}
+        full_video_metadatas = None
+    else:
+        if full_video_inputs is not None:
+            full_video_inputs, full_video_metadatas = zip(*full_video_inputs)
+            full_video_inputs = list(full_video_inputs)
+            full_video_metadatas = list(full_video_metadatas)
+        else:
+            full_video_metadatas = None
+    full_video_kwargs = normalize_video_kwargs(full_video_kwargs)
     full_inputs = processor(
         text=[full_text],
         images=full_image_inputs,
         videos=full_video_inputs,
+        video_metadata=full_video_metadatas,
         padding=True,
         return_tensors="pt",
+        do_resize=False,
+        **full_video_kwargs,
     )
 
-    prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
+    try:
+        prompt_image_inputs, prompt_video_inputs, prompt_video_kwargs = process_vision_info(
+            prompt_messages,
+            image_patch_size=16,
+            return_video_kwargs=True,
+            return_video_metadata=True,
+        )
+    except TypeError:
+        prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
+        prompt_video_kwargs = {}
+        prompt_video_metadatas = None
+    else:
+        if prompt_video_inputs is not None:
+            prompt_video_inputs, prompt_video_metadatas = zip(*prompt_video_inputs)
+            prompt_video_inputs = list(prompt_video_inputs)
+            prompt_video_metadatas = list(prompt_video_metadatas)
+        else:
+            prompt_video_metadatas = None
+    prompt_video_kwargs = normalize_video_kwargs(prompt_video_kwargs)
     prompt_inputs = processor(
         text=[prompt_text],
         images=prompt_image_inputs,
         videos=prompt_video_inputs,
+        video_metadata=prompt_video_metadatas,
         padding=True,
         return_tensors="pt",
+        do_resize=False,
+        **prompt_video_kwargs,
     )
 
     labels = full_inputs["input_ids"].clone()
@@ -432,7 +518,7 @@ def run_eval_loss(
             try:
                 clip_path, clip_fps = make_clip(row, args.video_stride, resolution)
                 inputs = encode_sample(
-                    processor, row, clip_path, clip_fps, resolution, system_prompt, args.device
+                    processor, row, clip_path, clip_fps, resolution, system_prompt, args.device, args
                 )
                 loss = model(**inputs).loss
                 losses.append(float(loss.detach().cpu()))
@@ -454,8 +540,8 @@ def main() -> None:
     val_jsonl = Path(args.val_jsonl).expanduser().resolve()
     resolution = (args.width, args.height)
 
-    train_rows = read_jsonl(train_jsonl, args.max_train_samples)
-    val_rows = read_jsonl(val_jsonl, args.max_val_samples)
+    train_rows = read_jsonl(train_jsonl, normalize_limit(args.max_train_samples))
+    val_rows = read_jsonl(val_jsonl, normalize_limit(args.max_val_samples))
     train_rows_before_filter = len(train_rows)
     val_rows_before_filter = len(val_rows)
     train_rows, invalid_train_rows = validate_clip_rows(train_rows, "train", output_dir)
@@ -533,6 +619,7 @@ def main() -> None:
                         resolution,
                         system_prompt,
                         args.device,
+                        args,
                     )
                     outputs = model(**inputs)
                     loss = outputs.loss / args.gradient_accumulation_steps

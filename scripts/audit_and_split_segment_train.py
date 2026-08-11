@@ -1,8 +1,9 @@
 """Audit ORena FOCUS SEGMENT splits and create a leakage-safe train/val split.
 
 Run this on the remote server inside the `orena-focus` conda environment. The
-script uses the official HeiCo SEGMENT TRAIN split for SFT data construction and
-keeps the official TEST split as held-out evaluation data.
+script uses official SEGMENT TRAIN split(s) for SFT data construction and keeps
+official TEST split(s) as held-out evaluation data. It supports one or more
+FOCUS datasets, for example HeiCo alone or HeiCo + LapChole.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ from focus.enums import DatasetSplit, Track
 
 @dataclass(frozen=True)
 class SampleRecord:
+    dataset: str
     official_split: str
     qID: str
     videoID: str
@@ -39,7 +41,15 @@ class SampleRecord:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root-dir", default="/home/Jiali_Wang/data/focus")
-    parser.add_argument("--dataset", default="heico")
+    parser.add_argument(
+        "--dataset",
+        action="append",
+        default=None,
+        help=(
+            "FOCUS dataset name. Repeat to combine datasets, e.g. "
+            "--dataset heico --dataset lapchole. Defaults to heico."
+        ),
+    )
     parser.add_argument("--track", default="segment", choices=["segment"])
     parser.add_argument("--val-fraction", type=float, default=0.1)
     parser.add_argument("--seed", type=int, default=20260707)
@@ -53,6 +63,17 @@ def parse_args() -> argparse.Namespace:
         help="Also write a held-out test manifest JSONL. This is for analysis only, not training.",
     )
     return parser.parse_args()
+
+
+def requested_datasets(args: argparse.Namespace) -> list[str]:
+    values = args.dataset or ["heico"]
+    datasets: list[str] = []
+    for value in values:
+        for item in str(value).split(","):
+            item = item.strip()
+            if item and item not in datasets:
+                datasets.append(item)
+    return datasets
 
 
 def norm(value: object) -> str:
@@ -79,6 +100,7 @@ def load_records(dataset_name: str, split: DatasetSplit) -> list[SampleRecord]:
     for request, reference in dataset:
         rows.append(
             SampleRecord(
+                dataset=dataset_name,
                 official_split=split.value,
                 qID=str(request.qID),
                 videoID=str(request.videoID),
@@ -150,36 +172,47 @@ def make_stratified_split(
         internal_val.extend(group[:n_val])
         internal_train.extend(group[n_val:])
 
-    internal_train.sort(key=lambda row: row.qID)
-    internal_val.sort(key=lambda row: row.qID)
+    internal_train.sort(key=stable_sort_key)
+    internal_val.sort(key=stable_sort_key)
     return internal_train, internal_val
 
 
-def to_manifest_row(record: SampleRecord, internal_split: str | None = None) -> dict[str, object]:
+def overlay_path(root_dir: Path, record: SampleRecord) -> Path:
+    return root_dir / record.dataset / "overlayed" / f"{Path(record.videoID).stem}_overlay.mp4"
+
+
+def raw_video_path(root_dir: Path, record: SampleRecord) -> Path:
+    return root_dir / record.dataset / "videos" / record.videoID
+
+
+def stable_sort_key(record: SampleRecord) -> tuple[str, str]:
+    return (record.dataset, record.qID)
+
+
+def to_manifest_row(
+    root_dir: Path,
+    record: SampleRecord,
+    internal_split: str | None = None,
+) -> dict[str, object]:
     row = asdict(record)
     if internal_split is not None:
         row["internal_split"] = internal_split
     row["duration"] = round(record.end_time - record.start_time, 6)
-    row["raw_video_path"] = f"/home/Jiali_Wang/data/focus/heico/videos/{record.videoID}"
-    row["overlay_video_path"] = (
-        "/home/Jiali_Wang/data/focus/heico/overlayed/"
-        f"{Path(record.videoID).stem}_overlay.mp4"
-    )
+    row["raw_video_path"] = str(raw_video_path(root_dir, record))
+    row["overlay_video_path"] = str(overlay_path(root_dir, record))
     return row
 
 
-def to_sft_row(record: SampleRecord, internal_split: str) -> dict[str, object]:
+def to_sft_row(root_dir: Path, record: SampleRecord, internal_split: str) -> dict[str, object]:
     return {
         "qID": record.qID,
         "internal_split": internal_split,
+        "dataset": record.dataset,
         "videoID": record.videoID,
         "start_time": record.start_time,
         "end_time": record.end_time,
         "video_source": "overlay",
-        "overlay_video_path": (
-            "/home/Jiali_Wang/data/focus/heico/overlayed/"
-            f"{Path(record.videoID).stem}_overlay.mp4"
-        ),
+        "overlay_video_path": str(overlay_path(root_dir, record)),
         "messages": [
             {
                 "role": "user",
@@ -191,7 +224,7 @@ def to_sft_row(record: SampleRecord, internal_split: str) -> dict[str, object]:
             {"role": "assistant", "content": record.answer},
         ],
         "metadata": {
-            "dataset": "heico",
+            "dataset": record.dataset,
             "track": "segment",
             "official_split": record.official_split,
             "primary": record.primary,
@@ -205,11 +238,16 @@ def main() -> None:
     args = parse_args()
     output_dir = Path(args.output_dir).expanduser().resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
+    root_dir = Path(args.root_dir).expanduser().resolve()
+    dataset_names = requested_datasets(args)
 
-    set_config(FocusConfig(root_dir=str(Path(args.root_dir).expanduser())))
+    set_config(FocusConfig(root_dir=str(root_dir)))
 
-    train_records = load_records(args.dataset, DatasetSplit.TRAIN)
-    test_records = load_records(args.dataset, DatasetSplit.TEST)
+    train_records: list[SampleRecord] = []
+    test_records: list[SampleRecord] = []
+    for dataset_name in dataset_names:
+        train_records.extend(load_records(dataset_name, DatasetSplit.TRAIN))
+        test_records.extend(load_records(dataset_name, DatasetSplit.TEST))
     all_records = train_records + test_records
     internal_train, internal_val = make_stratified_split(
         train_records,
@@ -228,10 +266,15 @@ def main() -> None:
             {
                 "split": split_name,
                 "count": len(records),
-                "unique_videos": len({record.videoID for record in records}),
+                "unique_videos": len({(record.dataset, record.videoID) for record in records}),
             }
         )
 
+    write_csv(
+        output_dir / "distribution_by_official_split_dataset.csv",
+        ["official_split", "dataset", "count"],
+        count_by(all_records, "official_split", "dataset"),
+    )
     write_csv(output_dir / "split_counts.csv", ["split", "count", "unique_videos"], split_rows)
     write_csv(
         output_dir / "distribution_by_official_split_primary.csv",
@@ -250,11 +293,12 @@ def main() -> None:
     )
 
     train_manifest_rows = [
-        to_manifest_row(record, "train") for record in internal_train
-    ] + [to_manifest_row(record, "val") for record in internal_val]
+        to_manifest_row(root_dir, record, "train") for record in internal_train
+    ] + [to_manifest_row(root_dir, record, "val") for record in internal_val]
     write_csv(
         output_dir / "train_internal_split_manifest.csv",
         [
+            "dataset",
             "official_split",
             "qID",
             "videoID",
@@ -275,20 +319,20 @@ def main() -> None:
     )
     write_jsonl(
         output_dir / "sft_train_overlay.jsonl",
-        (to_sft_row(record, "train") for record in internal_train),
+        (to_sft_row(root_dir, record, "train") for record in internal_train),
     )
     write_jsonl(
         output_dir / "sft_val_overlay.jsonl",
-        (to_sft_row(record, "val") for record in internal_val),
+        (to_sft_row(root_dir, record, "val") for record in internal_val),
     )
     if args.include_test_jsonl:
         write_jsonl(
             output_dir / "heldout_test_manifest.jsonl",
-            (to_manifest_row(record) for record in test_records),
+            (to_manifest_row(root_dir, record) for record in test_records),
         )
 
     summary = {
-        "dataset": args.dataset,
+        "datasets": dataset_names,
         "track": args.track,
         "seed": args.seed,
         "val_fraction": args.val_fraction,

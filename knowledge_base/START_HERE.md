@@ -270,20 +270,17 @@ Official pre-evaluation result:
   `results/official_preeval_20260810_qwen_lora_metrics.csv`
 - SFT gap audit after comparing against a stronger ~0.5 baseline:
   `docs/sft_training_audit_20260810.md`
+- Qwen3-VL LoRA-SFT v2 plan after checking official HeiCo + LapChole data:
+  `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`
 
 ## Current Recommended Remote Command
 
-Update the remote project and copy Qwen-LoRA submission files into the official
-SEGMENT template:
+Update the remote project, then check whether LapChole SEGMENT splits are
+visible to the current Hugging Face account:
 
 ```bash
-source ~/tools/miniconda3/etc/profile.d/conda.sh
-conda activate orena-focus
-cd ~/workspace/VLM-Competition
-git pull origin main
-
-cp ~/workspace/VLM-Competition/submission/segment_qwen_lora/inference.py \
-  ~/workspace/orena-focus-submission-template/segment-algorithm/inference.py
-cp ~/workspace/VLM-Competition/submission/segment_qwen_lora/requirements.txt \
-  ~/workspace/orena-focus-submission-template/segment-algorithm/requirements.txt
+source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition && git pull origin main
 ```
+
+Then run the Step 1 command in
+`docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`.
