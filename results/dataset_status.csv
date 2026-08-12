@@ -1,4 +1,4 @@
 dataset,official_name,status,local_path,local_size,track_used,split_used,known_sample_count,notes
-heico,HeiCo-FOCUS,downloaded,/home/Jiali_Wang/data/focus/heico/videos,150G,SEGMENT,TEST,4000,Used for current raw-video baseline.
-heico_overlay,HeiCo-FOCUS timestamp overlay,generated,/home/Jiali_Wang/data/focus/heico/overlayed,81G,SEGMENT,TEST,4000,Generated from heico videos for use_overlay=True experiments.
-lapchole,LapChole-FOCUS,not_downloaded,,,,,Officially supported but not used yet.
+heico,HeiCo-FOCUS,downloaded,/home/Jiali_Wang/data/focus/heico/videos -> /mnt/data/jiali_wang/focus/heico/videos,150G,SEGMENT,"TRAIN,TEST","8000 train; 4000 test","Migrated to /mnt/data on 2026-08-12; /home/Jiali_Wang/data/focus is now a symlink."
+heico_overlay,HeiCo-FOCUS timestamp overlay,generated,/home/Jiali_Wang/data/focus/heico/overlayed -> /mnt/data/jiali_wang/focus/heico/overlayed,81G,SEGMENT,"TRAIN,TEST","8000 train; 4000 test","Generated overlay videos migrated to /mnt/data on 2026-08-12."
+lapchole,LapChole-FOCUS,gated_not_accessible,/home/Jiali_Wang/data/focus/lapchole -> /mnt/data/jiali_wang/focus/lapchole,,SEGMENT,pending,pending,"Access check on 2026-08-12 still returns Hugging Face gated dataset error; do not download until access is approved."

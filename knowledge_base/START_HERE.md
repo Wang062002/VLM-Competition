@@ -232,6 +232,10 @@ Storage decision:
 - New large disk mount: `/mnt/data`
 - User project directory to create/use: `/mnt/data/jiali_wang`
 - Prefer future large data/cache/run storage under `/mnt/data/jiali_wang`
+- Completed FOCUS data migration on `2026-08-12`:
+  `/home/Jiali_Wang/data/focus -> /mnt/data/jiali_wang/focus`
+- After migration and backup removal, root disk free space improved from about
+  `25G` to `261G`; `/mnt/data` still had about `3.1T` free.
 - Open-VLM candidate snapshots can be removed after recorded full baseline
   results, because Qwen is the stronger overall mainline.
 
@@ -272,6 +276,9 @@ Official pre-evaluation result:
   `docs/sft_training_audit_20260810.md`
 - Qwen3-VL LoRA-SFT v2 plan after checking official HeiCo + LapChole data:
   `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`
+- Latest LapChole access check (`2026-08-12`): HeiCo SEGMENT is accessible
+  (`8000` train / `4000` test), but LapChole still returns Hugging Face
+  `gated dataset` access error.
 
 ## Current Recommended Remote Command
 

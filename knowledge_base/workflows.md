@@ -516,7 +516,17 @@ LLaVA full TEST-4000 check:
 
 ## Storage Migration And Cleanup
 
-New large disk mount:
+Current state as of `2026-08-12`:
+
+- FOCUS data has been migrated off the root disk.
+- `/home/Jiali_Wang/data/focus` is now a symlink to
+  `/mnt/data/jiali_wang/focus`.
+- Verified dataset load after migration:
+  HeiCo SEGMENT TEST loads `4000` samples.
+- Root disk free space improved to about `261G`; `/mnt/data` still has about
+  `3.1T` free.
+
+Large disk mount:
 
 ```bash
 /mnt/data
@@ -528,7 +538,7 @@ Required user directory:
 /mnt/data/jiali_wang
 ```
 
-Create the storage layout:
+Storage layout:
 
 ```bash
 mkdir -p /mnt/data/jiali_wang/focus
@@ -537,14 +547,14 @@ mkdir -p /mnt/data/jiali_wang/hf-cache
 mkdir -p /mnt/data/jiali_wang/tmp
 ```
 
-Check large paths:
+Check current large paths:
 
 ```bash
 df -h
 du -sh ~/data/focus ~/workspace/vlm-models ~/workspace/focus-runs ~/.cache/huggingface 2>/dev/null
 ```
 
-Move FOCUS data by copy-first migration:
+Historical copy-first migration command, rerun only if repairing a partial copy:
 
 ```bash
 rsync -aH --info=progress2 ~/data/focus/ /mnt/data/jiali_wang/focus/
@@ -553,15 +563,15 @@ find ~/data/focus/heico/overlayed -type f -name '*_overlay.mp4' | wc -l
 find /mnt/data/jiali_wang/focus/heico/overlayed -type f -name '*_overlay.mp4' | wc -l
 ```
 
-After verifying that the new copy is complete:
+Historical symlink switch command, already completed:
 
 ```bash
 mv ~/data/focus ~/data/focus.before_mnt_data_migration
 ln -s /mnt/data/jiali_wang/focus ~/data/focus
 ```
 
-Only after one dataset load and one smoke run pass, remove the backup if the
-main disk needs space:
+Historical backup removal command, already completed after dataset-load
+validation:
 
 ```bash
 rm -rf ~/data/focus.before_mnt_data_migration

@@ -636,3 +636,30 @@ Next plan:
 Detailed plan:
 
 - `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`
+
+## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
+
+Storage result:
+
+- Before migration, `/home/Jiali_Wang/data/focus` was a real directory on the
+  root disk and used `237G`.
+- Copied the FOCUS tree to `/mnt/data/jiali_wang/focus` with `rsync`.
+- Verified both source and destination were `237G` with `93` files.
+- Replaced `/home/Jiali_Wang/data/focus` with a symlink to
+  `/mnt/data/jiali_wang/focus`.
+- Verified `FocusDataset("heico", DatasetSplit.TEST, Track.SEGMENT)` loads
+  `4000` samples through the symlink.
+- Removed the old backup directory
+  `/home/Jiali_Wang/data/focus.before_mnt_data_migration`.
+- Root disk free space improved from about `25G` to `261G`; `/mnt/data` had
+  about `3.1T` free after migration.
+
+LapChole access status:
+
+- Access check saved to
+  `/home/Jiali_Wang/workspace/focus-runs/data-audit/qwen-lora-sft-v2-access-check.json`.
+- HeiCo SEGMENT remains accessible:
+  `8000` train / `4000` test.
+- LapChole SEGMENT still returns Hugging Face `gated dataset` error for both
+  train and test.
+- Do not run LapChole download until gated access is approved.

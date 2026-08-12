@@ -92,6 +92,10 @@ source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus &
 
 如果 LapChole 报 gated/access error，则先在 Hugging Face 页面申请权限。
 
+2026-08-12 最新状态：使用 `JialiWang620` 账号检查后，HeiCo SEGMENT 可访问，
+LapChole SEGMENT train/test 仍返回 Hugging Face gated dataset error。等待权限通过前，
+不要执行 LapChole 下载。
+
 ### Step 2：下载并预处理 LapChole
 
 权限通过后，下载到主数据目录或 `/mnt/data/jiali_wang/focus`。考虑主盘紧张，优先使用大盘：

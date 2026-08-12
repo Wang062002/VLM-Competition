@@ -10,9 +10,10 @@ parameter-efficient supervised fine-tuning.
 
 - Challenge/toolkit: ORena FOCUS, Foreign Object Contextual Understanding for
   Surgery
-- Current dataset: `heico`
+- Current accessible dataset: `heico`
 - Current track: `SEGMENT`
-- Other known dataset: `lapchole`, not downloaded or used
+- Other known dataset: `lapchole`, still blocked by Hugging Face gated access
+  as of `2026-08-12`
 - Source videos in HeiCo: `30`
 - SEGMENT official TRAIN: `8000` QA samples
 - SEGMENT official TEST: `4000` QA samples
@@ -35,20 +36,20 @@ Do not store or repeat the server password.
 - Conda install: `/home/Jiali_Wang/tools/miniconda3`
 - Conda env: `orena-focus`
 - Preferred large-storage root: `/mnt/data/jiali_wang`
-- Preferred future data root: `/mnt/data/jiali_wang/focus`
-- Legacy data root: `/home/Jiali_Wang/data/focus`
-- Raw videos: `/home/Jiali_Wang/data/focus/heico/videos` or
-  `/mnt/data/jiali_wang/focus/heico/videos` after migration
-- Overlay videos: `/home/Jiali_Wang/data/focus/heico/overlayed` or
-  `/mnt/data/jiali_wang/focus/heico/overlayed` after migration
+- Current data root: `/home/Jiali_Wang/data/focus`
+  -> symlink to `/mnt/data/jiali_wang/focus`
+- Raw videos: `/home/Jiali_Wang/data/focus/heico/videos`
+- Overlay videos: `/home/Jiali_Wang/data/focus/heico/overlayed`
 - Experiment outputs: `/home/Jiali_Wang/workspace/focus-runs`
 
 Storage policy:
 
 - `/mnt/data` has a newly mounted disk. Create and use
   `/mnt/data/jiali_wang` before storing large files.
-- Avoid placing large datasets, model snapshots, Hugging Face cache, or future
-  run artifacts on the main system disk.
+- FOCUS data migration completed on `2026-08-12`; root disk free space improved
+  from about `25G` to `261G`.
+- Avoid placing large model snapshots, Hugging Face cache, or future run
+  artifacts on the main system disk.
 - Open-VLM candidate snapshots under `~/workspace/vlm-models` may be removed
   after their baseline metrics have been recorded, because Qwen remains the
   stronger mainline model.
@@ -85,8 +86,8 @@ conda activate orena-focus
 - `./do_test_run.sh` PASSED (3 samples, 0 failures, CPU fallback);
   `./do_save.sh` produced tarball
   `segment-algorithm_2026-08-07T15-57-33.08855081+08-00.tar.gz`
-- Disk risk: `/` at 98% full (~40G free); migrate large data to
-  `/mnt/data/jiali_wang` and prune unused docker images after submission
+- Previous disk risk was reduced by migrating FOCUS data to `/mnt/data`;
+  continue keeping new large files on `/mnt/data/jiali_wang`.
 
 ## Data Integrity Notes
 

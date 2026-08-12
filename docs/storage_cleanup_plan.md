@@ -2,6 +2,17 @@
 
 Date: `2026-07-20`
 
+Status update (`2026-08-12`):
+
+- FOCUS data migration is complete.
+- `/home/Jiali_Wang/data/focus` is now a symlink to
+  `/mnt/data/jiali_wang/focus`.
+- Destination verification: `237G`, `93` files.
+- HeiCo SEGMENT TEST loaded `4000` samples after migration.
+- Migration backup was removed; root disk free space improved to about `261G`.
+- LapChole is still not downloaded because Hugging Face gated access has not
+  been approved yet.
+
 The remote server has a new mounted disk at `/mnt/data`. Large project files
 should use a user-owned directory:
 
