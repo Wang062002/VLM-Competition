@@ -459,9 +459,16 @@ def load_model_and_processor(args: argparse.Namespace):
 
     model_kwargs: dict[str, Any] = {}
     if args.load_in_4bit:
+        from transformers import BitsAndBytesConfig
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True,
+        )
         model_kwargs.update(
             {
-                "load_in_4bit": True,
+                "quantization_config": bnb_config,
                 "device_map": {"": args.device},
                 "torch_dtype": torch.bfloat16,
             }
