@@ -55,7 +55,7 @@ VIDEO_SUBDIR_CANDIDATES = (
     "batch-videos",
 )
 
-MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "64"))
+MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", "128"))
 VIDEO_FPS = float(os.environ.get("VIDEO_FPS", "1.0"))
 VIDEO_MIN_FRAMES = int(os.environ.get("VIDEO_MIN_FRAMES", "4"))
 VIDEO_MAX_FRAMES = int(os.environ.get("VIDEO_MAX_FRAMES", "64"))
