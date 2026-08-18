@@ -24,8 +24,7 @@ from pathlib import Path
 
 import torch
 from focus import Request, Response, load_requests, save_items
-from qwen_vl_utils import process_vision_info
-from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
+from transformers import AutoProcessor, Qwen3_5ForConditionalGeneration
 
 try:
     from peft import PeftModel
@@ -45,8 +44,8 @@ INPUT_PATH = Path(os.environ.get("ORENA_INPUT_PATH", "/input"))
 OUTPUT_PATH = Path(os.environ.get("ORENA_OUTPUT_PATH", "/output"))
 RESOURCES_PATH = Path(__file__).parent / "resources"
 
-BASE_MODEL_PATH = RESOURCES_PATH / "qwen3vl-4b"
-ADAPTER_PATH = RESOURCES_PATH / "qwen3vl-lora"
+BASE_MODEL_PATH = RESOURCES_PATH / "qwen3.5-4b"
+ADAPTER_PATH = RESOURCES_PATH / "qwen3.5-lora"
 VIDEO_SUBDIR_CANDIDATES = (
     "overlayed",
     "plain",
@@ -151,14 +150,16 @@ class QwenLoraEngine:
         self.processor = AutoProcessor.from_pretrained(
             str(ADAPTER_PATH),
             local_files_only=True,
+            trust_remote_code=True,
         )
 
         dtype = torch.bfloat16 if self.device.startswith("cuda") and USE_BFLOAT16 else torch.float32
         LOGGER.info("Loading base model from %s with dtype=%s", BASE_MODEL_PATH, dtype)
-        self.model = Qwen3VLForConditionalGeneration.from_pretrained(
+        self.model = Qwen3_5ForConditionalGeneration.from_pretrained(
             str(BASE_MODEL_PATH),
             torch_dtype=dtype,
             local_files_only=True,
+            trust_remote_code=True,
         ).eval()
         self.model.to(self.device)
 
@@ -185,7 +186,7 @@ class QwenLoraEngine:
                 "content": [
                     {
                         "type": "video",
-                        "video": f"file://{video_path}",
+                        "video": str(video_path),
                         "fps": VIDEO_FPS,
                         "min_frames": VIDEO_MIN_FRAMES,
                         "max_frames": VIDEO_MAX_FRAMES,
@@ -200,39 +201,17 @@ class QwenLoraEngine:
             },
         ]
 
-        text = self.processor.apply_chat_template(
+        # Qwen3.5: apply_chat_template(tokenize=True, return_dict=True) directly
+        # produces model inputs; no qwen_vl_utils / process_vision_info.
+        # enable_thinking=False keeps inference fast and within the per-question
+        # time budget, and matches the non-thinking SFT target distribution.
+        inputs = self.processor.apply_chat_template(
             messages,
-            tokenize=False,
+            tokenize=True,
             add_generation_prompt=True,
-        )
-        try:
-            image_inputs, video_inputs, video_kwargs = process_vision_info(
-                messages,
-                image_patch_size=16,
-                return_video_kwargs=True,
-                return_video_metadata=True,
-            )
-        except TypeError:
-            image_inputs, video_inputs = process_vision_info(messages)
-            video_kwargs = {}
-            video_metadatas = None
-        else:
-            if video_inputs is not None:
-                video_inputs, video_metadatas = zip(*video_inputs)
-                video_inputs = list(video_inputs)
-                video_metadatas = list(video_metadatas)
-            else:
-                video_metadatas = None
-        video_kwargs = normalize_video_kwargs(video_kwargs)
-        inputs = self.processor(
-            text=[text],
-            images=image_inputs,
-            videos=video_inputs,
-            video_metadata=video_metadatas,
-            padding=True,
+            return_dict=True,
             return_tensors="pt",
-            do_resize=False,
-            **video_kwargs,
+            chat_template_kwargs={"enable_thinking": False},
         ).to(self.device)
 
         with torch.no_grad():

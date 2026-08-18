@@ -30,8 +30,7 @@ import cv2
 import decord
 import torch
 from progiter import ProgIter
-from qwen_vl_utils import process_vision_info
-from transformers import AutoProcessor, Qwen3VLForConditionalGeneration
+from transformers import AutoProcessor, Qwen3_5ForConditionalGeneration
 
 from focus import FO_DEFINITIONS_FILE
 
@@ -44,7 +43,7 @@ class InvalidClipError(ValueError):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-id", default="Qwen/Qwen3-VL-4B-Instruct")
+    parser.add_argument("--model-id", default="/mnt/data/jiali_wang/models/Qwen3.5-4B")
     parser.add_argument(
         "--train-jsonl",
         default=(
@@ -92,7 +91,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument(
         "--target-modules",
-        default="q_proj,k_proj,v_proj,o_proj,gate_proj,up_proj,down_proj",
+        default="q_proj,k_proj,v_proj,o_proj,in_proj_qkv,out_proj,gate_proj,up_proj,down_proj",
         help="Comma-separated LoRA target module names.",
     )
     parser.add_argument("--load-in-4bit", action="store_true")
@@ -321,7 +320,7 @@ def build_messages(
             "content": [
                 {
                     "type": "video",
-                    "video": f"file://{clip_path}",
+                    "video": str(clip_path),
                     "fps": clip_fps,
                     "min_frames": min_frames,
                     "max_frames": max_frames,
@@ -371,75 +370,26 @@ def encode_sample(
         max_frames=args.video_max_frames,
     )
 
-    full_text = processor.apply_chat_template(
+    # Qwen3.5: apply_chat_template(tokenize=True, return_dict=True) directly
+    # produces model inputs; qwen_vl_utils / process_vision_info is no longer
+    # used. enable_thinking=False makes the model emit the reference answer
+    # directly instead of a chain-of-thought preamble (which would mismatch the
+    # SFT target and waste the per-question time budget at inference).
+    full_inputs = processor.apply_chat_template(
         full_messages,
-        tokenize=False,
+        tokenize=True,
         add_generation_prompt=False,
+        return_dict=True,
+        return_tensors="pt",
+        chat_template_kwargs={"enable_thinking": False},
     )
-    prompt_text = processor.apply_chat_template(
+    prompt_inputs = processor.apply_chat_template(
         prompt_messages,
-        tokenize=False,
+        tokenize=True,
         add_generation_prompt=True,
-    )
-
-    try:
-        full_image_inputs, full_video_inputs, full_video_kwargs = process_vision_info(
-            full_messages,
-            image_patch_size=16,
-            return_video_kwargs=True,
-            return_video_metadata=True,
-        )
-    except TypeError:
-        full_image_inputs, full_video_inputs = process_vision_info(full_messages)
-        full_video_kwargs = {}
-        full_video_metadatas = None
-    else:
-        if full_video_inputs is not None:
-            full_video_inputs, full_video_metadatas = zip(*full_video_inputs)
-            full_video_inputs = list(full_video_inputs)
-            full_video_metadatas = list(full_video_metadatas)
-        else:
-            full_video_metadatas = None
-    full_video_kwargs = normalize_video_kwargs(full_video_kwargs)
-    full_inputs = processor(
-        text=[full_text],
-        images=full_image_inputs,
-        videos=full_video_inputs,
-        video_metadata=full_video_metadatas,
-        padding=True,
+        return_dict=True,
         return_tensors="pt",
-        do_resize=False,
-        **full_video_kwargs,
-    )
-
-    try:
-        prompt_image_inputs, prompt_video_inputs, prompt_video_kwargs = process_vision_info(
-            prompt_messages,
-            image_patch_size=16,
-            return_video_kwargs=True,
-            return_video_metadata=True,
-        )
-    except TypeError:
-        prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
-        prompt_video_kwargs = {}
-        prompt_video_metadatas = None
-    else:
-        if prompt_video_inputs is not None:
-            prompt_video_inputs, prompt_video_metadatas = zip(*prompt_video_inputs)
-            prompt_video_inputs = list(prompt_video_inputs)
-            prompt_video_metadatas = list(prompt_video_metadatas)
-        else:
-            prompt_video_metadatas = None
-    prompt_video_kwargs = normalize_video_kwargs(prompt_video_kwargs)
-    prompt_inputs = processor(
-        text=[prompt_text],
-        images=prompt_image_inputs,
-        videos=prompt_video_inputs,
-        video_metadata=prompt_video_metadatas,
-        padding=True,
-        return_tensors="pt",
-        do_resize=False,
-        **prompt_video_kwargs,
+        chat_template_kwargs={"enable_thinking": False},
     )
 
     labels = full_inputs["input_ids"].clone()
@@ -455,7 +405,7 @@ def encode_sample(
 def load_model_and_processor(args: argparse.Namespace):
     LoraConfig, get_peft_model, prepare_model_for_kbit_training = require_peft()
 
-    processor = AutoProcessor.from_pretrained(args.model_id)
+    processor = AutoProcessor.from_pretrained(args.model_id, trust_remote_code=True)
 
     model_kwargs: dict[str, Any] = {}
     if args.load_in_4bit:
@@ -469,7 +419,7 @@ def load_model_and_processor(args: argparse.Namespace):
     else:
         model_kwargs.update({"torch_dtype": torch.bfloat16})
 
-    model = Qwen3VLForConditionalGeneration.from_pretrained(args.model_id, **model_kwargs)
+    model = Qwen3_5ForConditionalGeneration.from_pretrained(args.model_id, trust_remote_code=True, **model_kwargs)
     if not args.load_in_4bit:
         model.to(args.device)
 
