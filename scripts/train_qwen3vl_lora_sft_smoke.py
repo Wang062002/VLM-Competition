@@ -384,64 +384,22 @@ def encode_sample(
         add_generation_prompt=True,
     )
 
-    try:
-        full_image_inputs, full_video_inputs, full_video_kwargs = process_vision_info(
-            full_messages,
-            image_patch_size=16,
-            return_video_kwargs=True,
-            return_video_metadata=True,
-        )
-    except TypeError:
-        full_image_inputs, full_video_inputs = process_vision_info(full_messages)
-        full_video_kwargs = {}
-        full_video_metadatas = None
-    else:
-        if full_video_inputs is not None:
-            full_video_inputs, full_video_metadatas = zip(*full_video_inputs)
-            full_video_inputs = list(full_video_inputs)
-            full_video_metadatas = list(full_video_metadatas)
-        else:
-            full_video_metadatas = None
-    full_video_kwargs = normalize_video_kwargs(full_video_kwargs)
+    full_image_inputs, full_video_inputs = process_vision_info(full_messages)
     full_inputs = processor(
         text=[full_text],
         images=full_image_inputs,
         videos=full_video_inputs,
-        video_metadata=full_video_metadatas,
         padding=True,
         return_tensors="pt",
-        do_resize=False,
-        **full_video_kwargs,
     )
 
-    try:
-        prompt_image_inputs, prompt_video_inputs, prompt_video_kwargs = process_vision_info(
-            prompt_messages,
-            image_patch_size=16,
-            return_video_kwargs=True,
-            return_video_metadata=True,
-        )
-    except TypeError:
-        prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
-        prompt_video_kwargs = {}
-        prompt_video_metadatas = None
-    else:
-        if prompt_video_inputs is not None:
-            prompt_video_inputs, prompt_video_metadatas = zip(*prompt_video_inputs)
-            prompt_video_inputs = list(prompt_video_inputs)
-            prompt_video_metadatas = list(prompt_video_metadatas)
-        else:
-            prompt_video_metadatas = None
-    prompt_video_kwargs = normalize_video_kwargs(prompt_video_kwargs)
+    prompt_image_inputs, prompt_video_inputs = process_vision_info(prompt_messages)
     prompt_inputs = processor(
         text=[prompt_text],
         images=prompt_image_inputs,
         videos=prompt_video_inputs,
-        video_metadata=prompt_video_metadatas,
         padding=True,
         return_tensors="pt",
-        do_resize=False,
-        **prompt_video_kwargs,
     )
 
     labels = full_inputs["input_ids"].clone()
