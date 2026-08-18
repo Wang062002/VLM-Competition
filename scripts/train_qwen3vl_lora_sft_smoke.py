@@ -314,6 +314,10 @@ def build_messages(
     min_frames: int,
     max_frames: int,
 ) -> list[dict[str, Any]]:
+    # NOTE: v1 (qwen3vl-4b-sft-valid5959-e1) did NOT pass min_frames/max_frames
+    # to the video item; qwen_vl_utils sampled purely by fps. Adding these fields
+    # (Codex 4ebfe56) changed qwen_vl_utils behavior and caused OOM. Keep v1
+    # behavior: fps-only sampling, no min/max_frames in the video item.
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
         {
@@ -323,8 +327,6 @@ def build_messages(
                     "type": "video",
                     "video": f"file://{clip_path}",
                     "fps": clip_fps,
-                    "min_frames": min_frames,
-                    "max_frames": max_frames,
                     "video_metadata": {
                         "fps": clip_fps,
                         "width": resolution[0],
