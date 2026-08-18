@@ -102,7 +102,7 @@ Observed:
   - `videoID`: `0029 - Heico - Sigma - 10.avi`
   - answer: `Clip`
 
-Not downloaded/used yet:
+Not downloaded yet, but gated access approved as of 2026-08-16:
 
 - `lapchole`
 

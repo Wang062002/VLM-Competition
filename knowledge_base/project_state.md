@@ -12,8 +12,8 @@ parameter-efficient supervised fine-tuning.
   Surgery
 - Current accessible dataset: `heico`
 - Current track: `SEGMENT`
-- Other known dataset: `lapchole`, still blocked by Hugging Face gated access
-  as of `2026-08-12`
+- Other known dataset: `lapchole`, gated access approved as of `2026-08-16`,
+  ready for download and preprocessing
 - Source videos in HeiCo: `30`
 - SEGMENT official TRAIN: `8000` QA samples
 - SEGMENT official TEST: `4000` QA samples

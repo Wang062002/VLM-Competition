@@ -96,6 +96,8 @@ source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus &
 LapChole SEGMENT train/test 仍返回 Hugging Face gated dataset error。等待权限通过前，
 不要执行 LapChole 下载。
 
+2026-08-16 更新：LapChole gated access 已通过，可以继续 Step 1 验证及后续下载流程。
+
 ### Step 2：下载并预处理 LapChole
 
 权限通过后，下载到主数据目录或 `/mnt/data/jiali_wang/focus`。考虑主盘紧张，优先使用大盘：
