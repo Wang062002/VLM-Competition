@@ -2,7 +2,7 @@
 
 交接日期：2026-08-20
 交接人：小巴 → Codex
-状态：v2 训练在跑（4 epochs，ETA 8-26，超 8-22 停电）+ 8-22 机房停电 + 申请新算力
+状态：v2 训练在跑（4 epochs，ETA 8-26，超 8-22 停电）→ **先生定 B：等新算力从头跑 3 epochs，当前 v2 进度放弃** + 8-22 机房停电 + 申请新算力
 
 > 本文档聚焦"当前状态 + Codex 接手的首要任务"。完整背景见 `knowledge_base/AGENT_HANDOFF_ZH.md` + 上版 `knowledge_base/HANDOFF_CODEX_2026-08-08.md`。
 
@@ -69,10 +69,11 @@ ORena FOCUS 手术视频 QA challenge，SEGMENT track。主线 Qwen3-VL-4B + LoR
 3. 22 号停电前停，scp 最后一个 checkpoint 到本地
 4. 新机器 `--resume-from <checkpoint>` 继续
 
-### 选项 B：等新算力从头跑
-- 不改脚本，22 号停电训练中断（丢失进度）
-- 等新 80GB GPU 到位，从头跑 4 epochs ~15-20h
-- 简单但浪费已跑进度 + 等批准时间
+### 选项 B：等新算力从头跑（**先生已定**）
+- 不改脚本，22 号停电训练中断（丢失进度，先生接受）
+- 等新 80GB GPU 到位，**从头跑 3 epochs**（先生从 4 改 3 减时间）
+- 80GB GPU 估计 ~12-15h 完成（3 epochs，比 4 epochs 快）
+- v1 adapter 先备份到本地，停电期间不会断档
 
 ### 选项 C：stride 50 重启（赶 22 号）
 - Ctrl+C 停，改 `--video-stride 50`（帧数减半 300→150，时间减半 ~82h）
