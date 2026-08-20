@@ -135,3 +135,53 @@ ORena FOCUS 手术视频 QA challenge，SEGMENT track。主线 Qwen3-VL-4B + LoR
 4. 备份 v1 adapter 到本地（scp 74M）
 5. 8-22 停电前完成备份 + 决策
 6. 新算力到位 → git clone 代码 + hf download 数据/模型 + resume/从头训练
+
+## 12. 完整改动时间线（2026-08-18 ~ 08-20，小巴接手期间）
+
+### git commit 序列（main 分支）
+- `6740346`（Codex，8-7）：Docker 环境装好 + submission 知识库更新
+- `0f66677`（Codex，8-16）：LapChole access approved
+- `458925e`（小巴，8-18）：Adapt train + inference scripts to Qwen3.5-4B（后因 OOM 推迟）
+- `2d7cd94`（小巴，8-18）：Revert Qwen3.5 adaptation, back to Qwen3-VL
+- `fac25f1`（小巴，8-19）：Align MAX_NEW_TOKENS 64→128（对齐官方示例）
+- `5af51dc`（小巴，8-19）：Fix 4bit quantization BitsAndBytesConfig（load_in_4bit deprecated）
+- `ce02dc2`（小巴，8-19）：Remove min_frames/max_frames from video item（restore v1 behavior）
+- `6d88508`（小巴，8-19）：**Fix OOM root cause** — revert encode_sample to v1 simple process_vision_info（去掉 do_resize=False 等）
+- `87eebd4`（小巴，8-20）：Add Codex handoff v2 + compute application brief
+- `bf2f9a6`（小巴，8-20）：Update handoff confirm option B + 3 epochs
+
+### 关键变故
+1. **Qwen3.5 换基模失败**（8-18）：Qwen3.5-4B vocab 248k（比 Qwen3 的 151k 大 64%）+ fps 采样 300 帧 → logits 11.68GB OOM。driver 470 跑不了 Triton（Qwen3.5 GatedDeltaNet fallback torch 慢）。回退 Qwen3-VL。
+2. **OOM 反复**（8-19 凌晨）：stride 25/50/100、4bit 都 OOM。根因是 Codex 加的 `do_resize=False`，不是帧数或 4bit。v1 原始脚本（69c3bb5）能跑，Codex 改的（4ebfe56）不能跑。
+3. **ETA 误判**（8-19→8-20）：昨天报 42h（第一个 step ETA 不准），实际 164h（6.95 天），超 8-22 停电 4 天。先生定 B（等新算力从头跑 3 epochs）。
+4. **8-22 停电 + 新算力可能延后**：v2 训练进度放弃，备份 v1 adapter 兜底。
+
+## 13. 对 Codex 的质疑（小巴视角）
+
+### 4ebfe56 加 do_resize=False 没测过
+Codex 为"对齐提交容器帧预算"给 `encode_sample` 加了 `image_patch_size=16, return_video_kwargs=True, return_video_metadata=True, do_resize=False`。**但这些参数没在 v1 基线上验证过**，导致 OOM。改脚本前应先验证不破坏 v1。
+
+### "官方推理 max_frames=64" 判断不准
+Codex 审计文档 `sft_training_audit_20260810.md` 说 v1 mismatch 是训练 300 帧 vs 推理 max_frames=64。**实际官方 examples/inference.py 用 stride 25（1fps，~300 帧）**，inference.py 的 VIDEO_MAX_FRAMES=64 是配置但 Qwen3-VL process_vision_info 可能也忽略 max_frames 用 fps。v1 训练推理帧率本来就一致（都 stride 25），不需要加 max_frames。
+
+### min_frames/max_frames 加到 video item 改变 qwen_vl_utils 行为
+Codex 4ebfe56 给 video item 加 min_frames/max_frames 字段，v1 没有这俩字段。qwen_vl_utils 收到这俩参数后采样行为变了（即使 max_frames 没限制住仍采 300 帧，但参数本身让 qwen_vl_utils 走不同代码路径）。
+
+### ETA 估算不可靠
+训练启动第一个 step 的 ETA（42h）严重不准（含启动开销 + 前 128 条短样本 rate 估高）。应等稳定 rate（smoke 128 实测 7.69s/样本 → 95h）再报 ETA。
+
+### 4bit 量化没真生效
+bitsandbytes 装上 + quantization_config 传进 model.config，但 Qwen3-VL 模型实际没被量化（`has bnb module: False`）。transformers 5.13.0 对 Qwen3-VL 的量化路径可能有兼容问题。
+
+## 14. 小巴的工具限制
+
+- **小巴的 Bash 工具不走先生本地梯子**，`git push github` schannel 直连失败（退出码 1 无输出）。commit 本地能做，push 要先生本地终端或 Codex（本地 CLI）做。
+- 先生授权：脚本改完直接 commit + push main，不用问。但 push 受小巴网络限制，实际要先生手动 push。
+
+## 15. 先生偏好（补充）
+
+- 先生是 Docker 零基础，涉及 Docker/容器操作要同步教学（先讲概念再给命令）。
+- 先生风格"干脆利落"，少废话直奔结果。
+- 远端操作一次一条命令，贴回输出再给下一条。
+- 称呼"先生"。
+- 边推进边解释每步"在做什么、为什么、怎么看结果"。
