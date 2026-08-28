@@ -109,9 +109,9 @@ conda activate orena-focus
 - Runtime image: `orena-env-v2@v2`.
 - Requested resources: `24` CPU cores, `128 GB` RAM, `4 x NVIDIA L20`.
 - Current status when recorded: queued; no terminal-level hardware audit yet.
-- The platform page reports `GPU total memory: 5600 MB`. This is inconsistent
-  with a full L20 allocation and must be checked with `nvidia-smi` before model
-  setup or training.
+- The platform page temporarily reported `GPU total memory: 5600 MB` because a
+  collaborating FRAME-track participant was occupying all four GPUs. Recheck
+  the full allocation with `nvidia-smi` after those jobs release the GPUs.
 - The current `train_qwen3vl_lora_sft_smoke.py` is single-process/single-GPU:
   it moves the model to one `args.device` and has no DDP initialization or data
   sharding. Allocating four GPUs does not accelerate it without a DDP update.
@@ -121,3 +121,17 @@ conda activate orena-focus
 - Provisional target after implementing four-GPU DDP: about `35-45 h` total for
   three epochs plus validation. Replace this estimate with a measured 128-256
   sample smoke-test projection after the notebook becomes available.
+- Updated model decision: use `Qwen3.5-4B` rather than Qwen3-VL-4B for the next
+  dual-dataset, three-epoch run. The current main-branch scripts are Qwen3-VL
+  specific; Qwen3.5 support from historical commit `458925e` must be restored,
+  reviewed, and combined with four-GPU DDP before training.
+- A collaborator in the FRAME track already downloaded HeiCo and LapChole to a
+  personal path and will move/share them through a public area. Treat the
+  shared datasets as read-only; keep manifests, clips, checkpoints, caches, and
+  experiment outputs under Jiali Wang's own persistent directory.
+- Runtime image `orena-env-v2` is collaborator-owned. Do not modify or overwrite
+  the shared image. Use it only as the base for a separate notebook/environment
+  and save a new project-owned image after dependency validation.
+- The Cybertron platform does not expose Docker inside the notebook, but it can
+  save the configured runtime as a new image. Stop training and leave CPU/RAM
+  headroom before image saving; keep datasets/model weights out of the image.
