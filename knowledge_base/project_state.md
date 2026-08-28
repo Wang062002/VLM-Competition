@@ -100,3 +100,24 @@ conda activate orena-focus
   - `0027 - Heico - Sigma - 8.avi`
   - `0028 - Heico - Sigma - 9.avi`
 - Lesson: validate overlay duration coverage against QA metadata.
+
+## Cybertron Cloud Notebook (2026-08-28)
+
+- Platform: University Cybertron online-development environment.
+- Notebook name: `orena-fucus-segment` (platform spelling).
+- Project: `ORena-SAVE-FOCUS-Challenge`.
+- Runtime image: `orena-env-v2@v2`.
+- Requested resources: `24` CPU cores, `128 GB` RAM, `4 x NVIDIA L20`.
+- Current status when recorded: queued; no terminal-level hardware audit yet.
+- The platform page reports `GPU total memory: 5600 MB`. This is inconsistent
+  with a full L20 allocation and must be checked with `nvidia-smi` before model
+  setup or training.
+- The current `train_qwen3vl_lora_sft_smoke.py` is single-process/single-GPU:
+  it moves the model to one `args.device` and has no DDP initialization or data
+  sharding. Allocating four GPUs does not accelerate it without a DDP update.
+- Historical dual-dataset run on one RTX A5000 measured about `0.08 Hz`
+  (`13.5 s/sample`) and estimated `164 h` for four epochs. A direct single-GPU
+  three-epoch rerun is therefore roughly `123 h` before final validation.
+- Provisional target after implementing four-GPU DDP: about `35-45 h` total for
+  three epochs plus validation. Replace this estimate with a measured 128-256
+  sample smoke-test projection after the notebook becomes available.
