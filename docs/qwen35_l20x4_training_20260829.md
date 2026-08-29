@@ -5,7 +5,7 @@ Date: 2026-08-29
 ## Objective
 
 Train `Qwen3.5-4B` with LoRA-SFT for the ORena FOCUS SEGMENT track using the
-combined HeiCo and LapChole training data for three epochs. The formal job is
+combined HeiCo and LapChole training data for five epochs. The formal job is
 designed for one Cybertron node with four NVIDIA L20 GPUs.
 
 ## Storage Layout
@@ -142,7 +142,7 @@ official TEST questions remain held out.
 
 ## Required Validation Order
 
-Do not launch the three-epoch job immediately. Use this order:
+Do not launch the full job immediately. Use this order:
 
 1. Confirm all four L20 GPUs and full `48 GB` memory with `nvidia-smi`.
 2. Confirm the active runtime has compatible PyTorch, Transformers, PEFT,
@@ -154,8 +154,8 @@ Do not launch the three-epoch job immediately. Use this order:
 3. Confirm shared HeiCo/LapChole data and overlay videos are readable.
 4. Run the combined-data split and clip-window audit.
 5. Run the 128-train/32-val four-GPU smoke test.
-6. Derive measured samples/second and projected three-epoch time.
-7. Run the full three-epoch job only if loss, GPU memory, and throughput are
+6. Derive measured samples/second and projected full-run time.
+7. Run the full job only if loss, GPU memory, and throughput are
    healthy.
 
 The read-only environment check for the current minimum notebook is:
@@ -216,8 +216,12 @@ batch size four but finite and non-divergent. Both the epoch and final adapters
 were saved successfully.
 
 At the aggregate smoke throughput, one full 12,372-row epoch projects to
-about `8.0 h` and three epochs to `24.0 h`. The smoke includes a roughly
-one-minute first-step compilation warm-up; steady-state steps project closer
-to `6.5 h` per epoch. Budget `20-25 h` for three epochs plus approximately
-`18 min` for the 1,374-row validation set and small checkpoint overheads.
-Formal three-epoch training is approved on the validated configuration.
+about `8.0 h`; steady-state steps excluding the roughly one-minute compilation
+warm-up project closer to `6.5 h` per epoch. The final decision is five epochs:
+`61,860` processed training samples and `15,465` optimizer steps. Budget
+`33-41 h` for training plus approximately `18 min` for the 1,374-row final
+validation set and small checkpoint overheads.
+
+Adapters are saved after every epoch, allowing downstream evaluation to choose
+epoch 3, 4, or 5 if the final checkpoint overfits. Formal five-epoch training
+is approved on the validated configuration.

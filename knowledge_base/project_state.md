@@ -175,9 +175,14 @@ conda activate orena-focus
   steps to 0.5269 over the last 15. The measured formal three-epoch budget is
   20-25 hours including warm-up and normal variance, plus about 18 minutes for
   final validation. Formal training is approved without further code changes.
+- Final epoch decision: train for five epochs, preserving an adapter after each
+  epoch so epoch 3/4/5 can be compared later. This processes 61,860 samples and
+  15,465 optimizer steps. Expected steady runtime is about 32.5 hours;
+  conservative aggregate-smoke projection is about 40 hours. Use a 33-41 hour
+  operational budget plus final validation.
 - `causal-conv1d 1.7.0` has no PyTorch 2.11 wheel and failed to compile locally.
   It is not a launch blocker. The successful four-GPU smoke includes its
-  PyTorch fallback cost, and the resulting 20-25 hour budget is acceptable.
+  PyTorch fallback cost, and the resulting five-epoch budget is acceptable.
 - A collaborator in the FRAME track already downloaded HeiCo and LapChole to a
   personal path and will move/share them through a public area. Treat the
   shared datasets as read-only; keep manifests, clips, checkpoints, caches, and

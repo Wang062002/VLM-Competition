@@ -670,8 +670,11 @@ Detailed plan:
   24.0 hours for three epochs. Excluding first-step compilation warm-up gives
   about 6.5 hours/epoch. Use a 20-25 hour operational budget plus roughly
   18 minutes for final validation.
-- Decision: launch the full 12,372-row, three-epoch run on the exact validated
-  code and hyperparameters; do not introduce another optimization change first.
+- Final decision: launch the full 12,372-row, five-epoch run on the exact
+  validated code and hyperparameters; do not introduce another optimization
+  change first. This is 61,860 processed samples and 15,465 optimizer steps,
+  with a 33-41 hour budget. Per-epoch adapters preserve epochs 3/4/5 for later
+  comparison if epoch 5 overfits.
 
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
 
