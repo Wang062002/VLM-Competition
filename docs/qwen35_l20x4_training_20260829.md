@@ -81,6 +81,52 @@ configs/qwen35_lora_sft_cybertron_l20x4.json
 The configured dataset root is the confirmed personal copy:
 `/storage/main/users/jialiwang/data/focus`.
 
+Source the persistent environment helper in every new terminal:
+
+```bash
+source /storage/main/users/jialiwang/workspace/VLM-Competition/scripts/activate_cybertron_qwen35.sh
+```
+
+The generated smoke and training commands source this helper automatically. It
+selects the personal Python environment and redirects Hugging Face, pip,
+TorchInductor, extension-build, and temporary caches away from the container
+root filesystem. It also supplies `USER` and `LOGNAME`, which are required
+because Cybertron runs the notebook as UID `20083` without an `/etc/passwd`
+entry.
+
+## Verified Cybertron Environment
+
+The formal notebook was validated with:
+
+- `4 x NVIDIA L20`, each reporting `44.4 GiB` to PyTorch;
+- NVIDIA driver `570.86.15`;
+- Python `3.11.16` in
+  `/storage/main/users/jialiwang/envs/orena-qwen35`;
+- PyTorch `2.11.0+cu128`, CUDA runtime `12.8`, and Triton `3.6.0`;
+- Transformers `5.13.0`, PEFT `0.20.0`, and Accelerate `1.14.0`;
+- editable `orena-focus 0.3.5` from official commit `7b7e5c5`;
+- Decord `0.6.0` and `opencv-python-headless 4.12.0.88`.
+
+The GUI OpenCV wheel cannot load in this headless image because `libxcb.so.1`
+is absent. Do not reinstall `opencv-python`; keep the pinned headless wheel.
+
+`Qwen/Qwen3.5-4B` is stored at
+`/storage/main/users/jialiwang/models/Qwen3.5-4B`. A real one-GPU weight-load
+and short generation smoke passed with `8.81 GiB` peak allocated memory. A
+meta-device architecture audit also confirmed every configured LoRA target:
+`q_proj`, `k_proj`, `v_proj`, `o_proj`, `in_proj_qkv`, `out_proj`, `gate_proj`,
+`up_proj`, and `down_proj`.
+
+`flash-linear-attention 0.5.2` is installed. `causal-conv1d 1.7.0` has no
+published wheel for PyTorch 2.11 and its local CUDA build failed. This package
+remains optional; measure the actual fallback throughput in the four-GPU smoke
+before spending more time on extension compilation.
+
+The personal data copy contains 30 HeiCo videos and 171 LapChole source files.
+The current official metadata references 30 HeiCo videos and 100 LapChole
+videos. Timestamp-overlay generation was started with eight workers per
+dataset and must finish before the split and clip-window audits.
+
 ## Required Validation Order
 
 Do not launch the three-epoch job immediately. Use this order:
@@ -127,7 +173,8 @@ python scripts/print_qwen_lora_sft_v2_commands.py \
 
 ## Current Status
 
-The DDP code, Cybertron configuration, and generated commands pass local syntax
-and formatting checks. They have not yet run against the real Qwen3.5 weights,
-the collaborator's shared datasets, or a four-L20 allocation. The smoke test is
-therefore a required compatibility and performance gate, not an optional demo.
+The DDP code and generated commands pass local checks. The four-L20 allocation,
+personal Python environment, both gated datasets, real Qwen3.5 weights, and all
+LoRA target suffixes are now validated. Dataset overlay preprocessing is in
+progress. The 128-row distributed smoke test remains the next required gate
+after the overlay, split, and clip-window audits finish.

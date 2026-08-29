@@ -6,7 +6,7 @@
   "root_dir": "/storage/main/users/jialiwang/data/focus",
   "seed": 20260707,
   "val_fraction": 0.1,
-  "command_prefix": "cd /storage/main/users/jialiwang/workspace/VLM-Competition",
+  "command_prefix": "source /storage/main/users/jialiwang/workspace/VLM-Competition/scripts/activate_cybertron_qwen35.sh && cd /storage/main/users/jialiwang/workspace/VLM-Competition",
   "training_script": "scripts/train_qwen35_lora_sft_ddp.py",
   "access_output": "/storage/main/users/jialiwang/focus-runs/data-audit/qwen35-l20x4-access-check.json",
   "data_audit_dir": "/storage/main/users/jialiwang/focus-runs/data-audit/segment-trainval-heico-lapchole-seed20260707",

@@ -145,6 +145,22 @@ conda activate orena-focus
 - Cybertron configuration:
   `configs/qwen35_lora_sft_cybertron_l20x4.json`.
 - Detailed runbook: `docs/qwen35_l20x4_training_20260829.md`.
+- The formal Cybertron notebook now exposes all four L20 GPUs, each with
+  `44.4 GiB` in PyTorch. The personal runtime is Python `3.11.16`, PyTorch
+  `2.11.0+cu128`, Transformers `5.13.0`, PEFT `0.20.0`, and FLA `0.5.2` under
+  `/storage/main/users/jialiwang/envs/orena-qwen35`.
+- Source `scripts/activate_cybertron_qwen35.sh` in every Cybertron terminal.
+  This is especially important because the notebook UID has no passwd entry
+  and the platform default remains Python 3.8.
+- The official Qwen3.5-4B weights are downloaded under the personal model
+  directory. Real weight loading and a short generation passed at `8.81 GiB`
+  peak GPU allocation; all configured LoRA target suffixes exist.
+- Gated access checks passed for HeiCo and LapChole train/test SEGMENT splits.
+  Timestamp overlays are being generated for the 30 metadata-referenced HeiCo
+  videos and 100 metadata-referenced LapChole videos.
+- `causal-conv1d 1.7.0` has no PyTorch 2.11 wheel and failed to compile locally.
+  It is not a launch blocker; use the four-GPU smoke to measure fallback cost
+  before revisiting this optional extension.
 - A collaborator in the FRAME track already downloaded HeiCo and LapChole to a
   personal path and will move/share them through a public area. Treat the
   shared datasets as read-only; keep manifests, clips, checkpoints, caches, and
