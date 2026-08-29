@@ -357,6 +357,7 @@ def apply_qwen35_template(
                     "total_num_frames": sampled_frames,
                     "fps": clip_fps,
                     "duration": sampled_frames / clip_fps,
+                    "frames_indices": np.arange(sampled_frames),
                 }
             ],
         },

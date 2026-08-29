@@ -201,7 +201,8 @@ sample is decoded only once. A preprocessing probe showed that Transformers
 5.13 also failed to expand processor-level `template_kwargs`. The trainer now
 renders the Qwen3.5 template through `processor.tokenizer` with the direct
 `enable_thinking=False` argument, then sends the rendered text and in-memory
-video to the multimodal processor.
+video to the multimodal processor. The supplied video metadata includes the
+sampled-frame indices required by Qwen3.5's timestamp-token calculation.
 
 Rerun the 128-row smoke after pulling this change. A successful run must show
 finite loss, declining or at least non-exploding early loss, memory below the
