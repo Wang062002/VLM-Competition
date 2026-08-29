@@ -18,7 +18,6 @@ export TMPDIR="$ORENA_USER_ROOT/tmp"
 
 export CUDA_HOME="$ORENA_QWEN35_ENV"
 export PATH="$ORENA_QWEN35_ENV/bin:$PATH"
-export LD_LIBRARY_PATH="$ORENA_QWEN35_ENV/lib:$ORENA_QWEN35_ENV/lib64:$ORENA_QWEN35_ENV/targets/x86_64-linux/lib:${LD_LIBRARY_PATH:-}"
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 
 mkdir -p \

@@ -94,6 +94,11 @@ root filesystem. It also supplies `USER` and `LOGNAME`, which are required
 because Cybertron runs the notebook as UID `20083` without an `/etc/passwd`
 entry.
 
+Do not prepend the Conda environment's generic library directories to the
+global `LD_LIBRARY_PATH`. Doing so can make system utilities such as `watch`
+load incompatible Conda terminal libraries and crash. Set additional CUDA
+library paths only for an individual extension-build command when required.
+
 ## Verified Cybertron Environment
 
 The formal notebook was validated with:
