@@ -165,8 +165,10 @@ conda activate orena-focus
   Transformers tried the removed `torchvision.io.read_video` fallback. The
   trainer now passes Decord-sampled RGB arrays directly to the processor,
   removing the temporary-MP4/TorchCodec dependency and redundant decode. It
-  also passes `enable_thinking=False` through Transformers 5.13
-  `template_kwargs`. The 128-row smoke must be rerun before formal training.
+  also renders the chat template directly through the tokenizer with
+  `enable_thinking=False`, because a follow-up probe showed Transformers 5.13
+  did not expand processor-level `template_kwargs`. The 128-row smoke must be
+  rerun before formal training.
 - `causal-conv1d 1.7.0` has no PyTorch 2.11 wheel and failed to compile locally.
   It is not a launch blocker; use the four-GPU smoke to measure fallback cost
   before revisiting this optional extension.

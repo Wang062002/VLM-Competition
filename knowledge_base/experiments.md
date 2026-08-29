@@ -650,9 +650,10 @@ Detailed plan:
   the temporary MP4 because TorchCodec was absent and torchvision 0.26 no
   longer exposes `torchvision.io.read_video`.
 - Fix: keep Decord-sampled RGB frames in memory and pass the NumPy video object
-  directly to `apply_chat_template` with processor frame sampling disabled.
-  Also use `template_kwargs={"enable_thinking": false}` because the previous
-  `chat_template_kwargs` argument was ignored.
+  directly to the processor with frame sampling disabled. Render the chat
+  template separately through the tokenizer using the direct
+  `enable_thinking=False` argument; Transformers 5.13 ignored both the original
+  `chat_template_kwargs` and a processor-level `template_kwargs` probe.
 - Status: code fix complete locally; rerun required for throughput projection.
 
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated

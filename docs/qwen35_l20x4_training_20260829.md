@@ -197,8 +197,11 @@ because Transformers fell back to the removed
 `torchvision.io.read_video` API while reopening a temporary MP4. The trainer
 now sends the Decord-sampled NumPy video directly to the processor with
 `do_sample_frames=False`, so TorchCodec is not a training dependency and each
-sample is decoded only once. The same fix moves `enable_thinking=False` into
-Transformers 5.13's `template_kwargs`; the earlier argument was ignored.
+sample is decoded only once. A preprocessing probe showed that Transformers
+5.13 also failed to expand processor-level `template_kwargs`. The trainer now
+renders the Qwen3.5 template through `processor.tokenizer` with the direct
+`enable_thinking=False` argument, then sends the rendered text and in-memory
+video to the multimodal processor.
 
 Rerun the 128-row smoke after pulling this change. A successful run must show
 finite loss, declining or at least non-exploding early loss, memory below the

@@ -334,26 +334,31 @@ def build_messages(
 def apply_qwen35_template(
     processor: AutoProcessor,
     messages: list[dict[str, Any]],
+    video_frames: np.ndarray,
     add_generation_prompt: bool,
     clip_fps: float,
     sampled_frames: int,
 ) -> dict[str, torch.Tensor]:
-    return processor.apply_chat_template(
+    formatted = processor.tokenizer.apply_chat_template(
         messages,
-        tokenize=True,
+        tokenize=False,
         add_generation_prompt=add_generation_prompt,
-        return_dict=True,
+        enable_thinking=False,
+    )
+    return processor(
+        text=[formatted],
+        videos=[video_frames],
         return_tensors="pt",
-        template_kwargs={"enable_thinking": False},
-        processor_kwargs={
-            "videos_kwargs": {
-                "do_sample_frames": False,
-                "video_metadata": {
+        text_kwargs={"add_special_tokens": False},
+        videos_kwargs={
+            "do_sample_frames": False,
+            "video_metadata": [
+                {
                     "total_num_frames": sampled_frames,
                     "fps": clip_fps,
                     "duration": sampled_frames / clip_fps,
-                },
-            }
+                }
+            ],
         },
     )
 
@@ -370,10 +375,10 @@ def encode_sample(
     full_messages = build_messages(row, video_frames, system_prompt, True)
     prompt_messages = build_messages(row, video_frames, system_prompt, False)
     full_inputs = apply_qwen35_template(
-        processor, full_messages, False, clip_fps, sampled_frames
+        processor, full_messages, video_frames, False, clip_fps, sampled_frames
     )
     prompt_inputs = apply_qwen35_template(
-        processor, prompt_messages, True, clip_fps, sampled_frames
+        processor, prompt_messages, video_frames, True, clip_fps, sampled_frames
     )
 
     labels = full_inputs["input_ids"].clone()
