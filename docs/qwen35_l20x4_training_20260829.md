@@ -87,6 +87,10 @@ Do not launch the three-epoch job immediately. Use this order:
 1. Confirm all four L20 GPUs and full `48 GB` memory with `nvidia-smi`.
 2. Confirm the active runtime has compatible PyTorch, Transformers, PEFT,
    OpenCV, Decord, and Qwen3.5 model classes.
+   Record whether `causal_conv1d`, `fla`, `flash_attn`, or `kernels` are
+   available. They are optional in the preflight because the shared runtime
+   must not be modified in place, but missing Qwen3.5 linear-attention kernels
+   can materially reduce throughput and increase memory use.
 3. Confirm shared HeiCo/LapChole data and overlay videos are readable.
 4. Run the combined-data split and clip-window audit.
 5. Run the 128-train/32-val four-GPU smoke test.

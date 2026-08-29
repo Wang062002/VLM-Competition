@@ -50,6 +50,10 @@ def main() -> None:
             name: module_version(name)
             for name in ("torch", "transformers", "peft", "decord", "cv2")
         },
+        "optional_acceleration_packages": {
+            name: module_version(name)
+            for name in ("causal_conv1d", "fla", "flash_attn", "kernels")
+        },
         "paths": {
             "model": path_status(args.model_path),
             "train_jsonl": path_status(args.train_jsonl),
