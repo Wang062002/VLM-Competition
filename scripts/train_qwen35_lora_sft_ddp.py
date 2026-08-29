@@ -13,7 +13,6 @@ import logging
 import math
 import os
 import random
-import tempfile
 import time
 from contextlib import nullcontext
 from pathlib import Path
@@ -21,6 +20,7 @@ from typing import Any
 
 import cv2
 import decord
+import numpy as np
 import torch
 import torch.distributed as dist
 from progiter import ProgIter
@@ -181,12 +181,6 @@ def parse_args() -> argparse.Namespace:
         help="Comma-separated language-backbone LoRA target suffixes.",
     )
     parser.add_argument(
-        "--video-content-key",
-        choices=["video", "url"],
-        default="video",
-        help="Processor chat-template key for the local video path.",
-    )
-    parser.add_argument(
         "--attn-implementation",
         choices=["auto", "eager", "sdpa", "flash_attention_2"],
         default="sdpa",
@@ -219,10 +213,14 @@ def distributed_context() -> tuple[int, int, int, torch.device]:
 
     if not torch.cuda.is_available():
         raise SystemExit("Qwen3.5 training requires CUDA.")
-    if world_size > 1:
-        torch.cuda.set_device(local_rank)
-        dist.init_process_group(backend="nccl", init_method="env://")
     device = torch.device("cuda", local_rank)
+    torch.cuda.set_device(device)
+    if world_size > 1:
+        dist.init_process_group(
+            backend="nccl",
+            init_method="env://",
+            device_id=device,
+        )
     return rank, local_rank, world_size, device
 
 
@@ -251,13 +249,14 @@ def evenly_cap_indices(indices: list[int], max_frames: int) -> list[int]:
     return [indices[position] for position in positions]
 
 
-def make_capped_clip(
+def make_capped_video(
     row: dict[str, Any],
     stride: int,
+    min_frames: int,
     max_frames: int,
     resolution: tuple[int, int],
-) -> tuple[Path, float, int]:
-    """Cut a QA window and hard-cap its sampled frame count."""
+) -> tuple[np.ndarray, float, int]:
+    """Decode a QA window once and return capped RGB frames in memory."""
     video_path = Path(row["overlay_video_path"])
     if not video_path.exists():
         raise FileNotFoundError(f"Overlay video does not exist: {video_path}")
@@ -278,13 +277,18 @@ def make_capped_clip(
         )
 
     indices = list(range(start_frame, end_frame + 1, max(stride, 1))) or [start_frame]
+    if len(indices) < min_frames:
+        if min_frames == 1:
+            indices = [start_frame]
+        else:
+            span = end_frame - start_frame
+            indices = [
+                start_frame + round(position * span / (min_frames - 1))
+                for position in range(min_frames)
+            ]
     indices = evenly_cap_indices(indices, max_frames)
     frames = vr.get_batch(indices).asnumpy()
     del vr
-
-    temp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
-    clip_path = Path(temp.name)
-    temp.close()
 
     if len(indices) > 1:
         sampled_duration = (indices[-1] - indices[0]) / base_fps
@@ -292,37 +296,28 @@ def make_capped_clip(
     else:
         clip_fps = max(base_fps / max(stride, 1), 1.0)
 
-    writer = cv2.VideoWriter(
-        str(clip_path),
-        cv2.VideoWriter_fourcc(*"mp4v"),
-        clip_fps,
-        resolution,
+    resized_frames = np.empty(
+        (len(frames), resolution[1], resolution[0], 3),
+        dtype=np.uint8,
     )
-    if not writer.isOpened():
-        clip_path.unlink(missing_ok=True)
-        raise RuntimeError(f"Could not create temporary clip for qID={row.get('qID')}")
-    for frame in frames:
-        frame_bgr = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-        frame_bgr = cv2.resize(frame_bgr, resolution, interpolation=cv2.INTER_AREA)
-        writer.write(frame_bgr)
-    writer.release()
-    return clip_path, clip_fps, len(indices)
+    for index, frame in enumerate(frames):
+        resized_frames[index] = cv2.resize(
+            frame,
+            resolution,
+            interpolation=cv2.INTER_AREA,
+        )
+    return resized_frames, clip_fps, len(indices)
 
 
 def build_messages(
     row: dict[str, Any],
-    clip_path: Path,
-    clip_fps: float,
+    video_frames: np.ndarray,
     system_prompt: str,
     include_answer: bool,
-    args: argparse.Namespace,
 ) -> list[dict[str, Any]]:
     video_item: dict[str, Any] = {
         "type": "video",
-        args.video_content_key: str(clip_path),
-        "fps": clip_fps,
-        "min_frames": args.video_min_frames,
-        "max_frames": args.video_max_frames,
+        "video": video_frames,
     }
     messages: list[dict[str, Any]] = [
         {"role": "system", "content": system_prompt},
@@ -340,6 +335,8 @@ def apply_qwen35_template(
     processor: AutoProcessor,
     messages: list[dict[str, Any]],
     add_generation_prompt: bool,
+    clip_fps: float,
+    sampled_frames: int,
 ) -> dict[str, torch.Tensor]:
     return processor.apply_chat_template(
         messages,
@@ -347,23 +344,37 @@ def apply_qwen35_template(
         add_generation_prompt=add_generation_prompt,
         return_dict=True,
         return_tensors="pt",
-        chat_template_kwargs={"enable_thinking": False},
+        template_kwargs={"enable_thinking": False},
+        processor_kwargs={
+            "videos_kwargs": {
+                "do_sample_frames": False,
+                "video_metadata": {
+                    "total_num_frames": sampled_frames,
+                    "fps": clip_fps,
+                    "duration": sampled_frames / clip_fps,
+                },
+            }
+        },
     )
 
 
 def encode_sample(
     processor: AutoProcessor,
     row: dict[str, Any],
-    clip_path: Path,
+    video_frames: np.ndarray,
     clip_fps: float,
     system_prompt: str,
     device: torch.device,
-    args: argparse.Namespace,
 ) -> dict[str, torch.Tensor]:
-    full_messages = build_messages(row, clip_path, clip_fps, system_prompt, True, args)
-    prompt_messages = build_messages(row, clip_path, clip_fps, system_prompt, False, args)
-    full_inputs = apply_qwen35_template(processor, full_messages, False)
-    prompt_inputs = apply_qwen35_template(processor, prompt_messages, True)
+    sampled_frames = len(video_frames)
+    full_messages = build_messages(row, video_frames, system_prompt, True)
+    prompt_messages = build_messages(row, video_frames, system_prompt, False)
+    full_inputs = apply_qwen35_template(
+        processor, full_messages, False, clip_fps, sampled_frames
+    )
+    prompt_inputs = apply_qwen35_template(
+        processor, prompt_messages, True, clip_fps, sampled_frames
+    )
 
     labels = full_inputs["input_ids"].clone()
     prompt_len = prompt_inputs["input_ids"].shape[1]
@@ -564,19 +575,18 @@ def run_eval_loss(
     iterator = ProgIter(local_rows, desc="Eval loss") if is_main_process(rank) else local_rows
     with torch.no_grad():
         for row in iterator:
-            clip_path: Path | None = None
-            try:
-                clip_path, clip_fps, _ = make_capped_clip(
-                    row, args.video_stride, args.video_max_frames, resolution
-                )
-                inputs = encode_sample(
-                    processor, row, clip_path, clip_fps, system_prompt, device, args
-                )
-                local_loss_sum += float(model(**inputs).loss.detach())
-                local_count += 1
-            finally:
-                if clip_path is not None:
-                    clip_path.unlink(missing_ok=True)
+            video_frames, clip_fps, _ = make_capped_video(
+                row,
+                args.video_stride,
+                args.video_min_frames,
+                args.video_max_frames,
+                resolution,
+            )
+            inputs = encode_sample(
+                processor, row, video_frames, clip_fps, system_prompt, device
+            )
+            local_loss_sum += float(model(**inputs).loss.detach())
+            local_count += 1
     model.train()
     return reduce_loss(local_loss_sum, local_count, device, world_size)
 
@@ -606,8 +616,11 @@ def main() -> None:
     )
     if args.gradient_accumulation_steps < 1:
         raise SystemExit("--gradient-accumulation-steps must be at least 1.")
-    if args.video_max_frames < 1:
-        raise SystemExit("--video-max-frames must be at least 1.")
+    if args.video_min_frames < 1 or args.video_max_frames < args.video_min_frames:
+        raise SystemExit(
+            "Video frame limits must satisfy 1 <= --video-min-frames "
+            "<= --video-max-frames."
+        )
 
     torch.backends.cuda.matmul.allow_tf32 = True
     torch.backends.cudnn.allow_tf32 = True
@@ -721,7 +734,6 @@ def main() -> None:
                 group_count = 0
 
                 for local_index, row in enumerate(iterator):
-                    clip_path: Path | None = None
                     group_start = (
                         local_index // args.gradient_accumulation_steps
                     ) * args.gradient_accumulation_steps
@@ -736,68 +748,64 @@ def main() -> None:
                         if isinstance(model, DDP) and not should_step
                         else nullcontext()
                     )
-                    try:
-                        clip_path, clip_fps, sampled_frames = make_capped_clip(
-                            row,
-                            args.video_stride,
-                            args.video_max_frames,
-                            resolution,
-                        )
-                        inputs = encode_sample(
-                            processor,
-                            row,
-                            clip_path,
-                            clip_fps,
-                            system_prompt,
-                            device,
-                            args,
-                        )
-                        with sync_context:
-                            raw_loss = model(**inputs).loss
-                            (raw_loss / group_size).backward()
-                        accumulated_loss += float(raw_loss.detach())
-                        global_micro_step += 1
+                    video_frames, clip_fps, sampled_frames = make_capped_video(
+                        row,
+                        args.video_stride,
+                        args.video_min_frames,
+                        args.video_max_frames,
+                        resolution,
+                    )
+                    inputs = encode_sample(
+                        processor,
+                        row,
+                        video_frames,
+                        clip_fps,
+                        system_prompt,
+                        device,
+                    )
+                    with sync_context:
+                        raw_loss = model(**inputs).loss
+                        (raw_loss / group_size).backward()
+                    accumulated_loss += float(raw_loss.detach())
+                    global_micro_step += 1
 
-                        if should_step:
-                            torch.nn.utils.clip_grad_norm_(
-                                (
-                                    parameter
-                                    for parameter in model.parameters()
-                                    if parameter.requires_grad
-                                ),
-                                args.max_grad_norm,
+                    if should_step:
+                        torch.nn.utils.clip_grad_norm_(
+                            (
+                                parameter
+                                for parameter in model.parameters()
+                                if parameter.requires_grad
+                            ),
+                            args.max_grad_norm,
+                        )
+                        optimizer.step()
+                        optimizer.zero_grad(set_to_none=True)
+                        optimizer_step += 1
+                        mean_loss = reduce_loss(
+                            accumulated_loss, group_count, device, world_size
+                        )
+                        if history is not None:
+                            record = {
+                                "epoch": epoch + 1,
+                                "micro_step_per_rank": global_micro_step,
+                                "optimizer_step": optimizer_step,
+                                "loss": mean_loss,
+                                "qID_rank0": row.get("qID"),
+                                "sampled_frames_rank0": sampled_frames,
+                                "elapsed_sec": round(time.perf_counter() - start_time, 3),
+                            }
+                            history.write(json.dumps(record, ensure_ascii=False) + "\n")
+                            history.flush()
+                            LOGGER.info(
+                                "epoch=%s step=%s loss=%.4f sampled_frames=%s qID=%s",
+                                epoch + 1,
+                                optimizer_step,
+                                mean_loss,
+                                sampled_frames,
+                                row.get("qID"),
                             )
-                            optimizer.step()
-                            optimizer.zero_grad(set_to_none=True)
-                            optimizer_step += 1
-                            mean_loss = reduce_loss(
-                                accumulated_loss, group_count, device, world_size
-                            )
-                            if history is not None:
-                                record = {
-                                    "epoch": epoch + 1,
-                                    "micro_step_per_rank": global_micro_step,
-                                    "optimizer_step": optimizer_step,
-                                    "loss": mean_loss,
-                                    "qID_rank0": row.get("qID"),
-                                    "sampled_frames_rank0": sampled_frames,
-                                    "elapsed_sec": round(time.perf_counter() - start_time, 3),
-                                }
-                                history.write(json.dumps(record, ensure_ascii=False) + "\n")
-                                history.flush()
-                                LOGGER.info(
-                                    "epoch=%s step=%s loss=%.4f sampled_frames=%s qID=%s",
-                                    epoch + 1,
-                                    optimizer_step,
-                                    mean_loss,
-                                    sampled_frames,
-                                    row.get("qID"),
-                                )
-                            accumulated_loss = 0.0
-                            group_count = 0
-                    finally:
-                        if clip_path is not None:
-                            clip_path.unlink(missing_ok=True)
+                        accumulated_loss = 0.0
+                        group_count = 0
 
                 if not args.no_save_every_epoch:
                     save_adapter(

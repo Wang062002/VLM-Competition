@@ -156,8 +156,17 @@ conda activate orena-focus
   directory. Real weight loading and a short generation passed at `8.81 GiB`
   peak GPU allocation; all configured LoRA target suffixes exist.
 - Gated access checks passed for HeiCo and LapChole train/test SEGMENT splits.
-  Timestamp overlays are being generated for the 30 metadata-referenced HeiCo
-  videos and 100 metadata-referenced LapChole videos.
+  Timestamp overlays completed for all 30 metadata-referenced HeiCo videos and
+  100 metadata-referenced LapChole videos. The combined official TRAIN pool is
+  13,746 questions, split into 12,372 internal-train and 1,374 validation rows;
+  every clip window passed the audit. The 6,254 official TEST rows are held out.
+- The first four-L20 smoke validated NCCL, four model replicas, all LoRA
+  targets, and 13,959,168 trainable parameters, then stopped before step 1 when
+  Transformers tried the removed `torchvision.io.read_video` fallback. The
+  trainer now passes Decord-sampled RGB arrays directly to the processor,
+  removing the temporary-MP4/TorchCodec dependency and redundant decode. It
+  also passes `enable_thinking=False` through Transformers 5.13
+  `template_kwargs`. The 128-row smoke must be rerun before formal training.
 - `causal-conv1d 1.7.0` has no PyTorch 2.11 wheel and failed to compile locally.
   It is not a launch blocker; use the four-GPU smoke to measure fallback cost
   before revisiting this optional extension.

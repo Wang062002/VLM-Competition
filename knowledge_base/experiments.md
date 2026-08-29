@@ -637,6 +637,24 @@ Detailed plan:
 
 - `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`
 
+## 2026-08-29 — Qwen3.5 Four-L20 Smoke Attempt 1
+
+- Input preparation completed for both datasets: 30 HeiCo and 100 LapChole
+  timestamp overlays.
+- Combined official TRAIN: 13,746 rows; internal train/validation split:
+  12,372/1,374; clip audit invalid count: 0.
+- Four-rank NCCL startup, model loading, LoRA target matching, and optimizer
+  construction succeeded. Trainable parameters were 13,959,168 of
+  4,553,224,704 (`0.3066%`).
+- The run failed before optimizer step 1. Transformers 5.13 could not reopen
+  the temporary MP4 because TorchCodec was absent and torchvision 0.26 no
+  longer exposes `torchvision.io.read_video`.
+- Fix: keep Decord-sampled RGB frames in memory and pass the NumPy video object
+  directly to `apply_chat_template` with processor frame sampling disabled.
+  Also use `template_kwargs={"enable_thinking": false}` because the previous
+  `chat_template_kwargs` argument was ignored.
+- Status: code fix complete locally; rerun required for throughput projection.
+
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
 
 Storage result:

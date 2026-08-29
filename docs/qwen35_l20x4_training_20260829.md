@@ -55,6 +55,9 @@ It provides:
 - rank-zero-only logs and adapter writes;
 - distributed final validation-loss reduction;
 - an explicit `64`-frame hard cap before Qwen3.5 processing;
+- one-pass Decord sampling into in-memory RGB frames, avoiding temporary MP4
+  encoding and a second TorchCodec/torchvision decode;
+- explicit non-thinking chat-template formatting for short FOCUS answers;
 - BF16, gradient checkpointing, SDPA, TF32, and fused AdamW defaults;
 - language-backbone LoRA targets for Qwen3.5 full-attention, Gated DeltaNet,
   and MLP projections;
@@ -129,8 +132,13 @@ before spending more time on extension compilation.
 
 The personal data copy contains 30 HeiCo videos and 171 LapChole source files.
 The current official metadata references 30 HeiCo videos and 100 LapChole
-videos. Timestamp-overlay generation was started with eight workers per
-dataset and must finish before the split and clip-window audits.
+videos. Timestamp-overlay generation completed for all metadata-referenced
+videos: 30 HeiCo overlays (`99 GB`) and 100 LapChole overlays (`118 GB`).
+
+The combined official SEGMENT TRAIN split contains `13,746` questions. The
+seeded internal split contains `12,372` training rows and `1,374` validation
+rows; all `13,746` clip windows passed the duration/path audit. The `6,254`
+official TEST questions remain held out.
 
 ## Required Validation Order
 
@@ -178,8 +186,21 @@ python scripts/print_qwen_lora_sft_v2_commands.py \
 
 ## Current Status
 
-The DDP code and generated commands pass local checks. The four-L20 allocation,
-personal Python environment, both gated datasets, real Qwen3.5 weights, and all
-LoRA target suffixes are now validated. Dataset overlay preprocessing is in
-progress. The 128-row distributed smoke test remains the next required gate
-after the overlay, split, and clip-window audits finish.
+The four-L20 allocation, personal Python environment, both gated datasets,
+Qwen3.5 weights, overlays, combined split, clip-window audit, and all LoRA
+target suffixes are validated.
+
+The first 128-row distributed smoke reached NCCL initialization, loaded all
+four model replicas, injected `13,959,168` trainable LoRA parameters
+(`0.3066%`), and constructed the optimizer. It then failed before step 1
+because Transformers fell back to the removed
+`torchvision.io.read_video` API while reopening a temporary MP4. The trainer
+now sends the Decord-sampled NumPy video directly to the processor with
+`do_sample_frames=False`, so TorchCodec is not a training dependency and each
+sample is decoded only once. The same fix moves `enable_thinking=False` into
+Transformers 5.13's `template_kwargs`; the earlier argument was ignored.
+
+Rerun the 128-row smoke after pulling this change. A successful run must show
+finite loss, declining or at least non-exploding early loss, memory below the
+L20 limit, a final validation loss, and measured global samples/second before
+the three-epoch job is approved.
