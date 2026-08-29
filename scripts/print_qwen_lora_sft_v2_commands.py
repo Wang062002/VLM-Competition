@@ -27,8 +27,12 @@ def q(value: object) -> str:
     return shlex.quote(text)
 
 
-def prefix() -> str:
-    return "source ~/tools/miniconda3/etc/profile.d/conda.sh && conda activate orena-focus && cd ~/workspace/VLM-Competition"
+def prefix(config: dict[str, Any]) -> str:
+    return config.get(
+        "command_prefix",
+        "source ~/tools/miniconda3/etc/profile.d/conda.sh && "
+        "conda activate orena-focus && cd ~/workspace/VLM-Competition",
+    )
 
 
 def dataset_args(config: dict[str, Any]) -> str:
@@ -43,10 +47,14 @@ def print_block(title: str, command: str) -> None:
 
 
 def access_command(config: dict[str, Any]) -> str:
+    access_output = config.get(
+        "access_output",
+        "~/workspace/focus-runs/data-audit/qwen-lora-sft-v2-access-check.json",
+    )
     return (
-        f"{prefix()} && python scripts/check_focus_dataset_access.py "
+        f"{prefix(config)} && python scripts/check_focus_dataset_access.py "
         f"--root-dir {q(config['root_dir'])} {dataset_args(config)} --track {q(config['track'])} "
-        "--json-output ~/workspace/focus-runs/data-audit/qwen-lora-sft-v2-access-check.json"
+        f"--json-output {q(access_output)}"
     )
 
 
@@ -54,7 +62,7 @@ def prepare_commands(config: dict[str, Any]) -> list[str]:
     commands = []
     for dataset in config["datasets"]:
         commands.append(
-            f"{prefix()} && python scripts/prepare_focus_data.py "
+            f"{prefix(config)} && python scripts/prepare_focus_data.py "
             f"--root-dir {q(config['root_dir'])} --dataset {q(dataset)} --skip-frames"
         )
     return commands
@@ -62,7 +70,7 @@ def prepare_commands(config: dict[str, Any]) -> list[str]:
 
 def split_command(config: dict[str, Any]) -> str:
     return (
-        f"{prefix()} && python scripts/audit_and_split_segment_train.py "
+        f"{prefix(config)} && python scripts/audit_and_split_segment_train.py "
         f"--root-dir {q(config['root_dir'])} {dataset_args(config)} "
         f"--val-fraction {q(config['val_fraction'])} --seed {q(config['seed'])} "
         f"--output-dir {q(config['data_audit_dir'])}"
@@ -71,7 +79,7 @@ def split_command(config: dict[str, Any]) -> str:
 
 def clip_audit_command(config: dict[str, Any]) -> str:
     return (
-        f"{prefix()} && python scripts/audit_sft_clip_windows.py "
+        f"{prefix(config)} && python scripts/audit_sft_clip_windows.py "
         f"--input-jsonl {q(config['data_audit_dir'] + '/sft_train_overlay.jsonl')} "
         f"--input-jsonl {q(config['data_audit_dir'] + '/sft_val_overlay.jsonl')} "
         f"--output-dir {q(config['clip_audit_dir'])}"
@@ -83,8 +91,16 @@ def train_command(config: dict[str, Any], smoke: bool) -> str:
     max_train = 128 if smoke else config["max_train_samples"]
     max_val = 32 if smoke else config["max_val_samples"]
     epochs = 1 if smoke else config["epochs"]
+    nproc = config.get("smoke_nproc_per_node", 1) if smoke else config.get("nproc_per_node", 1)
+    training_script = config.get(
+        "training_script", "scripts/train_qwen3vl_lora_sft_smoke.py"
+    )
+    if nproc > 1:
+        launcher = f"torchrun --standalone --nproc-per-node {q(nproc)}"
+    else:
+        launcher = "CUDA_VISIBLE_DEVICES=0 python"
     return (
-        f"{prefix()} && CUDA_VISIBLE_DEVICES=0 python scripts/train_qwen3vl_lora_sft_smoke.py "
+        f"{prefix(config)} && {launcher} {q(training_script)} "
         f"--model-id {q(config['model_id'])} "
         f"--train-jsonl {q(config['train_jsonl'])} "
         f"--val-jsonl {q(config['val_jsonl'])} "
@@ -98,6 +114,11 @@ def train_command(config: dict[str, Any], smoke: bool) -> str:
         f"--video-max-frames {q(config['video_max_frames'])} "
         f"--width {q(config['width'])} --height {q(config['height'])} "
         f"--gradient-accumulation-steps {q(config['gradient_accumulation_steps'])}"
+        + (
+            f" --attn-implementation {q(config['attn_implementation'])}"
+            if "attn_implementation" in config
+            else ""
+        )
     )
 
 

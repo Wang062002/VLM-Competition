@@ -276,9 +276,14 @@ Official pre-evaluation result:
   `docs/sft_training_audit_20260810.md`
 - Qwen3-VL LoRA-SFT v2 plan after checking official HeiCo + LapChole data:
   `docs/qwen_lora_sft_v2_lapchole_plan_20260811.md`
-- Latest LapChole access check (`2026-08-12`): HeiCo SEGMENT is accessible
-  (`8000` train / `4000` test), but LapChole still returns Hugging Face
-  `gated dataset` access error.
+- Qwen3.5 four-L20 DDP implementation and Cybertron runbook:
+  `docs/qwen35_l20x4_training_20260829.md`
+- Cybertron training config:
+  `configs/qwen35_lora_sft_cybertron_l20x4.json`
+- The `2026-08-12` check recorded HeiCo SEGMENT at `8000` train / `4000` test
+  while LapChole was still gated. LapChole access was approved on `2026-08-16`;
+  the current cloud workflow will use the collaborator's shared copy after its
+  public project path is confirmed.
 
 ## Current Recommended Remote Command
 

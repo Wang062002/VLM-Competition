@@ -108,13 +108,21 @@ conda activate orena-focus
 - Project: `ORena-SAVE-FOCUS-Challenge`.
 - Runtime image: `orena-env-v2@v2`.
 - Requested resources: `24` CPU cores, `128 GB` RAM, `4 x NVIDIA L20`.
-- Current status when recorded: queued; no terminal-level hardware audit yet.
+- A minimum one-GPU notebook was started for platform and storage discovery;
+  this is not the formal four-GPU training allocation.
+- Terminal mount audit confirmed two writable persistent NFS mounts:
+  - shared project area: `/storage/main/projects/orenafocus-prj`
+  - personal area: `/storage/main/users/jialiwang`
+- The notebook root is an overlay filesystem with about `159 GB` free. Keep
+  datasets, model weights, manifests, and checkpoints on the NFS mounts.
 - The platform page temporarily reported `GPU total memory: 5600 MB` because a
   collaborating FRAME-track participant was occupying all four GPUs. Recheck
   the full allocation with `nvidia-smi` after those jobs release the GPUs.
-- The current `train_qwen3vl_lora_sft_smoke.py` is single-process/single-GPU:
-  it moves the model to one `args.device` and has no DDP initialization or data
-  sharding. Allocating four GPUs does not accelerate it without a DDP update.
+- The historical `train_qwen3vl_lora_sft_smoke.py` remains single-GPU for v1
+  reproducibility. A new `train_qwen35_lora_sft_ddp.py` now implements
+  single-node NCCL DDP for Qwen3.5 on four L20 GPUs, including rank-local data
+  shards, `no_sync()` accumulation, distributed validation, and rank-zero-only
+  logging/checkpoint writes.
 - Historical dual-dataset run on one RTX A5000 measured about `0.08 Hz`
   (`13.5 s/sample`) and estimated `164 h` for four epochs. A direct single-GPU
   three-epoch rerun is therefore roughly `123 h` before final validation.
@@ -122,9 +130,13 @@ conda activate orena-focus
   three epochs plus validation. Replace this estimate with a measured 128-256
   sample smoke-test projection after the notebook becomes available.
 - Updated model decision: use `Qwen3.5-4B` rather than Qwen3-VL-4B for the next
-  dual-dataset, three-epoch run. The current main-branch scripts are Qwen3-VL
-  specific; Qwen3.5 support from historical commit `458925e` must be restored,
-  reviewed, and combined with four-GPU DDP before training.
+  dual-dataset, three-epoch run. Qwen3.5 support from historical commit
+  `458925e` has been reworked into the new DDP entry point instead of replacing
+  the v1 script. The implementation is syntax-checked but still requires a real
+  four-L20 smoke test before the formal run.
+- Cybertron configuration:
+  `configs/qwen35_lora_sft_cybertron_l20x4.json`.
+- Detailed runbook: `docs/qwen35_l20x4_training_20260829.md`.
 - A collaborator in the FRAME track already downloaded HeiCo and LapChole to a
   personal path and will move/share them through a public area. Treat the
   shared datasets as read-only; keep manifests, clips, checkpoints, caches, and

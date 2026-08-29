@@ -205,10 +205,20 @@ For a fuller table, see:
   LLaVA results are still useful as evidence that medical or open-VLM priors do
   not automatically outperform the task-aligned Qwen baseline without FOCUS
   fine-tuning.
+- Planned v2 method (implementation completed, training pending):
+  Qwen3.5-4B LoRA-SFT on the combined HeiCo and LapChole SEGMENT training data,
+  three epochs, timestamp-overlay video input, at most 64 uniformly sampled
+  frames per QA window, frozen vision tower, and language-backbone adapters on
+  full-attention, Gated DeltaNet, and MLP projection layers. Training uses
+  four-way single-node DDP on NVIDIA L20 GPUs with global effective batch size
+  four. This must remain described as planned until the four-GPU smoke and full
+  run produce measured results.
 - Storage note:
-  Large future data/cache/run artifacts should use `/mnt/data/jiali_wang`; open
-  VLM model snapshots can be deleted from the main disk after their recorded
-  results are preserved.
+  On the old school server, large artifacts use `/mnt/data/jiali_wang`. On
+  Cybertron, shared read-only data belongs under
+  `/storage/main/projects/orenafocus-prj`, while personal model caches,
+  manifests, checkpoints, and results belong under
+  `/storage/main/users/jialiwang`.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the
