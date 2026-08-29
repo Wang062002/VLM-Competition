@@ -167,11 +167,17 @@ conda activate orena-focus
   removing the temporary-MP4/TorchCodec dependency and redundant decode. It
   also renders the chat template directly through the tokenizer with
   `enable_thinking=False`, because a follow-up probe showed Transformers 5.13
-  did not expand processor-level `template_kwargs`. The 128-row smoke must be
-  rerun before formal training.
+  did not expand processor-level `template_kwargs`.
+- The corrected four-L20 smoke then completed 128 train and 32 validation rows:
+  298.492 seconds training, 0.42882 global samples/s, 32 optimizer steps,
+  validation loss 0.326603, and successful epoch/final adapter saves. Visible
+  step loss averaged 0.5603 and decreased from 0.5994 over the first 15 logged
+  steps to 0.5269 over the last 15. The measured formal three-epoch budget is
+  20-25 hours including warm-up and normal variance, plus about 18 minutes for
+  final validation. Formal training is approved without further code changes.
 - `causal-conv1d 1.7.0` has no PyTorch 2.11 wheel and failed to compile locally.
-  It is not a launch blocker; use the four-GPU smoke to measure fallback cost
-  before revisiting this optional extension.
+  It is not a launch blocker. The successful four-GPU smoke includes its
+  PyTorch fallback cost, and the resulting 20-25 hour budget is acceptable.
 - A collaborator in the FRAME track already downloaded HeiCo and LapChole to a
   personal path and will move/share them through a public area. Treat the
   shared datasets as read-only; keep manifests, clips, checkpoints, caches, and

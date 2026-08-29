@@ -204,7 +204,20 @@ renders the Qwen3.5 template through `processor.tokenizer` with the direct
 video to the multimodal processor. The supplied video metadata includes the
 sampled-frame indices required by Qwen3.5's timestamp-token calculation.
 
-Rerun the 128-row smoke after pulling this change. A successful run must show
-finite loss, declining or at least non-exploding early loss, memory below the
-L20 limit, a final validation loss, and measured global samples/second before
-the three-epoch job is approved.
+The corrected 128-train/32-validation smoke completed successfully on four
+L20s. It processed 128 training samples in `298.492 s` at `0.42882` global
+samples/s, completed 32 optimizer steps, and reported validation loss
+`0.326603`. Total runtime including validation and adapter saves was
+`328.242 s`.
+
+The 31 visible per-step losses averaged `0.5603`; the first and last 15-step
+means were `0.5994` and `0.5269`, respectively. The curve is noisy at global
+batch size four but finite and non-divergent. Both the epoch and final adapters
+were saved successfully.
+
+At the aggregate smoke throughput, one full 12,372-row epoch projects to
+about `8.0 h` and three epochs to `24.0 h`. The smoke includes a roughly
+one-minute first-step compilation warm-up; steady-state steps project closer
+to `6.5 h` per epoch. Budget `20-25 h` for three epochs plus approximately
+`18 min` for the 1,374-row validation set and small checkpoint overheads.
+Formal three-epoch training is approved on the validated configuration.

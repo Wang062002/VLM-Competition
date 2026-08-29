@@ -656,6 +656,23 @@ Detailed plan:
   `chat_template_kwargs` and a processor-level `template_kwargs` probe.
 - Status: code fix complete locally; rerun required for throughput projection.
 
+## 2026-08-30 — Qwen3.5 Four-L20 Smoke Attempt 2 Passed
+
+- Configuration: 128 train rows, 32 validation rows, four L20 GPUs, global
+  batch size 4, 64-frame cap, 640x360 input, BF16/SDPA, LoRA rank 8.
+- Result: completed 32 optimizer steps in 298.492 seconds at 0.42882 global
+  samples/s; total runtime including validation and saves was 328.242 seconds.
+- Validation loss: 0.326603.
+- The 31 visible step losses averaged 0.5603. First/last 15-step means were
+  0.5994/0.5269, with no NaN, divergence, decoder error, or distributed hang.
+- Both `adapter-epoch-1` and `adapter-final` were saved.
+- Projection: conservative aggregate throughput gives 8.0 hours/epoch and
+  24.0 hours for three epochs. Excluding first-step compilation warm-up gives
+  about 6.5 hours/epoch. Use a 20-25 hour operational budget plus roughly
+  18 minutes for final validation.
+- Decision: launch the full 12,372-row, three-epoch run on the exact validated
+  code and hyperparameters; do not introduce another optimization change first.
+
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
 
 Storage result:
