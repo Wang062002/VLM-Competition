@@ -115,6 +115,14 @@ conda activate orena-focus
   - personal area: `/storage/main/users/jialiwang`
 - The notebook root is an overlay filesystem with about `159 GB` free. Keep
   datasets, model weights, manifests, and checkpoints on the NFS mounts.
+- The collaborator copied the raw datasets to the shared project mount:
+  - HeiCo: `/storage/main/projects/orenafocus-prj/heico-focus-vqa` (`150 GB`)
+  - LapChole: `/storage/main/projects/orenafocus-prj/lapchole-focus-vqa` (`91 GB`)
+- Both datasets were then copied into Jiali Wang's persistent personal root as
+  `/storage/main/users/jialiwang/data/focus/{heico,lapchole}`. The Cybertron
+  config now trains from this personal copy. The inspected shared sources
+  contain annotations and raw `videos`, but no timestamp `overlayed` directory;
+  overlays still need to be generated in the personal copy.
 - The platform page temporarily reported `GPU total memory: 5600 MB` because a
   collaborating FRAME-track participant was occupying all four GPUs. Recheck
   the full allocation with `nvidia-smi` after those jobs release the GPUs.

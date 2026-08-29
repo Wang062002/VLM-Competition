@@ -219,6 +219,11 @@ For a fuller table, see:
   `/storage/main/projects/orenafocus-prj`, while personal model caches,
   manifests, checkpoints, and results belong under
   `/storage/main/users/jialiwang`.
+- Cybertron data copy:
+  the collaborator's shared HeiCo (`150 GB`) and LapChole (`91 GB`) copies were
+  replicated under `/storage/main/users/jialiwang/data/focus/{heico,lapchole}`.
+  Shared sources contain the raw videos and annotations but not timestamp
+  overlays; overlay preprocessing remains part of the v2 preparation stage.
 - report table requirement:
   formal evaluation runs should include evaluator-style breakdown tables with
   `level`, `name`, `accuracy`, `ci_low`, `ci_high`, and `count`, matching the

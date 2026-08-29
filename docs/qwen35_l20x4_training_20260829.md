@@ -19,22 +19,24 @@ The container root filesystem has only about `159 GB` free and is an overlay
 filesystem. Do not store datasets, model weights, or training checkpoints under
 `/workspace`, `/root`, or `/tmp` except for short-lived temporary clips.
 
-Planned layout:
+Confirmed layout after the personal copy:
 
 ```text
-/storage/main/projects/orenafocus-prj/shared/focus-data/
-  heico/
-  lapchole/
-
 /storage/main/users/jialiwang/
+  data/focus/heico/
+  data/focus/lapchole/
   models/Qwen3.5-4B/
   workspace/VLM-Competition/
   focus-runs/data-audit/
   focus-runs/lora-sft/
 ```
 
-The shared dataset must be treated as read-only. Generated manifests,
-checkpoints, logs, and Hugging Face caches belong in the personal mount.
+The original shared datasets remain read-only at
+`/storage/main/projects/orenafocus-prj/{heico,lapchole}-focus-vqa`. Training
+uses the personal copies under `/storage/main/users/jialiwang/data/focus` so
+overlay generation and local integrity repair cannot affect the collaborator's
+files. Generated manifests, checkpoints, logs, and Hugging Face caches also
+belong in the personal mount.
 
 ## Training Implementation
 
@@ -76,9 +78,8 @@ Cybertron paths and hyperparameters are recorded in:
 configs/qwen35_lora_sft_cybertron_l20x4.json
 ```
 
-The shared dataset path remains provisional until the collaborator copies the
-data and confirms the exact directory structure. Update only the config when
-the final path is known.
+The configured dataset root is the confirmed personal copy:
+`/storage/main/users/jialiwang/data/focus`.
 
 ## Required Validation Order
 

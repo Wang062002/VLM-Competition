@@ -3,7 +3,7 @@
   "model_id": "/storage/main/users/jialiwang/models/Qwen3.5-4B",
   "datasets": ["heico", "lapchole"],
   "track": "segment",
-  "root_dir": "/storage/main/projects/orenafocus-prj/shared/focus-data",
+  "root_dir": "/storage/main/users/jialiwang/data/focus",
   "seed": 20260707,
   "val_fraction": 0.1,
   "command_prefix": "cd /storage/main/users/jialiwang/workspace/VLM-Competition",
