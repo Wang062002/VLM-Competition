@@ -246,3 +246,7 @@ python scripts/package_qwen35_training_artifacts.py \
   --run-root /storage/main/users/jialiwang/focus-runs/lora-sft/qwen35-4b-heico-lapchole-e5-l20x4-rerun1 \
   --output-dir /storage/main/users/jialiwang/transfers/qwen35-e5-rerun1
 ```
+
+Before container assembly, run one real generation through `adapter-final`
+with `scripts/smoke_qwen35_final_adapter.py`. This checks explicit Qwen chat
+EOS handling and concise-answer cleanup in addition to model/adapter loading.
