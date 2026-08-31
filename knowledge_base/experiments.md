@@ -693,6 +693,20 @@ Detailed plan:
   official three-sample container test with zero empty responses before a
   pre-evaluation submission.
 
+Final-artifact verification:
+
+- The transfer archive was generated at 55,494,936 bytes with SHA256
+  `79fc6b8b21ef2ace1b8f3e6617cb270ae551b11c0dda4df6001a20e2e2bf03da`;
+  `sha256sum -c` passed.
+- A real held-out generation loaded the final adapter and base model on one
+  L20. For qID `1000688`, the raw and cleaned answers were both `00:18:26`
+  against label `00:18:14`; explicit Qwen chat EOS `248046` stopped generation
+  without leaked role or thinking tokens.
+- Peak GPU allocation was 9.346 GiB. The missing optional fast path continued
+  to use the same PyTorch fallback validated during training.
+- Status: training, archive integrity, adapter loading, output termination,
+  and answer-format smoke all passed. Docker interface validation remains.
+
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
 
 Storage result:

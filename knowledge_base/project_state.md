@@ -202,6 +202,10 @@ conda activate orena-focus
 - Formal training is complete: 61,860 processed samples, 15,465 optimizer
   steps, final validation loss `0.24039989`, and total runtime `31 h 43 min
   24 s`. `adapter-final` was saved successfully.
+- The final adapter archive passed SHA256 verification. A real held-out
+  generation also passed with explicit EOS termination, a clean `hh:mm:ss`
+  answer, and 9.346 GiB peak GPU allocation. The remaining release gate is the
+  official Docker three-sample interface test.
 - A new submission implementation lives in
   `submission/segment_qwen35_lora/`; the successful Qwen3-VL v1 submission is
   preserved unchanged in `submission/segment_qwen_lora/`.
