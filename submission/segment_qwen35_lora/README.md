@@ -36,19 +36,15 @@ part of inference. Use these routes instead:
 ### 1. Package the adapter on Cybertron
 
 Run this only after training reports `status: completed` and `adapter-final`
-exists:
+exists. The packaging helper validates the run, includes the summary and
+history, and writes SHA256 metadata:
 
 ```bash
 RUN_ROOT=/storage/main/users/jialiwang/focus-runs/lora-sft/qwen35-4b-heico-lapchole-e5-l20x4-rerun1
 TRANSFER_ROOT=/storage/main/users/jialiwang/transfers/qwen35-e5-rerun1
-mkdir -p "$TRANSFER_ROOT"
-test -s "$RUN_ROOT/adapter-final/adapter_config.json"
-test -s "$RUN_ROOT/adapter-final/adapter_model.safetensors"
-tar -C "$RUN_ROOT/adapter-final" -czf "$TRANSFER_ROOT/qwen35-lora-e5-final.tar.gz" .
-(
-  cd "$TRANSFER_ROOT"
-  sha256sum qwen35-lora-e5-final.tar.gz > qwen35-lora-e5-final.tar.gz.sha256
-)
+python scripts/package_qwen35_training_artifacts.py \
+  --run-root "$RUN_ROOT" \
+  --output-dir "$TRANSFER_ROOT"
 ls -lh "$TRANSFER_ROOT"
 ```
 

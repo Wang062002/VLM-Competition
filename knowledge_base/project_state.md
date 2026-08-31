@@ -20,7 +20,8 @@ parameter-efficient supervised fine-tuning.
 
 ## Remote Server
 
-- Host/IP: `10.176.61.126`
+- Last known host/IP: `10.176.61.126` (unreachable after maintenance on
+  `2026-08-31`; verify the current address before reconnecting)
 - User: `Jiali_Wang`
 - Hostname: `UNNC-CVIP-03`
 - GPUs: `2 x NVIDIA RTX A5000`, 24GB each
@@ -198,6 +199,9 @@ conda activate orena-focus
 
 - The Qwen3.5 five-epoch rerun is written separately under
   `/storage/main/users/jialiwang/focus-runs/lora-sft/qwen35-4b-heico-lapchole-e5-l20x4-rerun1`.
+- Formal training is complete: 61,860 processed samples, 15,465 optimizer
+  steps, final validation loss `0.24039989`, and total runtime `31 h 43 min
+  24 s`. `adapter-final` was saved successfully.
 - A new submission implementation lives in
   `submission/segment_qwen35_lora/`; the successful Qwen3-VL v1 submission is
   preserved unchanged in `submission/segment_qwen_lora/`.

@@ -45,16 +45,25 @@ def main() -> None:
         algorithm_root / "inference.py",
         algorithm_root / "requirements.txt",
         base_dir / "config.json",
-        base_dir / "preprocessor_config.json",
         base_dir / "tokenizer_config.json",
         adapter_dir / "adapter_config.json",
         adapter_dir / "adapter_model.safetensors",
-        adapter_dir / "preprocessor_config.json",
         adapter_dir / "tokenizer_config.json",
     ]
     for path in required_files:
         if not path.is_file() or path.stat().st_size == 0:
             errors.append(f"Missing or empty required file: {path}")
+
+    for directory in (base_dir, adapter_dir):
+        processor_configs = [
+            directory / "processor_config.json",
+            directory / "preprocessor_config.json",
+        ]
+        if not any(path.is_file() and path.stat().st_size > 0 for path in processor_configs):
+            errors.append(
+                f"Missing processor configuration in {directory}; expected "
+                "processor_config.json or preprocessor_config.json"
+            )
 
     base_weights = sorted(base_dir.glob("*.safetensors"))
     if not base_weights:

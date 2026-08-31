@@ -225,3 +225,24 @@ validation set and small checkpoint overheads.
 Adapters are saved after every epoch, allowing downstream evaluation to choose
 epoch 3, 4, or 5 if the final checkpoint overfits. Formal five-epoch training
 is approved on the validated configuration.
+
+## Formal Run Result
+
+The rerun `qwen35-4b-heico-lapchole-e5-l20x4-rerun1` completed on
+`2026-08-31`:
+
+- five epochs and four L20 ranks;
+- 12,372 rows per epoch and 61,860 total sample presentations;
+- 15,465 optimizer steps;
+- 113,087.49 seconds of training at 0.547010 global samples/second;
+- final validation loss 0.24039989 over 1,374 rows;
+- 114,203.618 seconds total (`31 h 43 min 24 s`);
+- successful `adapter-final` and `training_summary.json` saves.
+
+Package the completed run with:
+
+```bash
+python scripts/package_qwen35_training_artifacts.py \
+  --run-root /storage/main/users/jialiwang/focus-runs/lora-sft/qwen35-4b-heico-lapchole-e5-l20x4-rerun1 \
+  --output-dir /storage/main/users/jialiwang/transfers/qwen35-e5-rerun1
+```

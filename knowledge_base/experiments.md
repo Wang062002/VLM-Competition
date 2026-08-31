@@ -676,6 +676,23 @@ Detailed plan:
   with a 33-41 hour budget. Per-epoch adapters preserve epochs 3/4/5 for later
   comparison if epoch 5 overfits.
 
+## 2026-08-31 — Qwen3.5 Four-L20 Formal Five-Epoch Run Completed
+
+- Run: `qwen35-4b-heico-lapchole-e5-l20x4-rerun1`.
+- Configuration: combined HeiCo and LapChole official TRAIN data, 12,372
+  internal-training rows per epoch, 1,374 held-out validation rows, four L20
+  GPUs, global batch size four, and five epochs.
+- Result: completed all 61,860 sample presentations and 15,465 optimizer steps.
+- Training time: 113,087.49 seconds at 0.547010 global samples/second.
+- Final validation loss: 0.24039989.
+- Total runtime including validation and final saves: 114,203.618 seconds
+  (`31 h 43 min 24 s`).
+- `training_summary.json` reports `status: completed`; `adapter-final` contains
+  the 54 MB LoRA safetensors plus tokenizer and processor resources.
+- Next release gate: archive and checksum the final adapter, then complete the
+  official three-sample container test with zero empty responses before a
+  pre-evaluation submission.
+
 ## 2026-08-12 — Storage Migration Completed; LapChole Still Gated
 
 Storage result:
