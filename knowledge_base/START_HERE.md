@@ -100,6 +100,8 @@ Current next step:
   `--normalize-answer`
 - `submission/segment_qwen_lora/`: files to copy into the official
   `segment-algorithm` template for Qwen3-VL + LoRA submission
+- `submission/segment_qwen35_lora/`: Qwen3.5-4B + LoRA v2 inference files and
+  the Cybertron-to-school-server adapter migration/Docker build runbook
 - `docs/open_vlm_baseline_plan.md`: plan for downloading and batch-testing
   open-source VLM baselines
 - `codex.md`: compact operational memory

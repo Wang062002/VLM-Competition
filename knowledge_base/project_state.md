@@ -193,3 +193,22 @@ conda activate orena-focus
 - The Cybertron platform does not expose Docker inside the notebook, but it can
   save the configured runtime as a new image. Stop training and leave CPU/RAM
   headroom before image saving; keep datasets/model weights out of the image.
+
+## Qwen3.5 Official Submission Preparation (2026-08-31)
+
+- The Qwen3.5 five-epoch rerun is written separately under
+  `/storage/main/users/jialiwang/focus-runs/lora-sft/qwen35-4b-heico-lapchole-e5-l20x4-rerun1`.
+- A new submission implementation lives in
+  `submission/segment_qwen35_lora/`; the successful Qwen3-VL v1 submission is
+  preserved unchanged in `submission/segment_qwen_lora/`.
+- The Qwen3.5 inference path matches training: Decord in-memory RGB frames,
+  target `1 FPS`, `4-64` frames, `640 x 360`, tokenizer-level
+  `enable_thinking=False`, and explicit `frames_indices` metadata.
+- Do not migrate the 241 GB HeiCo/LapChole training datasets to the Docker
+  server. Sync code through GitHub, redownload the public Qwen3.5 base model on
+  the old server's `/mnt/data` disk, and transfer only the final LoRA adapter
+  plus its SHA256 checksum from Cybertron.
+- Build in a fresh Qwen3.5 copy of the official template on `/mnt/data`; do not
+  overwrite the known-good Qwen3-VL template or image.
+- Complete the official three-sample `do_test_run.sh` with zero inference
+  failures before `do_save.sh`, image upload, Try-out, and pre-evaluation.
