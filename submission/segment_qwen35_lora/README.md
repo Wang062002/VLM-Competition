@@ -12,6 +12,7 @@ resource layout:
 
 ```text
 segment-algorithm/
+  answer_utils.py
   inference.py
   requirements.txt
   resources/
@@ -112,6 +113,7 @@ cd /home/Jiali_Wang/workspace/VLM-Competition
 git pull --ff-only origin main
 ALGORITHM_ROOT=/mnt/data/jiali_wang/workspace/orena-focus-submission-template-qwen35/segment-algorithm
 cp submission/segment_qwen35_lora/inference.py "$ALGORITHM_ROOT/inference.py"
+cp submission/segment_qwen35_lora/answer_utils.py "$ALGORITHM_ROOT/answer_utils.py"
 cp submission/segment_qwen35_lora/requirements.txt "$ALGORITHM_ROOT/requirements.txt"
 mkdir -p "$ALGORITHM_ROOT/resources/qwen35-4b"
 mkdir -p "$ALGORITHM_ROOT/resources/qwen35-lora"

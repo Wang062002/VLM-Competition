@@ -23,6 +23,7 @@ class CheckQwen35SubmissionResourcesTest(unittest.TestCase):
 
             for path in (
                 algorithm_root / "inference.py",
+                algorithm_root / "answer_utils.py",
                 algorithm_root / "requirements.txt",
                 base_dir / "tokenizer_config.json",
                 base_dir / "processor_config.json",

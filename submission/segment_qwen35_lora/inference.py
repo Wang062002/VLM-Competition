@@ -27,6 +27,8 @@ from focus import Request, Response, load_requests, save_items
 from peft import PeftModel
 from transformers import AutoProcessor, Qwen3_5ForConditionalGeneration
 
+from answer_utils import clean_generated_answer, generation_eos_token_ids
+
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -264,18 +266,32 @@ class Qwen35LoraEngine:
         }
 
         with torch.inference_mode():
-            generated = self.model.generate(
-                **inputs,
-                max_new_tokens=MAX_NEW_TOKENS,
-                do_sample=False,
-                use_cache=True,
-            )
+            generation_kwargs = {
+                "max_new_tokens": MAX_NEW_TOKENS,
+                "do_sample": False,
+                "use_cache": True,
+            }
+            eos_token_ids = generation_eos_token_ids(self.processor.tokenizer)
+            if eos_token_ids is not None:
+                generation_kwargs["eos_token_id"] = eos_token_ids
+                pad_token_id = self.processor.tokenizer.pad_token_id
+                if pad_token_id is None:
+                    pad_token_id = (
+                        eos_token_ids[0]
+                        if isinstance(eos_token_ids, list)
+                        else eos_token_ids
+                    )
+                generation_kwargs["pad_token_id"] = pad_token_id
+            generated = self.model.generate(**inputs, **generation_kwargs)
         answer_tokens = generated[:, inputs["input_ids"].shape[1] :]
-        return self.processor.batch_decode(
+        raw_answer = self.processor.batch_decode(
             answer_tokens,
             skip_special_tokens=True,
             clean_up_tokenization_spaces=False,
         )[0].strip()
+        answer = clean_generated_answer(raw_answer)
+        LOGGER.info("qID=%s raw_answer=%r cleaned_answer=%r", req.qID, raw_answer, answer)
+        return answer
 
 
 def run() -> int:
